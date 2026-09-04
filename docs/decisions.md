@@ -17,6 +17,13 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Seats | Cosmetic avatars; any player may solve any puzzle |
 | TTS | Deferred (text-only v1) |
 | Native image | Later; JVM first |
+| Puzzle source of truth | Campaign YAML; LLM narrates only; YAML fallback if vLLM is down |
+| Terminal | Simulated; never execute player `oc` / Ansible / Linux / Java on the cluster |
+| Agent docs | Canonical specs under `docs/` in this repo; thin `AGENTS.md` + `CLAUDE.md` pointers in the other four |
+| Filenames | `AGENTS.md` and `CLAUDE.md` at every repo root (tools auto-load) |
+| Cursor | Always-on `.cursor/rules/questshift.mdc` in each repo, plus glob rules (Java / TSX / YAML) |
+| Look | 16-bit pixel dungeon; Kenney Tiny Dungeon CC0 sheet in `questshift-ui/public/assets/` |
+| Dual panel | Panel A Phaser pixel canvas; Panel B CRT-like terminal in IBM Plex Mono |
 
 ## Deliberately not in v1
 

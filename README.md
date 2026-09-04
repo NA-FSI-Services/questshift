@@ -44,7 +44,26 @@ questshift/
 
 In Cursor: **File → Open Workspace from File…** and choose `QuestShift.code-workspace` (or [QuestShift.code-workspace](QuestShift.code-workspace) in this repo). That loads all five git repos as one multi-root project.
 
-Then see [docs/architecture.md](docs/architecture.md) and each repo README.
+## Documentation
+
+Canonical specs live in this repo. Agents: read `AGENTS.md`, then [ARCHITECTURE-ESSENTIALS.md](docs/ARCHITECTURE-ESSENTIALS.md).
+
+| Spec | GitHub | Local |
+| --- | --- | --- |
+| PRD | https://github.com/NA-FSI-Services/questshift/blob/main/docs/PRD.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/PRD.md` |
+| Architecture | https://github.com/NA-FSI-Services/questshift/blob/main/docs/ARCHITECTURE.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/ARCHITECTURE.md` |
+| Essentials | https://github.com/NA-FSI-Services/questshift/blob/main/docs/ARCHITECTURE-ESSENTIALS.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/ARCHITECTURE-ESSENTIALS.md` |
+| UX | https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md` |
+| Game design | https://github.com/NA-FSI-Services/questshift/blob/main/docs/GAME-DESIGN.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/GAME-DESIGN.md` |
+| API contract | https://github.com/NA-FSI-Services/questshift/blob/main/docs/API-CONTRACT.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/API-CONTRACT.md` |
+| Plan | https://github.com/NA-FSI-Services/questshift/blob/main/docs/PLAN.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/PLAN.md` |
+| Workflows | https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md` |
+| Campaign authoring | https://github.com/NA-FSI-Services/questshift/blob/main/docs/CAMPAIGN-AUTHORING.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/CAMPAIGN-AUTHORING.md` |
+| Decisions | https://github.com/NA-FSI-Services/questshift/blob/main/docs/decisions.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/decisions.md` |
+
+The kickoff filename `docs/architecture.md` is the same file as `ARCHITECTURE.md` on macOS APFS (case-insensitive). Git records `ARCHITECTURE.md`.
+
+Also: [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [CLAUDE.md](CLAUDE.md).
 
 ## Locked decisions
 

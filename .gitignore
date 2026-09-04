@@ -3,3 +3,8 @@
 .idea/
 .vscode/
 *.swp
+.env
+.env.*
+*.pem
+kubeconfig
+kubeconfig.*

@@ -1,0 +1,17 @@
+---
+description: QuestShift always-on map for the docs repo
+alwaysApply: true
+---
+
+# QuestShift (docs)
+
+Read `AGENTS.md` then `docs/ARCHITECTURE-ESSENTIALS.md` before editing.
+
+- AGENTS: https://github.com/NA-FSI-Services/questshift/blob/main/AGENTS.md
+  Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/AGENTS.md`
+- Essentials: https://github.com/NA-FSI-Services/questshift/blob/main/docs/ARCHITECTURE-ESSENTIALS.md
+  Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/ARCHITECTURE-ESSENTIALS.md`
+- Full architecture: https://github.com/NA-FSI-Services/questshift/blob/main/docs/ARCHITECTURE.md
+  Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/ARCHITECTURE.md`
+
+v1 freeze: vLLM + Granite 3.1 8B Instruct on L4, no Ollama, YAML wins, simulated terminal, one party, cosmetic seats, JVM only, no TTS. Cite GitHub + local paths for every spec. Do not re-litigate product decisions. Never commit secrets (HF tokens, `.env`, kubeconfigs); `questshift-hf` is created with `oc create secret`, not YAML in git.
