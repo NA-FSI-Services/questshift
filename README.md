@@ -30,16 +30,19 @@ Voice / TTS is deferred. v1 is text-only.
 
 ## Local layout
 
-Clone siblings under one parent directory:
+Clone siblings under one parent directory, then open the Cursor workspace:
 
 ```text
 questshift/
+  QuestShift.code-workspace
   questshift/
   questshift-engine/
   questshift-ui/
   questshift-campaigns/
   questshift-gitops/
 ```
+
+In Cursor: **File → Open Workspace from File…** and choose `QuestShift.code-workspace` (or [QuestShift.code-workspace](QuestShift.code-workspace) in this repo). That loads all five git repos as one multi-root project.
 
 Then see [docs/architecture.md](docs/architecture.md) and each repo README.
 

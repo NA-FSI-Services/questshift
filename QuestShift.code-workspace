@@ -1,0 +1,31 @@
+{
+  "folders": [
+    {
+      "name": "docs",
+      "path": "."
+    },
+    {
+      "name": "engine",
+      "path": "../questshift-engine"
+    },
+    {
+      "name": "ui",
+      "path": "../questshift-ui"
+    },
+    {
+      "name": "campaigns",
+      "path": "../questshift-campaigns"
+    },
+    {
+      "name": "gitops",
+      "path": "../questshift-gitops"
+    }
+  ],
+  "settings": {
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/target": true,
+      "**/dist": true
+    }
+  }
+}
