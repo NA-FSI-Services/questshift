@@ -71,7 +71,7 @@ UI split:
 | `src/api/client.ts` | REST helpers (`/api/campaigns`, sessions, commands, export) |
 | `public/assets/kenney/tiny-dungeon/` | CC0 sprite sheet |
 
-GitOps split: `k8s/llm-deployment.yaml` (vLLM + L4), `game-backend-deployment.yaml`, `game-ui-deployment.yaml`, `configmap.yaml`, `pvc.yaml`, `openshift-route.yaml`, campaign ConfigMap generator.
+GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). Manifests: `k8s/llm-deployment.yaml` (vLLM + L4), `game-backend-deployment.yaml`, `game-ui-deployment.yaml`, `configmap.yaml`, `pvc.yaml`, `openshift-route.yaml`, campaign ConfigMap generator.
 
 ## Game loop
 

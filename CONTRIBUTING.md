@@ -30,4 +30,4 @@ UI: Node 22+, `npm install && npm run dev` in `questshift-ui`.
 
 Campaigns: edit YAML, restart the engine or hit the reload endpoint.
 
-GitOps: `oc apply -k k8s/` against a non-prod project.
+GitOps: `./install.sh` against a 4.20+ cluster (`oc apply -k k8s/` is fallback only).

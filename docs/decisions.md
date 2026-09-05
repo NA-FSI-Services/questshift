@@ -21,6 +21,7 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Terminal | Simulated; never execute player `oc` / Ansible / Linux / Java on the cluster |
 | Agent docs | Canonical specs under `docs/` in this repo; thin `AGENTS.md` + `CLAUDE.md` pointers in the other four |
 | Filenames | `AGENTS.md` and `CLAUDE.md` at every repo root (tools auto-load) |
+| Install on OpenShift | `./install.sh` (GitOps Application); Ansible under `install/` |
 | Cursor | Always-on `.cursor/rules/questshift.mdc` in each repo, plus glob rules (Java / TSX / YAML) |
 | Look | 16-bit pixel dungeon; Kenney Tiny Dungeon CC0 sheet in `questshift-ui/public/assets/` |
 | Dual panel | Panel A Phaser pixel canvas; Panel B CRT-like terminal in IBM Plex Mono |
@@ -30,5 +31,5 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 - Browser Web Speech / Piper TTS
 - Ollama local sidecar
 - Multi-party / multi-tenant matchmaking
-- Real execution of `oc`, Ansible, or a login node
+- Real execution of **player** `oc`, Ansible, or a login node (facilitator `./install.sh` is cluster bootstrap only)
 - Native Quarkus binary

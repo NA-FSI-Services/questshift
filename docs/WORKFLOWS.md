@@ -80,7 +80,7 @@ v1 secrets live in the cluster (or an untracked local file), never in git.
 
 Do:
 
-- Create `questshift-hf` with `oc create secret` on the cluster **after** clone, **before** `oc apply`. Docs may show the placeholder `YOUR_HF_TOKEN` only.
+- Create `questshift-hf` with `./install.sh` (or `oc create secret` on the cluster). Docs may show the placeholder `YOUR_HF_TOKEN` only. Never put the token in git.
 - Put local LLM overrides in untracked files (`application-local.properties`, `.env`). Those names are gitignored.
 - Keep `k8s/` limited to `secretKeyRef` (name + key). Never add a `Secret` manifest with `stringData` or a real token.
 
@@ -92,14 +92,18 @@ Do not:
 
 If a token is committed, rotate it on Hugging Face / the cluster and purge it from git history before the next push.
 
-## OpenShift — `oc apply -k k8s/`
+## OpenShift install
 
-From `questshift-gitops`, with GPU operator + L4 already present:
+Cluster install is two steps. See [INSTALL.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/INSTALL.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/INSTALL.md`).
+
+1. Set up OpenShift **4.20+**.
+2. From `questshift-gitops`: `./install.sh` (or `./install.sh --install-operators`).
+
+The script checks cluster-admin, worker/GPU/CPU/memory, then OpenShift GitOps, NFD, NVIDIA GPU Operator, and RHOAI. It deploys QuestShift with an Argo CD Application pointing at `k8s/`. Hugging Face token becomes secret `questshift-hf` on the cluster only.
+
+Emergency fallback after operators and the secret exist:
 
 ```bash
-oc new-project questshift
-# Token stays on the cluster. Do not write it into k8s/ or commit it.
-oc create secret generic questshift-hf --from-literal=token=YOUR_HF_TOKEN
 oc apply -k k8s/
 ```
 

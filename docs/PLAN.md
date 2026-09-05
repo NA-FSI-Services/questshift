@@ -35,7 +35,7 @@ Exit: GM JSON narrates; regex still comes from YAML; fallback still wins the hou
 
 ## Phase 4 — OpenShift apply
 
-`oc new-project questshift`, Hugging Face secret `questshift-hf`, `oc apply -k k8s/` from `questshift-gitops`. GPU operator + NVIDIA L4 already on the node. Publish JVM and nginx images to the in-cluster registry (placeholders today). Route → UI → engine → vLLM. One party.
+Set up OpenShift 4.20+. From `questshift-gitops` run `./install.sh` (or `./install.sh --install-operators`). The script checks cluster-admin and hardware, installs GitOps / NFD / NVIDIA GPU / RHOAI if needed, creates `questshift-hf`, and syncs `k8s/` through OpenShift GitOps. Publish JVM and nginx images to the in-cluster registry (placeholders today). One party.
 
 Exit: facilitated 60-minute run on the workshop cluster, export/import survives a pod bounce via PVC `questshift-session-export`.
 

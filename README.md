@@ -28,6 +28,19 @@ All repositories are public under the [Apache License 2.0](LICENSE).
 
 Voice / TTS is deferred. v1 is text-only.
 
+## Install on OpenShift
+
+1. Set up an OpenShift **4.20+** cluster (NVIDIA L4 worker, cluster-admin).
+2. Run the installer in [questshift-gitops](https://github.com/NA-FSI-Services/questshift-gitops):
+
+```bash
+oc login --server=https://api.CLUSTER:6443
+cd questshift-gitops
+./install.sh
+```
+
+Use `./install.sh --install-operators` to install missing GitOps / NFD / NVIDIA GPU / OpenShift AI operators without prompting. Full contract: [docs/INSTALL.md](docs/INSTALL.md).
+
 ## Local layout
 
 Clone siblings under one parent directory, then open the Cursor workspace:
@@ -59,6 +72,7 @@ Canonical specs live in this repo. Agents: read `AGENTS.md`, then [ARCHITECTURE-
 | Plan | https://github.com/NA-FSI-Services/questshift/blob/main/docs/PLAN.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/PLAN.md` |
 | Workflows | https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md` |
 | Campaign authoring | https://github.com/NA-FSI-Services/questshift/blob/main/docs/CAMPAIGN-AUTHORING.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/CAMPAIGN-AUTHORING.md` |
+| Install | https://github.com/NA-FSI-Services/questshift/blob/main/docs/INSTALL.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/INSTALL.md` |
 | Decisions | https://github.com/NA-FSI-Services/questshift/blob/main/docs/decisions.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/decisions.md` |
 
 The kickoff filename `docs/architecture.md` is the same file as `ARCHITECTURE.md` on macOS APFS (case-insensitive). Git records `ARCHITECTURE.md`.

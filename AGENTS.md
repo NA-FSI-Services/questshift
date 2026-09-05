@@ -17,6 +17,7 @@ Read [ARCHITECTURE-ESSENTIALS.md](https://github.com/NA-FSI-Services/questshift/
 | Plan | https://github.com/NA-FSI-Services/questshift/blob/main/docs/PLAN.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/PLAN.md` |
 | Workflows | https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md` |
 | Campaign authoring | https://github.com/NA-FSI-Services/questshift/blob/main/docs/CAMPAIGN-AUTHORING.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/CAMPAIGN-AUTHORING.md` |
+| Install | https://github.com/NA-FSI-Services/questshift/blob/main/docs/INSTALL.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/INSTALL.md` |
 | Decisions | https://github.com/NA-FSI-Services/questshift/blob/main/docs/decisions.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/decisions.md` |
 
 The kickoff filename `docs/architecture.md` is `docs/ARCHITECTURE.md` (same path on macOS APFS).
