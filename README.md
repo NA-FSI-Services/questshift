@@ -73,6 +73,7 @@ Canonical specs live in this repo. Agents: read `AGENTS.md`, then [ARCHITECTURE-
 | Workflows | https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md` |
 | Campaign authoring | https://github.com/NA-FSI-Services/questshift/blob/main/docs/CAMPAIGN-AUTHORING.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/CAMPAIGN-AUTHORING.md` |
 | Install | https://github.com/NA-FSI-Services/questshift/blob/main/docs/INSTALL.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/INSTALL.md` |
+| Quality | https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md` |
 | Decisions | https://github.com/NA-FSI-Services/questshift/blob/main/docs/decisions.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/decisions.md` |
 
 The kickoff filename `docs/architecture.md` is the same file as `ARCHITECTURE.md` on macOS APFS (case-insensitive). Git records `ARCHITECTURE.md`.
@@ -87,3 +88,7 @@ Also: [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [CLAUDE.md](CL
 - **LLM:** vLLM only, IBM Granite 3.1 8B Instruct, NVIDIA L4 (`nvidia.com/gpu: 1`)
 - **Play mode:** one party per deployment, cosmetic seats, shared canvas + terminal
 - **License:** Apache-2.0
+
+## Quality gates
+
+Canonical map: [docs/QUALITY.md](docs/QUALITY.md). This repo: `python3 -m pip install -r requirements-dev.txt && ./verify.sh`. Pre-commit: `./.githooks/install`. PRs to `main` run workflow **Quality**.

@@ -53,3 +53,5 @@ Hugging Face token handling matches [WORKFLOWS.md](https://github.com/NA-FSI-Ser
 Argo CD syncs `k8s/` from **git** (`--repo-url` / `--revision`, default `NA-FSI-Services/questshift-gitops` @ `main`), not from an uncommitted working tree.
 
 Emergency fallback if Argo CD is unavailable: `oc apply -k k8s/` still works after the operators and secret exist. Prefer `./install.sh`.
+
+Manifest freeze (no `Secret` YAML, no Ollama, GPU request `1`) is checked by `./verify.sh` in `questshift-gitops`. That gate does not log into a cluster; `--check-only` is the live probe. Details: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).

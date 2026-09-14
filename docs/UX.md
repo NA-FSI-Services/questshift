@@ -107,7 +107,7 @@ Load atlas key `tiny-dungeon`. Named keys below are what `DungeonScene` must use
 
 ## Terminal (Panel B)
 
-Keep the simulated CRT: dark green well, amber prompt `$`, `GM>` prefix on narrative. Clock shows `elapsedSeconds`. Footer: `export.yaml` plus last hint. Textarea accepts multiline (Shift+Enter); Enter submits. Placeholder: “type a command, YAML, oc, or Java snippet…”. Do not add a mic button.
+Keep the simulated CRT: dark green well, amber prompt `$`, `GM>` prefix on narrative. Clock shows `elapsedSeconds` and the UI polls `GET /api/sessions/{id}` once a second while a run is live. Footer: `export.yaml`, `import.yaml` (file picker; restores via `POST /api/sessions/import`), plus last hint. Textarea accepts multiline (Shift+Enter); Enter submits. Placeholder: “type a command, YAML, oc, or Java snippet…”. Do not add a mic button.
 
 ## Accessibility
 

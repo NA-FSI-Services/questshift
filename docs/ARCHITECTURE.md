@@ -145,6 +145,10 @@ Voice is out of scope for v1.
 
 Vite (`npm run dev`) proxies `/api` and `/ws` to `localhost:8080`. nginx in cluster does the same against `questshift-engine:8080`.
 
+## Quality
+
+Every repo gates merge with format, static analysis, and coverage (engine: Spotless / PMD / JaCoCo; UI: Prettier / ESLint / Vitest; campaigns and gitops and docs: yamllint/ruff or spec checker plus pytest-cov). Hooks and CI: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`). Commands: [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
+
 ## Why this split
 
 Campaign authors edit YAML without a Java rebuild. Platform engineers iterate GPU and Routes without a UI release. The engine stays the only writer of game truth.

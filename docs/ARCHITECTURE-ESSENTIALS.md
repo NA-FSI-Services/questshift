@@ -48,6 +48,8 @@ One OpenShift deployment **is** one party. No multi-tenant session router in v1.
 | OpenShift + vLLM | `questshift-gitops` | `k8s/` via `./install.sh` |
 | Specs | `questshift` | `docs/` |
 
+Quality gates (format, lint/PMD analog, coverage, hook, GitHub Actions) live in each repo. Map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
+
 ## Game Master JSON
 
 The model must return one JSON object (optionally fenced). The engine **keeps** the room's `expected_command_pattern` from YAML.

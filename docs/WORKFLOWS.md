@@ -16,7 +16,7 @@ Sibling clones, then open `QuestShift.code-workspace` from the parent directory.
   questshift-gitops/          kustomize
 ```
 
-## Engine — `mvn quarkus:dev`
+## Engine — `./mvnw quarkus:dev`
 
 Java 21, Maven 3.9+. From `questshift-engine`:
 
@@ -24,7 +24,7 @@ Java 21, Maven 3.9+. From `questshift-engine`:
 ./mvnw quarkus:dev
 ```
 
-Wrapper optional: `mvn quarkus:dev`. Listens on `http://localhost:8080`. Swagger: `/q/swagger-ui`. Health: `/q/health/ready`.
+Listens on `http://localhost:8080`. Swagger: `/q/swagger-ui`. Health: `/q/health/ready`.
 
 `application.properties`:
 
@@ -32,7 +32,7 @@ Wrapper optional: `mvn quarkus:dev`. Listens on `http://localhost:8080`. Swagger
 - `%dev.questshift.llm.enabled=false` ← YAML narration, no vLLM
 - `%test.questshift.llm.enabled=false`
 
-Tests: `./mvnw test`.
+Tests: `./mvnw test` (surefire: `*Test.java`). Quality gate: `./mvnw verify` (Spotless, PMD max 0 medium+ violations, failsafe `*IT.java`, JaCoCo 80% line / 70% branch). Format: `./mvnw spotless:apply`. Engine pre-commit: `./.githooks/install` then commit; it runs `./mvnw -Ppre-commit verify` (same gates minus ITs). Engine PRs to `main`: GitHub Actions workflow **Quality** (`./mvnw verify`). Map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`). Phase 1 proof is `GameResourceTest.acceptedExamplesClearTheHourThenExportImport` (LLM off). A live facilitator regex pass is not required to close Phase 1.
 
 To try live Granite **without** leaving the freeze, override only outside `%dev` (phase 3), e.g. a local `application-llm.properties` is not required in v1 — use cluster ConfigMap.
 
@@ -45,7 +45,9 @@ npm install
 npm run dev
 ```
 
-Vite on `http://localhost:5173` proxies `/api` → `http://localhost:8080` and `/ws` → `ws://localhost:8080`.
+Vite on `http://localhost:5173` proxies `/api` → `http://127.0.0.1:8080` and `/ws` → `ws://127.0.0.1:8080` (IPv4, so another process bound to `*:8080` does not steal the API).
+
+Quality: `npm run verify` (Prettier, ESLint, Vitest ≥ 80% lines / 70% branches). Pre-commit: `./.githooks/install`. PRs to `main`: GitHub Actions **Quality** / **Format, lint, coverage**. Map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
 
 ## Campaign edit + reload
 
@@ -54,6 +56,8 @@ Vite on `http://localhost:5173` proxies `/api` → `http://localhost:8080` and `
 3. Start a **new** session (`POST /api/sessions`). Existing sessions keep old room data in memory.
 
 Keep a classpath copy in `questshift-engine/src/main/resources/campaigns/` in sync when you change the canonical file, or local-only runs that miss the sibling dir will serve stale rooms.
+
+Quality: `./verify.sh` in `questshift-campaigns` (yamllint, ruff, pytest-cov). Pre-commit: `./.githooks/install`. Contract details: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
 
 ## Export / import session
 
@@ -66,7 +70,7 @@ curl -s -X POST "http://localhost:8080/api/sessions/import?format=yaml" \
   --data-binary @run.yaml -H 'Content-Type: application/yaml'
 ```
 
-UI: Panel B **export.yaml** downloads `questshift-{id}.yaml`. Import is engine-only in v1 (no file picker yet).
+UI: Panel B **export.yaml** downloads `questshift-{id}.yaml`. **import.yaml** is a file picker that posts the file to `POST /api/sessions/import` (works with or without a live session).
 
 ## Secrets — never commit to GitHub
 
@@ -101,6 +105,8 @@ Cluster install is two steps. See [INSTALL.md](https://github.com/NA-FSI-Service
 
 The script checks cluster-admin, worker/GPU/CPU/memory, then OpenShift GitOps, NFD, NVIDIA GPU Operator, and RHOAI. It deploys QuestShift with an Argo CD Application pointing at `k8s/`. Hugging Face token becomes secret `questshift-hf` on the cluster only.
 
+Quality: `./verify.sh` in `questshift-gitops` (yamllint, ruff, shellcheck, kustomize, pytest-cov). Pre-commit: `./.githooks/install`. Freeze checks: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
+
 Emergency fallback after operators and the secret exist:
 
 ```bash
@@ -114,3 +120,19 @@ Route name `questshift` → UI Service. nginx proxies `/api/` and `/ws/` to the 
 ## Simulated terminal
 
 Never pipe player input into `oc`, `ansible-playbook`, a JDK, or a login node. The evaluator is the only scorer.
+
+## Quality gates
+
+Canonical spec: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
+
+Each repo has format + static analysis + coverage, a repo-local pre-commit hook (`./.githooks/install`), and GitHub Actions workflow **Quality** on PRs/pushes to `main`. Mark the job required so a red run cannot merge. Bypass a hook with `SKIP_QUESTSHIFT_HOOKS=1` or `git commit --no-verify`.
+
+| Repo | Format / lint | Static analysis | Coverage | Local command |
+| --- | --- | --- | --- | --- |
+| engine | Spotless (AOSP) | PMD (priority ≤ 3, 0 allowed) | JaCoCo 80% lines / 70% branches | `./mvnw verify` |
+| ui | Prettier | ESLint | Vitest 80% lines / 70% branches | `npm run verify` |
+| campaigns | yamllint | ruff | pytest-cov 80% on `tools/` | `./verify.sh` |
+| gitops | yamllint + shellcheck | ruff | pytest-cov 80% on probe/helpers | `./verify.sh` |
+| docs | ruff format | ruff + spec checker | pytest-cov 80% on `tools/` | `./verify.sh` |
+
+PMD is Java-only. Other repos use the stack analog (ESLint or ruff). Campaign YAML and OpenShift manifests stay puzzle/cluster source of truth; the checkers do not execute player commands or talk to a live cluster.

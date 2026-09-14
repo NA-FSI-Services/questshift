@@ -25,6 +25,9 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Cursor | Always-on `.cursor/rules/questshift.mdc` in each repo, plus glob rules (Java / TSX / YAML) |
 | Look | 16-bit pixel dungeon; Kenney Tiny Dungeon CC0 sheet in `questshift-ui/public/assets/` |
 | Dual panel | Panel A Phaser pixel canvas; Panel B CRT-like terminal in IBM Plex Mono |
+| Session restore | Terminal footer file picker (`import.yaml`) posts to existing `POST /api/sessions/import` |
+| Phase 1 proof | QuarkusTest submits all five YAML `accepted_examples` then export/import; no live facilitator pass |
+| Quality gates | Format + static analysis + coverage on every repo; hook + GitHub Actions **Quality** (see [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md), local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`) |
 
 ## Deliberately not in v1
 

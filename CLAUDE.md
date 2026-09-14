@@ -21,3 +21,4 @@ Then:
 - v1 non-goals: TTS, Ollama, multi-party, real command execution, native Quarkus image.
 - Specs live under `docs/`. Do not re-litigate product decisions. Do not commit unless asked.
 - Never commit secrets to GitHub (HF token, `.env`, kubeconfig, real API keys). Use cluster secret `questshift-hf`.
+- Quality: `./verify.sh` (ruff + spec checker, pytest-cov). Pre-commit: `./.githooks/install`. Map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).

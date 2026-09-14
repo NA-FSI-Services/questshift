@@ -18,6 +18,7 @@ Read [ARCHITECTURE-ESSENTIALS.md](https://github.com/NA-FSI-Services/questshift/
 | Workflows | https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md` |
 | Campaign authoring | https://github.com/NA-FSI-Services/questshift/blob/main/docs/CAMPAIGN-AUTHORING.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/CAMPAIGN-AUTHORING.md` |
 | Install | https://github.com/NA-FSI-Services/questshift/blob/main/docs/INSTALL.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/INSTALL.md` |
+| Quality | https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md` |
 | Decisions | https://github.com/NA-FSI-Services/questshift/blob/main/docs/decisions.md | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/decisions.md` |
 
 The kickoff filename `docs/architecture.md` is `docs/ARCHITECTURE.md` (same path on macOS APFS).
@@ -43,3 +44,4 @@ The kickoff filename `docs/architecture.md` is `docs/ARCHITECTURE.md` (same path
 - Apache-2.0 on every repo. Do not add a second license except the Kenney CC0 NOTICE for sprites.
 - Do not start phase work that PLAN.md marks out of v1.
 - Never commit secrets (HF tokens, `.env`, kubeconfigs, real `questshift.llm.api-key`). Cluster secret `questshift-hf` via `oc create secret` only. Details: [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
+- Quality: `./verify.sh` (ruff + spec checker, pytest-cov ≥ 80% on `tools/`). Pre-commit: `./.githooks/install`. CI: `.github/workflows/quality.yml`. Map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).

@@ -24,10 +24,14 @@ Track work on the [QuestShift project board](https://github.com/orgs/NA-FSI-Serv
 
 ## Dev loop
 
-Engine: Java 21, `./mvnw quarkus:dev` in `questshift-engine`.
+Engine: Java 21, `./mvnw quarkus:dev` in `questshift-engine`. Enable the quality hook once with `./.githooks/install`. PRs to `main` run Spotless, PMD, tests, and JaCoCo via GitHub Actions (`quality.yml`).
 
-UI: Node 22+, `npm install && npm run dev` in `questshift-ui`.
+UI: Node 22+, `npm install && npm run dev` in `questshift-ui`. Quality: `npm run verify` (Prettier, ESLint, Vitest coverage). Hook: `./.githooks/install`.
 
-Campaigns: edit YAML, restart the engine or hit the reload endpoint.
+Campaigns: edit YAML, then restart the engine (no reload endpoint in v1). Quality: `./verify.sh` (yamllint, ruff, pytest-cov).
 
-GitOps: `./install.sh` against a 4.20+ cluster (`oc apply -k k8s/` is fallback only).
+GitOps: `./install.sh` against a 4.20+ cluster (`oc apply -k k8s/` is fallback only). Quality: `./verify.sh` (yamllint, ruff, shellcheck, kustomize, pytest-cov).
+
+Docs: `./verify.sh` (ruff + spec checker). Each repo's PRs to `main` run workflow **Quality**; mark that check required so a red run cannot merge.
+
+Full tool map, thresholds, and what each checker enforces: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
