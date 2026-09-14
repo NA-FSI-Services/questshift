@@ -14,16 +14,16 @@ Exit: clones under the parent `questshift/` workspace run as separate git roots.
 
 Not a separate phase. Every repo keeps format + static analysis + coverage, a repo-local pre-commit hook, and GitHub Actions **Quality** on `main`. PMD is Java-only (engine); UI uses ESLint, Python repos use ruff. Map, thresholds, and checkers: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`). Day-to-day commands: [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
 
-## Phase 1 — local engine + UI loop
+## Phase 1 — local engine + UI loop (done)
 
-Engine and UI already talk over Vite’s `/api` proxy. Finish the dry-run hour **with LLM disabled** (`%dev`).
+Engine and UI talk over Vite’s `/api` proxy. The dry-run hour is proven **with LLM disabled** (`%dev` / `%test`).
 
 - `./mvnw quarkus:dev` in `questshift-engine` (campaigns sibling dir).
 - `npm run dev` in `questshift-ui`.
 - Start session, submit the five `accepted_examples`, export YAML, import YAML, confirm inventory and `puzzleCompletion`.
-- Keep evaluator tests green (`CommandEvaluatorTest`, `StateSerializerTest`, `GameResourceTest`).
+- Evaluator tests stay green (`CommandEvaluatorTest`, `StateSerializerTest`, `GameResourceTest`).
 
-Exit: `./mvnw test` includes a `%test` QuarkusTest that starts `devops-dungeon` with LLM off, submits each room’s authored `accepted_examples`, then export/import YAML (inventory + `puzzleCompletion`). A live facilitator regex pass is **not** required to close this phase ([campaigns#1](https://github.com/NA-FSI-Services/questshift-campaigns/issues/1) stays workshop prep).
+Exit (met): `./mvnw test` includes `%test` `@QuarkusTest` `GameResourceTest.acceptedExamplesClearTheHourThenExportImport` — starts `devops-dungeon` with LLM off, submits each room’s authored `accepted_examples`, then export/import YAML (inventory + `puzzleCompletion`). A live facilitator regex pass is **not** required to close this phase ([campaigns#1](https://github.com/NA-FSI-Services/questshift-campaigns/issues/1) stays workshop prep).
 
 ## Phase 2 — CC0 sprites wired into Phaser
 
