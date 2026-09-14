@@ -125,7 +125,7 @@ Never pipe player input into `oc`, `ansible-playbook`, a JDK, or a login node. T
 
 Canonical spec: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
 
-Each repo has format + static analysis + coverage, a repo-local pre-commit hook (`./.githooks/install`), and GitHub Actions workflow **Quality** on PRs/pushes to `main`. Mark the job required so a red run cannot merge. Bypass a hook with `SKIP_QUESTSHIFT_HOOKS=1` or `git commit --no-verify`.
+Each repo has format + static analysis + coverage, a repo-local pre-commit hook (`./.githooks/install`), and GitHub Actions workflow **Quality** on PRs/pushes to `main`. Mark the job required so a red run cannot merge. Bypass a hook with `SKIP_QUESTSHIFT_HOOKS=1` or `git commit --no-verify`. Dependabot files weekly GitHub Actions update PRs (`.github/dependabot.yml`); those PRs still run **Quality**.
 
 | Repo | Format / lint | Static analysis | Coverage | Local command |
 | --- | --- | --- | --- | --- |

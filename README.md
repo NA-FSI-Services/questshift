@@ -91,4 +91,4 @@ Also: [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [CLAUDE.md](CL
 
 ## Quality gates
 
-Canonical map: [docs/QUALITY.md](docs/QUALITY.md). This repo: `python3 -m pip install -r requirements-dev.txt && ./verify.sh`. Pre-commit: `./.githooks/install`. PRs to `main` run workflow **Quality**.
+Canonical map: [docs/QUALITY.md](docs/QUALITY.md). This repo: `python3 -m pip install -r requirements-dev.txt && ./verify.sh`. Pre-commit: `./.githooks/install`. PRs to `main` run workflow **Quality**. Dependabot opens weekly GitHub Actions update PRs.

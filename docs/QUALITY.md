@@ -11,6 +11,7 @@ Each of the five repos has:
 1. A local verify command (format + lint + tests with a coverage floor).
 2. A repo-local Git hook at `.githooks/` — enable once per clone with `./.githooks/install` (sets `core.hooksPath`, not a global hook).
 3. GitHub Actions workflow **Quality** (`.github/workflows/quality.yml`) on pull requests and pushes to `main`.
+4. Dependabot (`.github/dependabot.yml`) opens weekly PRs that bump GitHub Actions used in those workflows. Grouped into one PR per repo. The Quality job still has to pass before merge.
 
 Mark the **Quality** job required on `main` so a red run cannot merge. Bypass a hook with `SKIP_QUESTSHIFT_HOOKS=1` or `git commit --no-verify`. Local overrides live in gitignored `.githooks/config` (copy `.githooks/config.example`).
 
