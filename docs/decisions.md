@@ -32,6 +32,7 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Phase 2 loot | HTML inventory strip stays; also draw `loot_*` sprites on Panel A as runes are collected (e.g. along the bottom of the tilemap) |
 | Phase 2 gem_hint | Show `gem_hint` on the current room after a failed command (`passed=false`) until the next pass or room change. No new engine field — UI keeps last command result. |
 | Phase 2 sprite scale | 3× (48px tiles), `pixelArt: true`, current-room pulse 1.0 → 1.15 |
+| Phase 2 Phaser renderer | `Phaser.CANVAS` — the vendored Kenney packed sheet is an 8-bit colormap PNG; WebGL left Panel A blank |
 | Phase 2 proof | Vitest named-key → frame map matches [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md); Phaser canvas stays coverage-excluded. PLAN exit is still visual (Panel A reads as a 16-bit dungeon) |
 | Quality gates | Format + static analysis + coverage on every repo; hook + GitHub Actions **Quality** (see [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md), local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`) |
 

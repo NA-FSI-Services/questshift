@@ -65,7 +65,7 @@ this.load.spritesheet("tiny-dungeon", "/assets/kenney/tiny-dungeon/tilemap_packe
 });
 ```
 
-Frame index equals Kenney `tile_NNNN` number.
+Frame index equals Kenney `tile_NNNN` number. Phaser must use the **Canvas** renderer (`type: Phaser.CANVAS`): the packed PNG is 8-bit colormap and WebGL uploads it as a blank texture.
 
 ## Sprite keys
 
