@@ -2,7 +2,12 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 cd "$ROOT"
-python3 -m ruff check tools tests
-python3 -m ruff format --check tools tests
-python3 -m pytest
-python3 -m tools.specs
+if [[ -x "${ROOT}/.venv/bin/python3" ]]; then
+  PYTHON="${ROOT}/.venv/bin/python3"
+else
+  PYTHON="python3"
+fi
+"$PYTHON" -m ruff check tools tests
+"$PYTHON" -m ruff format --check tools tests
+"$PYTHON" -m pytest
+"$PYTHON" -m tools.specs
