@@ -27,7 +27,9 @@ Exit (met): `./mvnw test` includes `%test` `@QuarkusTest` `GameResourceTest.acce
 
 ## Phase 2 — CC0 sprites wired into Phaser
 
-Sheet is vendored at `questshift-ui/public/assets/kenney/tiny-dungeon/tilemap_packed.png`. Replace `Arc` placeholders in `DungeonScene` with named keys from [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`): five rooms, four seats, status gems. `pixelArt: true`. Canvas events still only restyle nodes.
+Sheet is vendored at `questshift-ui/public/assets/kenney/tiny-dungeon/tilemap_packed.png`. Fill Panel A with Kenney `floor` / `wall` tiles, then place room sprites, four seat sprites, status gems, the `focus` reticle, and `loot_*` sprites as runes drop. Keep the HTML inventory strip under the canvas. Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`). `pixelArt: true`, display scale **3×** (48px). Canvas events still only restyle nodes (no shake, no particles).
+
+Board: [questshift#4](https://github.com/NA-FSI-Services/questshift/issues/4) (tracker), [ui#1](https://github.com/NA-FSI-Services/questshift-ui/issues/1) (wire `DungeonScene`), [ui#4](https://github.com/NA-FSI-Services/questshift-ui/issues/4) (named-key → frame Vitest). Phaser `src/game/**` stays coverage-excluded; CI proof is the key map.
 
 Exit: Panel A reads as a 16-bit dungeon; Panel B stays IBM Plex Mono.
 

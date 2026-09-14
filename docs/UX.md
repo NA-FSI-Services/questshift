@@ -11,10 +11,11 @@ Dual-panel 16-bit dungeon. Canvas is pixel art; the terminal stays readable.
 │ Panel A — Phaser canvas           │ Panel B — terminal       │
 │ 16-bit rooms, four seats, gems    │ IBM Plex Mono, CRT wash  │
 │ loot strip under the board        │ GM log / $ prompt / hint │
+│ (HTML + Phaser loot_* sprites)    │                          │
 └───────────────────────────────────┴──────────────────────────┘
 ```
 
-- **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Rooms from campaign `mapX` / `mapY`. Seats as sprites, not colored dots, once the sheet is wired (PLAN phase 2).
+- **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place rooms at campaign `mapX` / `mapY`. Seats as sprites, not colored dots. `focus` marks the current room. Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board.
 - **Panel B:** `src/terminal/TerminalPanel.tsx`. Still the command surface. CRT-like background (`#07110c`) and scanline wash in CSS; **typeface is IBM Plex Mono**, not a 8×8 font. Players must read YAML, `oc`, and Java.
 
 On viewports under 960px, stack Panel A above Panel B.
@@ -36,7 +37,7 @@ CSS tokens in `src/index.css`:
 
 Seat colors from campaign YAML (cosmetic): Guardian `#3d7a4a`, Automancer `#c45c26`, Cluster Ranger `#2a6f97`, Artificer `#7b4ea3`.
 
-Motion: nearest-neighbor scale on sprites (`pixelArt: true` when wiring Phaser). Current room pulses scale 1.0 → 1.15. Completed rooms swap to `gem_complete`. No screen shake, no particle spam. Canvas events (`unlock_room_02` … `campaign_complete`, `focus_room`) drive gem and path updates only.
+Motion: nearest-neighbor scale on sprites (`pixelArt: true`). Display tiles at **3×** (48px). Current room pulses 1.0 → 1.15. Completed rooms swap to `gem_complete`. After a miss, the current room shows `gem_hint` until the next pass or room change. No screen shake, no particle spam. Canvas events (`unlock_room_02` … `campaign_complete`, `focus_room`) drive gem and focus updates only — do not paint the event name as debug text on the canvas.
 
 Title face `UnifrakturMaguntia` is header-only. Body and terminal stay IBM Plex Mono.
 
@@ -54,7 +55,7 @@ Vendored CC0 1.0 sheet. Do not replace with AI-generated images.
 GitHub tree: https://github.com/NA-FSI-Services/questshift-ui/tree/main/public/assets  
 Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-ui/public/assets/`
 
-Source: [Kenney Tiny Dungeon](https://kenney.nl/assets/tiny-dungeon) by Kenney.nl. Sheet is **192×176**, **16×16 frames**, **12 columns × 11 rows**, **no spacing** (packed). Phaser:
+Source: [Kenney Tiny Dungeon](https://kenney.nl/assets/tiny-dungeon) by Kenney.nl. Sheet is **192×176**, **16×16 frames**, **12 columns × 11 rows**, **no spacing** (packed). Kenney’s `Tilesheet.txt` describes a 1px-gapped sheet; the vendored file is the packed PNG (confirmed 192×176), so Phaser `spacing` is **0**. Phaser:
 
 ```ts
 this.load.spritesheet("tiny-dungeon", "/assets/kenney/tiny-dungeon/tilemap_packed.png", {
@@ -99,11 +100,11 @@ Load atlas key `tiny-dungeon`. Named keys below are what `DungeonScene` must use
 | `gem_locked` | 113 | `tile_0113` | Room not yet open (pale vial) |
 | `gem_current` | 115 | `tile_0115` | Active room (red vial) |
 | `gem_complete` | 114 | `tile_0114` | Solved room (green vial) |
-| `gem_hint` | 116 | `tile_0116` | Miss / hint available (blue vial) |
-| `loot_thorn` | 29 | `tile_0029` | Rune THORN |
-| `loot_ash` | 113 | `tile_0113` | Rune ASH |
-| `loot_oak` | 114 | `tile_0114` | Rune OAK |
-| `loot_iron` | 116 | `tile_0116` | Rune IRON |
+| `gem_hint` | 116 | `tile_0116` | Current room after a miss (`passed=false`); clear on pass or room change |
+| `loot_thorn` | 29 | `tile_0029` | Rune THORN — draw when `rune-thorn` is in inventory |
+| `loot_ash` | 113 | `tile_0113` | Rune ASH — draw when `rune-ash` is in inventory |
+| `loot_oak` | 114 | `tile_0114` | Rune OAK — draw when `rune-oak` is in inventory |
+| `loot_iron` | 116 | `tile_0116` | Rune IRON — draw when `rune-iron` is in inventory |
 
 ## Terminal (Panel B)
 
