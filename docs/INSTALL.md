@@ -9,7 +9,7 @@ Workshop clusters are ephemeral. Every install uses a different API URL, token, 
 Provide a cluster that can host one party:
 
 - OpenShift Container Platform **4.20 or newer**
-- At least **one worker** (two recommended: GPU + general)
+- At least **one worker** (two recommended: GPU + general). If the cluster has no NVIDIA GPU, `./install.sh` clones a GPU MachineSet (`g6.4xlarge` / L4) unless you pass `--no-add-gpu-nodes`.
 - **One free NVIDIA GPU** (`nvidia.com/gpu: 1`, L4 class) after the GPU Operator is Ready
 - Free worker capacity at least **2300m CPU** and **~17Gi memory** (vLLM 2 CPU / 16Gi request plus engine and UI)
 - A default **StorageClass** (50Gi model cache + 1Gi session export)
@@ -46,6 +46,12 @@ export QUESTSHIFT_HF_TOKEN=...   # never commit this
 ./install.sh --install-operators
 ```
 
+Skip cloning a GPU MachineSet (you already have an L4 worker, or you will add one yourself):
+
+```bash
+./install.sh --install-operators --no-add-gpu-nodes
+```
+
 Validate only:
 
 ```bash
@@ -59,7 +65,8 @@ On this machine you need `oc`, `python3`, and `ansible-playbook` (`ansible-core`
 1. **Login** — `oc whoami` must succeed, then `oc auth can-i '*' '*' --all-namespaces`
 2. **Hardware** — OpenShift version, worker count, free CPU/memory/GPU, StorageClass, GPU taints
 3. **Operators** — Node Feature Discovery, NVIDIA GPU Operator, OpenShift GitOps, Red Hat OpenShift AI. If any CSV is missing it **asks** whether to install. `--install-operators` skips the question and installs them (NFD instance + GPU `ClusterPolicy` included)
-4. **GitOps deploy** — creates namespace `questshift`, secret `questshift-hf` from the token (not from git), applies the Argo CD Application that syncs `k8s/` from this repo
+4. **GPU node** — if NFD sees no NVIDIA GPU, clone a GPU MachineSet (`g6.4xlarge`, L4) from the first MachineSet in `openshift-machine-api`, taint it `nvidia.com/gpu=present:NoSchedule`, and wait until `nvidia.com/gpu` is allocatable. Pass `--no-add-gpu-nodes` to skip. The rendered MachineSet stays in `install/.work/` (gitignored).
+5. **GitOps deploy** — creates namespace `questshift`, secret `questshift-hf` from the token (not from git), applies the Argo CD Application that syncs `k8s/` from this repo
 
 `--install-operators` without `QUESTSHIFT_HF_TOKEN` installs the operators only, then stops. Re-run with the token in a gitignored `.env` to create `questshift-hf` and sync GitOps.
 

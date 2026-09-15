@@ -41,7 +41,7 @@ cp .env.example .env   # set QUESTSHIFT_HF_TOKEN locally; never commit
 ./install.sh
 ```
 
-`./install.sh` refuses to run without an existing `oc` session and does not accept cluster credentials as flags. Use `./install.sh --install-operators` to install missing GitOps / NFD / NVIDIA GPU / OpenShift AI operators without prompting. Full contract: [docs/INSTALL.md](docs/INSTALL.md).
+`./install.sh` refuses to run without an existing `oc` session and does not accept cluster credentials as flags. Use `./install.sh --install-operators` to install missing GitOps / NFD / NVIDIA GPU / OpenShift AI operators without prompting. If the cluster has no NVIDIA GPU, the installer clones a GPU MachineSet (`g6.4xlarge` / L4) unless you pass `--no-add-gpu-nodes`. Full contract: [docs/INSTALL.md](docs/INSTALL.md).
 
 ## Local layout
 

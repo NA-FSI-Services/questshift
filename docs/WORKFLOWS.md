@@ -106,7 +106,7 @@ Cluster install is two steps. See [INSTALL.md](https://github.com/NA-FSI-Service
 2. `oc login` as cluster-admin (`oc whoami` must succeed). Keep that cluster’s API URL, token, and CA out of git.
 3. From `questshift-gitops`: copy `.env.example` to `.env`, set `QUESTSHIFT_HF_TOKEN`, then `./install.sh` (or `./install.sh --install-operators`).
 
-The script checks cluster-admin, worker/GPU/CPU/memory, then OpenShift GitOps, NFD, NVIDIA GPU Operator, and RHOAI. It deploys QuestShift with an Argo CD Application pointing at `k8s/`. Hugging Face token becomes secret `questshift-hf` on the cluster only.
+The script checks cluster-admin, worker/GPU/CPU/memory, then OpenShift GitOps, NFD, NVIDIA GPU Operator, and RHOAI. If there is no NVIDIA GPU it clones a GPU MachineSet unless `--no-add-gpu-nodes`. It deploys QuestShift with an Argo CD Application pointing at `k8s/`. Hugging Face token becomes secret `questshift-hf` on the cluster only.
 
 Quality: `./verify.sh` in `questshift-gitops` (yamllint, ruff, shellcheck, kustomize, pytest-cov). Pre-commit: `./.githooks/install`. Freeze checks: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
 
