@@ -11,7 +11,7 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Engine | Quarkus 3 + Java 21 |
 | UI | Phaser 3 + React + TypeScript |
 | LLM serving | vLLM only |
-| Default model | IBM Granite 3.1 8B Instruct |
+| Default model | IBM Granite 3.2 8B Instruct |
 | GPU | NVIDIA L4, `nvidia.com/gpu: 1` |
 | Play mode | One party per deployment |
 | Seats | Cosmetic avatars; any player may solve any puzzle |

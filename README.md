@@ -85,7 +85,7 @@ Also: [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [CLAUDE.md](CL
 - **Name:** QuestShift
 - **Engine:** Quarkus 3 + Java 21
 - **UI:** Phaser 3 + React + TypeScript
-- **LLM:** vLLM only, IBM Granite 3.1 8B Instruct, NVIDIA L4 (`nvidia.com/gpu: 1`)
+- **LLM:** vLLM only, IBM Granite 3.2 8B Instruct, NVIDIA L4 (`nvidia.com/gpu: 1`)
 - **Play mode:** one party per deployment, cosmetic seats, shared canvas + terminal
 - **License:** Apache-2.0
 

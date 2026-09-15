@@ -39,7 +39,7 @@ If vLLM is unavailable, the engine uses authored YAML narrative and hints so the
 
 ### Game Master JSON
 
-- `LLMService` calls vLLM OpenAI-compatible `/v1/chat/completions` with Granite 3.1 8B Instruct.
+- `LLMService` calls vLLM OpenAI-compatible `/v1/chat/completions` with Granite 3.2 8B Instruct.
 - Completion is a single JSON object: `narrative`, `puzzle_type`, `expected_command_pattern`, `hint`, `canvas_event`.
 - Engine keeps YAML `puzzle_type` and `expected_command_pattern`. LLM supplies narration and optional hint flavor.
 

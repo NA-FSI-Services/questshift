@@ -14,7 +14,7 @@ Then:
 
 - Name QuestShift. Org NA-FSI-Services. License Apache-2.0.
 - Engine: Quarkus 3 + Java 21 (`io.questshift`). UI: Phaser 3 + React + TypeScript.
-- LLM: vLLM only, IBM Granite 3.1 8B Instruct, NVIDIA L4 (`nvidia.com/gpu: 1`). No Ollama.
+- LLM: vLLM only, IBM Granite 3.2 8B Instruct, NVIDIA L4 (`nvidia.com/gpu: 1`). No Ollama.
 - One party per OpenShift deployment. Seats are cosmetic; any player may solve any puzzle.
 - Campaign YAML is puzzle source of truth. LLM narrates only. If vLLM is down, fall back to YAML.
 - Terminal is simulated. Never execute player `oc` / Ansible / Linux / Java against the cluster.

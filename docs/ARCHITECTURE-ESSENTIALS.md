@@ -33,7 +33,7 @@ One OpenShift deployment **is** one party. No multi-tenant session router in v1.
 1. Campaign YAML is the puzzle source of truth. The LLM narrates only.
 2. If vLLM is down or `%dev`, fall back to authored YAML text. The hour still runs.
 3. Terminal is **simulated**. Never execute player `oc`, Ansible, Linux, or Java against the cluster.
-4. Serving is **vLLM only**. Model: `ibm-granite/granite-3.1-8b-instruct`. GPU: NVIDIA L4, `nvidia.com/gpu: 1`. No Ollama.
+4. Serving is **vLLM only**. Model: `ibm-granite/granite-3.2-8b-instruct`. GPU: NVIDIA L4, `nvidia.com/gpu: 1`. No Ollama.
 5. Seats (Guardian, Automancer, Cluster Ranger, Artificer) are cosmetic. Any player may solve any puzzle.
 6. v1 is JVM, text-only, one party. No TTS, native image, or multi-party.
 7. Never commit secrets to GitHub. Hugging Face token is cluster secret `questshift-hf` (`./install.sh` or `oc create secret`); git may reference the name only. See [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).

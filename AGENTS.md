@@ -35,7 +35,7 @@ The kickoff filename `docs/architecture.md` is `docs/ARCHITECTURE.md` (same path
 
 ## Coding constraints
 
-- v1 freeze: Quarkus 3 + Java 21, Phaser 3 + React + TypeScript, vLLM + Granite 3.1 8B Instruct on NVIDIA L4. No Ollama, TTS, native image, or multi-party.
+- v1 freeze: Quarkus 3 + Java 21, Phaser 3 + React + TypeScript, vLLM + Granite 3.2 8B Instruct on NVIDIA L4. No Ollama, TTS, native image, or multi-party.
 - Campaign YAML is puzzle source of truth. LLM narrates only. YAML fallback if vLLM is down.
 - Never execute player `oc` / Ansible / Linux / Java against the cluster.
 - Seats are cosmetic. One party per deployment.

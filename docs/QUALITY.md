@@ -61,7 +61,7 @@ YAML remains the puzzle source of truth. This checker does not score player comm
 The freeze checker (`tools/manifests.py`) scans `k8s/`:
 
 - Forbidden: `kind: Secret`, `stringData:`, `ollama`.
-- Required: `vllm`, `ibm-granite/granite-3.1-8b-instruct`, `questshift-hf`, `nvidia.com/gpu` request of **1**.
+- Required: `vllm`, `ibm-granite/granite-3.2-8b-instruct`, `questshift-hf`, `nvidia.com/gpu` request of **1**.
 
 Probe and wait scripts (`install/scripts/cluster_probe.py`, `wait_application.py`, `wait_operator.py`) have unit tests with mocked `oc`. Quality CI does not log into a cluster. Facilitator install remains [INSTALL.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/INSTALL.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/INSTALL.md`).
 
@@ -69,7 +69,7 @@ Probe and wait scripts (`install/scripts/cluster_probe.py`, `wait_application.py
 
 `./verify.sh` runs ruff on `tools/` and `tests/`, pytest-cov, then `python3 -m tools.specs`.
 
-The spec checker (`tools/specs.py`) requires the files in `AGENTS.md` (including this one), rejects token-like strings in markdown, and asserts [ARCHITECTURE-ESSENTIALS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/ARCHITECTURE-ESSENTIALS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/ARCHITECTURE-ESSENTIALS.md`) still names vLLM, Granite 3.1 8B Instruct, `nvidia.com/gpu`, and “No Ollama”. It is not a markdownlint pass over prose or tables.
+The spec checker (`tools/specs.py`) requires the files in `AGENTS.md` (including this one), rejects token-like strings in markdown, and asserts [ARCHITECTURE-ESSENTIALS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/ARCHITECTURE-ESSENTIALS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/ARCHITECTURE-ESSENTIALS.md`) still names vLLM, Granite 3.2 8B Instruct, `nvidia.com/gpu`, and “No Ollama”. It is not a markdownlint pass over prose or tables.
 
 ## What these gates are not
 
