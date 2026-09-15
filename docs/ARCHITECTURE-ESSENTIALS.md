@@ -36,7 +36,7 @@ One OpenShift deployment **is** one party. No multi-tenant session router in v1.
 4. Serving is **vLLM only**. Model: `ibm-granite/granite-3.2-8b-instruct`. GPU: NVIDIA L4, `nvidia.com/gpu: 1`. No Ollama.
 5. Seats (Guardian, Automancer, Cluster Ranger, Artificer) are cosmetic. Any player may solve any puzzle.
 6. v1 is JVM, text-only, one party. No TTS, native image, or multi-party.
-7. Never commit secrets to GitHub. Hugging Face token is cluster secret `questshift-hf` (`./install.sh` or `oc create secret`); git may reference the name only. Workshop API URLs, tokens, kubeconfigs, and CA certs stay in a local `oc` session or gitignored `.env`. See [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
+7. Never commit secrets to GitHub. Granite weights come from the ModelCar catalog via a Tekton PipelineRun (no Hugging Face token, no MinIO). Workshop API URLs, tokens, kubeconfigs, and CA certs stay in a local `oc` session or gitignored `.env`. See [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
 
 ## Where code lives
 

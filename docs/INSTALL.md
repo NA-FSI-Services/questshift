@@ -34,7 +34,6 @@ Optional: point `oc` at a local kubeconfig via `KUBECONFIG` in a gitignored `.en
 From [questshift-gitops](https://github.com/NA-FSI-Services/questshift-gitops) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-gitops`):
 
 ```bash
-cp .env.example .env          # then set QUESTSHIFT_HF_TOKEN locally
 # oc whoami must already succeed
 ./install.sh
 ```
@@ -42,7 +41,6 @@ cp .env.example .env          # then set QUESTSHIFT_HF_TOKEN locally
 Non-interactive (CI / unattended, still requires an existing `oc` login):
 
 ```bash
-export QUESTSHIFT_HF_TOKEN=...   # never commit this
 ./install.sh --install-operators
 ```
 
@@ -64,17 +62,13 @@ On this machine you need `oc`, `python3`, and `ansible-playbook` (`ansible-core`
 
 1. **Login** — `oc whoami` must succeed, then `oc auth can-i '*' '*' --all-namespaces`
 2. **Hardware** — OpenShift version, worker count, free CPU/memory/GPU, StorageClass, GPU taints
-3. **Operators** — Node Feature Discovery, NVIDIA GPU Operator, OpenShift GitOps, Red Hat OpenShift AI. If any CSV is missing it **asks** whether to install. `--install-operators` skips the question and installs them (NFD instance + GPU `ClusterPolicy` included)
+3. **Operators** — Node Feature Discovery, NVIDIA GPU Operator, OpenShift GitOps, Red Hat OpenShift AI, OpenShift Pipelines. If any CSV is missing it **asks** whether to install. `--install-operators` skips the question and installs them (NFD instance + GPU `ClusterPolicy` included)
 4. **GPU node** — if NFD sees no NVIDIA GPU, clone a GPU MachineSet (`g6.4xlarge`, L4) from the first MachineSet in `openshift-machine-api`, taint it `nvidia.com/gpu=present:NoSchedule`, and wait until `nvidia.com/gpu` is allocatable. Pass `--no-add-gpu-nodes` to skip. The rendered MachineSet stays in `install/.work/` (gitignored).
-5. **GitOps deploy** — creates namespace `questshift`, secret `questshift-hf` from the token (not from git), applies the Argo CD Application that syncs `k8s/` from this repo
+5. **GitOps deploy** — creates namespace `questshift`, labels it for OpenShift GitOps, applies the Argo CD Application that syncs `k8s/` from this repo. A Tekton `PipelineRun` copies Granite weights from the ModelCar catalog onto PVC `questshift-llm-cache` (no Hugging Face token, no MinIO). vLLM starts after that run succeeds.
 6. **UI URL** — prints `https://<route>` so facilitators can open the UI and start a campaign. If the Route is not ready yet, it tells you to run `oc get route questshift -n questshift`.
-
-`--install-operators` without `QUESTSHIFT_HF_TOKEN` installs the operators only, then stops. Re-run with the token in a gitignored `.env` to create `questshift-hf` and sync GitOps.
-
-Hugging Face token handling matches [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`): cluster secret only, never a `Secret` YAML in git. Prefer `QUESTSHIFT_HF_TOKEN` in a gitignored `.env` over `--hf-token` so the token is not on the process command line.
 
 Argo CD syncs `k8s/` from **git** (`--repo-url` / `--revision`, default `NA-FSI-Services/questshift-gitops` @ `main`), not from an uncommitted working tree.
 
-Emergency fallback if Argo CD is unavailable: `oc apply -k k8s/` still works after the operators and secret exist. Prefer `./install.sh`.
+Emergency fallback if Argo CD is unavailable: `oc apply -k k8s/` still works after the operators exist. Prefer `./install.sh`.
 
 Manifest freeze (no `Secret` YAML, no Ollama, GPU request `1`) is checked by `./verify.sh` in `questshift-gitops`. That gate does not log into a cluster; `--check-only` is the live probe. Details: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).

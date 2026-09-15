@@ -119,6 +119,7 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `lastNarrative` | string | last GM prose |
 | `lastHint` | string | last hint |
 | `lastCanvasEvent` | string | last canvas event |
+| `yamlFallback` | boolean | `true` when the last GM turn used campaign YAML because vLLM was disabled, unreachable, or returned HTTP ≥ 300 |
 
 Example YAML fragment:
 
@@ -142,6 +143,7 @@ hintCount: 1
 lastNarrative: The golem cracks.
 lastHint: The golem hates cat-only answers.
 lastCanvasEvent: unlock_room_02
+yamlFallback: true
 ```
 
 ## Errors

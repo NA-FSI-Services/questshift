@@ -37,7 +37,6 @@ Voice / TTS is deferred. v1 is text-only.
 ```bash
 oc login --server=https://api.CLUSTER:6443
 cd questshift-gitops
-cp .env.example .env   # set QUESTSHIFT_HF_TOKEN locally; never commit
 ./install.sh
 ```
 

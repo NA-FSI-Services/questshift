@@ -7,6 +7,7 @@ Dual-panel 16-bit dungeon. Canvas is pixel art; the terminal stays readable.
 ```text
 ┌──────────────────────────────────────────────────────────────┐
 │ QuestShift   The Cluster That Forgot Its Name    [start run] │
+│              [YAML fallback — Game Master unreachable]       │
 ├───────────────────────────────────┬──────────────────────────┤
 │ Panel A — Phaser canvas           │ Panel B — terminal       │
 │ 16-bit rooms, four seats, gems    │ IBM Plex Mono, CRT wash  │
@@ -109,6 +110,8 @@ Load atlas key `tiny-dungeon`. Named keys below are what `DungeonScene` must use
 ## Terminal (Panel B)
 
 Keep the simulated CRT: dark green well, amber prompt `$`, `GM>` prefix on narrative. Clock shows `elapsedSeconds` and the UI polls `GET /api/sessions/{id}` once a second while a run is live. Footer: `export.yaml`, `import.yaml` (file picker; restores via `POST /api/sessions/import`), plus last hint. Textarea accepts multiline (Shift+Enter); Enter submits. Placeholder: “type a command, YAML, oc, or Java snippet…”. Do not add a mic button.
+
+When `session.yamlFallback` is true (vLLM down, `%dev`, or HTTP ≥ 300), show **YAML fallback — Game Master unreachable** in `--fail` (`#d96a4a`) on the top bar (`role="status"`) and again next to the clock. Hide it when the engine narrates through vLLM. Text plus color; do not rely on the chip color alone. The hour still runs on authored YAML.
 
 ## Accessibility
 

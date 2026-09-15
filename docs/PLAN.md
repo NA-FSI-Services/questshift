@@ -43,7 +43,7 @@ Exit (met): GM JSON narrates through `LLMService`; room `expected_command_patter
 
 ## Phase 4 — OpenShift apply
 
-Set up OpenShift 4.20+. Log in as cluster-admin (`oc whoami` must succeed) and keep that cluster’s API URL, token, and CA in a local kubeconfig / gitignored `.env` — never in git. From `questshift-gitops` run `./install.sh` (or `./install.sh --install-operators`). The script refuses to run without an existing `oc` session, checks hardware, installs GitOps / NFD / NVIDIA GPU / RHOAI if needed, creates `questshift-hf`, and syncs `k8s/` through OpenShift GitOps. Publish JVM and nginx images to the in-cluster registry (placeholders today). One party.
+Set up OpenShift 4.20+. Log in as cluster-admin (`oc whoami` must succeed) and keep that cluster’s API URL, token, and CA in a local kubeconfig / gitignored `.env` — never in git. From `questshift-gitops` run `./install.sh` (or `./install.sh --install-operators`). The script refuses to run without an existing `oc` session, checks hardware, installs GitOps / NFD / NVIDIA GPU / RHOAI / OpenShift Pipelines if needed, and syncs `k8s/` through OpenShift GitOps. Granite 3.2 8B Instruct is copied from the ModelCar catalog by a Tekton PipelineRun (no Hugging Face token, no MinIO). Publish JVM and nginx images to the in-cluster registry (placeholders today). One party.
 
 Exit: facilitated 60-minute run on the workshop cluster, export/import survives a pod bounce via PVC `questshift-session-export`.
 

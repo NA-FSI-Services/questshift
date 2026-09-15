@@ -22,7 +22,8 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Agent docs | Canonical specs under `docs/` in this repo; thin `AGENTS.md` + `CLAUDE.md` pointers in the other four |
 | Filenames | `AGENTS.md` and `CLAUDE.md` at every repo root (tools auto-load) |
 | Install on OpenShift | `./install.sh` (GitOps Application); Ansible under `install/` |
-| Install credentials | Existing cluster-admin `oc login`; `QUESTSHIFT_HF_TOKEN` in gitignored `.env`. Installer does not take API URLs or tokens. Workshop clusters stay out of git. |
+| Install credentials | Existing cluster-admin `oc login`. Installer does not take API URLs or tokens. Workshop clusters stay out of git. |
+| Granite weights | Red Hat AI services ModelCar OCI image, copied by a Tekton PipelineRun onto PVC `questshift-llm-cache`. No Hugging Face token. No MinIO/S3. vLLM remains the Game Master runtime. |
 | GPU MachineSet | If NFD sees no NVIDIA GPU, clone `g6.4xlarge` (L4) from the first MachineSet. `--no-add-gpu-nodes` opts out. Rendered YAML is gitignored. |
 | Cursor | Always-on `.cursor/rules/questshift.mdc` in each repo, plus glob rules (Java / TSX / YAML) |
 | Look | 16-bit pixel dungeon; Kenney Tiny Dungeon CC0 sheet in `questshift-ui/public/assets/` |
@@ -37,6 +38,30 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Phase 2 Phaser renderer | `Phaser.CANVAS` — the vendored Kenney packed sheet is an 8-bit colormap PNG; WebGL left Panel A blank |
 | Phase 2 proof | Vitest named-key → frame map matches [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md); Phaser canvas stays coverage-excluded. PLAN exit is still visual (Panel A reads as a 16-bit dungeon) |
 | Quality gates | Format + static analysis + coverage on every repo; hook + GitHub Actions **Quality** (see [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md), local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`) |
+
+## Granite weights — ModelCar, not Hugging Face (2026-09-15)
+
+v1 still serves **IBM Granite 3.2 8B Instruct** through the existing **vLLM Deployment**. The change is only how the weights arrive on the GPU node.
+
+**Choice:** copy weights once from the Red Hat AI services ModelCar catalog image `quay.io/redhat-ai-services/modelcar-catalog:granite-3.2-8b-instruct` onto PVC `questshift-llm-cache`. vLLM loads `/models` offline (`HF_HUB_OFFLINE=1`) and advertises `--served-model-name ibm-granite/granite-3.2-8b-instruct` so the engine ConfigMap does not change. Facilitators no longer set `QUESTSHIFT_HF_TOKEN` or create secret `questshift-hf`.
+
+**Rejected**
+
+- **Hugging Face Hub + `questshift-hf`.** Extra secret, empty-token crash loops, and a pull path the workshop does not need now that Granite 3.2 is packaged as OCI.
+- **RHOAI KServe / dashboard model catalog as the Game Master runtime.** [ARCHITECTURE-ESSENTIALS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/ARCHITECTURE-ESSENTIALS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/ARCHITECTURE-ESSENTIALS.md`) freezes vLLM as the serving process. RHOAI stays a cluster operator prerequisite. The ModelCar image is the same OCI catalog RHOAI uses for weights; we do not switch the hour to an `InferenceService`.
+- **`registry.redhat.io/rhelai1/modelcar-granite-3-1-8b-instruct`.** That is the validated Red Hat registry ModelCar, but it is Granite **3.1**. v1 freeze stays on **3.2**. When Red Hat publishes a 3.2 (or later freeze) ModelCar on `registry.redhat.io`, swap the init-container image and keep vLLM.
+
+**Layout:** the ModelCar image stores files at `/models`. The Tekton Task must mount the PVC at a different path (`/pvc`) so it does not hide that tree, then `cp -R` onto the volume (`cp -a` fails: the restricted SCC denies `utime` on the PVC mount root). vLLM mounts the PVC at `/models` after the PipelineRun succeeds (Argo sync-wave 10). Do not pin `fsGroup: 1001`; OpenShift `restricted-v2` assigns the project’s allocated group range and rejects a fixed GID. The PipelineRun must land on the GPU node (`feature.node.kubernetes.io/pci-10de.present`) so the RWO volume is attached where vLLM will run.
+
+## Granite install — Tekton Pipeline, not MinIO (2026-09-15)
+
+**Choice:** OpenShift Pipelines copies ModelCar weights in `PipelineRun/questshift-install-granite` (`k8s/granite-pipeline.yaml`). The installer waits for that run before treating the party as ready. vLLM no longer uses a ModelCar init container (that re-pulled ~16Gi on every Recreate).
+
+**Rejected**
+
+- **MinIO / S3 as the weight store.** ModelCar is already OCI. An S3 bucket would need a `Secret` in git or a facilitator-minted key; the freeze forbids `kind: Secret` in `k8s/`. vLLM still reads `/models` on the PVC.
+- **RHOAI Data Science Pipelines (KFP + cluster MinIO).** That stack is for notebook/KServe workflows. Game Master serving stays the vLLM Deployment.
+- **Keeping the ModelCar init on `questshift-llm`.** It worked, but every pod restart competed with the GPU node for a 16Gi pull. Tekton runs once; later vLLM restarts reuse the PVC.
 
 ## Deliberately not in v1
 

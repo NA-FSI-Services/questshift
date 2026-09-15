@@ -61,7 +61,7 @@ YAML remains the puzzle source of truth. This checker does not score player comm
 The freeze checker (`tools/manifests.py`) scans `k8s/`:
 
 - Forbidden: `kind: Secret`, `stringData:`, `ollama`.
-- Required: `vllm`, `ibm-granite/granite-3.2-8b-instruct`, `questshift-hf`, `nvidia.com/gpu` request of **1**.
+- Required: `vllm`, `ibm-granite/granite-3.2-8b-instruct`, `modelcar-catalog:granite-3.2-8b-instruct`, `kind: Pipeline`, `nvidia.com/gpu` request of **1**.
 
 Probe and wait scripts (`install/scripts/cluster_probe.py`, `wait_application.py`, `wait_operator.py`, `ensure_gpu_machineset.py`) have unit tests with mocked `oc`. Quality CI does not log into a cluster. Facilitator install remains [INSTALL.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/INSTALL.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/INSTALL.md`).
 

@@ -78,16 +78,16 @@ v1 secrets live in the cluster (or an untracked local file), never in git.
 
 | Secret | How it exists | What git may contain |
 | --- | --- | --- |
-| Hugging Face hub token | `oc create secret generic questshift-hf --from-literal=token=...` | Secret **name** `questshift-hf` and `secretKeyRef` only |
+| Granite 3.2 8B Instruct weights | ModelCar image `quay.io/redhat-ai-services/modelcar-catalog:granite-3.2-8b-instruct`, copied by Tekton PipelineRun `questshift-install-granite` onto PVC `questshift-llm-cache` | Image name, Task, and Pipeline only |
 | `questshift.llm.api-key` | default `none` in committed `application.properties`; real keys only in gitignored `application-local.properties` | The word `none`, never a real key |
 | Local OpenAI-compatible URL / model | gitignored `application-local.properties` (`%dev.questshift.llm.*`) | Example placeholders in `application-local.properties.example` |
 | kubeconfig / cluster API / CA | local `oc login`, `KUBECONFIG`, gitignored `.env` | nothing (no hostnames, tokens, or certs) |
 
 Do:
 
-- Create `questshift-hf` with `./install.sh` (or `oc create secret` on the cluster). Docs may show the placeholder `YOUR_HF_TOKEN` only. Never put the token in git.
-- Put local LLM overrides and installer secrets in untracked files (`application-local.properties`, `.env`). Copy `questshift-gitops/.env.example` to `.env`. Those names are gitignored.
-- Keep `k8s/` limited to `secretKeyRef` (name + key). Never add a `Secret` manifest with `stringData` or a real token.
+- Pull Granite with the Tekton PipelineRun (`questshift-install-granite`). Do not create `questshift-hf`, MinIO, or set `QUESTSHIFT_HF_TOKEN`.
+- Put local LLM overrides in untracked `application-local.properties`. Copy `questshift-gitops/.env.example` to `.env` only if you need a local `KUBECONFIG` path. Those names are gitignored.
+- Keep `k8s/` free of `Secret` manifests. Never add `stringData` or a real token.
 - Log in with `oc login` before `./install.sh`. The installer refuses to run without an existing session and does not accept cluster API URLs or tokens as flags.
 
 Do not:
@@ -104,19 +104,19 @@ Cluster install is two steps. See [INSTALL.md](https://github.com/NA-FSI-Service
 
 1. Set up OpenShift **4.20+**.
 2. `oc login` as cluster-admin (`oc whoami` must succeed). Keep that cluster’s API URL, token, and CA out of git.
-3. From `questshift-gitops`: copy `.env.example` to `.env`, set `QUESTSHIFT_HF_TOKEN`, then `./install.sh` (or `./install.sh --install-operators`).
+3. From `questshift-gitops`: `./install.sh` (or `./install.sh --install-operators`). Optional gitignored `.env` may set `KUBECONFIG`.
 
-The script checks cluster-admin, worker/GPU/CPU/memory, then OpenShift GitOps, NFD, NVIDIA GPU Operator, and RHOAI. If there is no NVIDIA GPU it clones a GPU MachineSet unless `--no-add-gpu-nodes`. It deploys QuestShift with an Argo CD Application pointing at `k8s/`. Hugging Face token becomes secret `questshift-hf` on the cluster only. A successful run prints the UI Route so you can start a campaign.
+The script checks cluster-admin, worker/GPU/CPU/memory, then OpenShift GitOps, NFD, NVIDIA GPU Operator, RHOAI, and OpenShift Pipelines. If there is no NVIDIA GPU it clones a GPU MachineSet unless `--no-add-gpu-nodes`. It deploys QuestShift with an Argo CD Application pointing at `k8s/`. Granite 3.2 8B Instruct is copied from the ModelCar catalog by a Tekton PipelineRun (no Hugging Face token, no MinIO). A successful run prints the UI Route so you can start a campaign.
 
 Quality: `./verify.sh` in `questshift-gitops` (yamllint, ruff, shellcheck, kustomize, pytest-cov). Pre-commit: `./.githooks/install`. Freeze checks: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
 
-Emergency fallback after operators and the secret exist:
+Emergency fallback after operators exist:
 
 ```bash
 oc apply -k k8s/
 ```
 
-Images are placeholders (`image-registry.openshift-image-registry.svc:5000/questshift/...`) until CI publishes. LLM pod requests `nvidia.com/gpu: 1`. Engine ConfigMap sets `questshift.llm.enabled: "true"` and `questshift.llm.base-url: http://questshift-llm:8000/v1`.
+Images are placeholders (`image-registry.openshift-image-registry.svc:5000/questshift/...`) until CI publishes. LLM pod requests `nvidia.com/gpu: 1`. Engine ConfigMap sets `questshift.llm.enabled: "true"` and `questshift.llm.base-url: http://questshift-llm:8000/v1`. Granite weights come from a Tekton ModelCar copy, not Hugging Face or MinIO.
 
 Route name `questshift` → UI Service. nginx proxies `/api/` and `/ws/` to the engine.
 

@@ -71,7 +71,7 @@ UI split:
 | `src/api/client.ts` | REST helpers (`/api/campaigns`, sessions, commands, export) |
 | `public/assets/kenney/tiny-dungeon/` | CC0 sprite sheet |
 
-GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). Manifests: `k8s/llm-deployment.yaml` (vLLM + L4), `game-backend-deployment.yaml`, `game-ui-deployment.yaml`, `configmap.yaml`, `pvc.yaml`, `openshift-route.yaml`, campaign ConfigMap generator.
+GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). Manifests: `k8s/granite-pipeline.yaml` (Tekton ModelCar copy), `k8s/llm-deployment.yaml` (vLLM + L4), `game-backend-deployment.yaml`, `game-ui-deployment.yaml`, `configmap.yaml`, `pvc.yaml`, `openshift-route.yaml`, campaign ConfigMap generator.
 
 ## Game loop
 
@@ -98,7 +98,7 @@ GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). M
 - **Model:** `ibm-granite/granite-3.2-8b-instruct` (workshop / git freeze). Local `application-local.properties` may point `questshift.llm.model` and `questshift.llm.base-url` at another OpenAI-compatible server for development; do not commit that overlay.
 - **Hardware:** NVIDIA L4 24GB, `nvidia.com/gpu: 1`
 - **Client:** `LLMService` in the engine. Base URL `questshift.llm.base-url` (default `http://questshift-llm:8000/v1`). Path appended: `/chat/completions`.
-- **Flags:** `questshift.llm.enabled` — **false** in committed `%dev` and `%test`; true in cluster ConfigMap. An untracked overlay can set `%dev.questshift.llm.enabled=true` for local live narration. Committed `questshift.llm.api-key` is `none`. The Hugging Face hub token is **not** in git: cluster Secret `questshift-hf` created with `oc create secret` (see [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md), local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
+- **Flags:** `questshift.llm.enabled` — **false** in committed `%dev` and `%test`; true in cluster ConfigMap. An untracked overlay can set `%dev.questshift.llm.enabled=true` for local live narration. Committed `questshift.llm.api-key` is `none`. Granite weights on the cluster come from a Tekton ModelCar copy onto PVC `questshift-llm-cache`, not Hugging Face or MinIO (see [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md), local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
 - **Timeout:** `questshift.llm.timeout-seconds` (default 45). Temperature 0.4, `max_tokens` 700.
 
 Prompts pin a 60-minute arc, forbid breaking character, and demand a single JSON object (optionally fenced). The Java client parses the first `{...}` in the completion. `puzzle_type` values: `linux` \| `ansible` \| `openshift` \| `java`.
