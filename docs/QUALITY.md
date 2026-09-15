@@ -33,6 +33,7 @@ Python repos: `python3 -m pip install -r requirements-dev.txt` then `./verify.sh
 - Pre-commit runs `./mvnw -Ppre-commit verify` (Spotless, unit/`@QuarkusTest`, PMD, JaCoCo; skips ITs). CI runs full `./mvnw verify`.
 - Report: `target/jacoco-report/index.html`.
 - Phase 1 hour proof: `GameResourceTest.acceptedExamplesClearTheHourThenExportImport` (LLM off).
+- Phase 3 CI: `LLMServiceTest` enabled-narrate cases keep YAML `expectedCommandPattern` and fall back on HTTP errors. Do not call a live vLLM in `./mvnw test`.
 
 ## UI — `questshift-ui`
 

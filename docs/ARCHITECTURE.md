@@ -95,10 +95,10 @@ GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). M
 ## LLM contract
 
 - **Serving:** vLLM OpenAI-compatible API only (no Ollama).
-- **Model:** `ibm-granite/granite-3.1-8b-instruct`
+- **Model:** `ibm-granite/granite-3.1-8b-instruct` (workshop / git freeze). Local `application-local.properties` may point `questshift.llm.model` and `questshift.llm.base-url` at another OpenAI-compatible server for development; do not commit that overlay.
 - **Hardware:** NVIDIA L4 24GB, `nvidia.com/gpu: 1`
 - **Client:** `LLMService` in the engine. Base URL `questshift.llm.base-url` (default `http://questshift-llm:8000/v1`). Path appended: `/chat/completions`.
-- **Flags:** `questshift.llm.enabled` — **false** in `%dev` and `%test`; true in cluster ConfigMap. Committed `questshift.llm.api-key` is `none`. The Hugging Face hub token is **not** in git: cluster Secret `questshift-hf` created with `oc create secret` (see [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md), local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
+- **Flags:** `questshift.llm.enabled` — **false** in committed `%dev` and `%test`; true in cluster ConfigMap. An untracked overlay can set `%dev.questshift.llm.enabled=true` for local live narration. Committed `questshift.llm.api-key` is `none`. The Hugging Face hub token is **not** in git: cluster Secret `questshift-hf` created with `oc create secret` (see [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md), local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
 - **Timeout:** `questshift.llm.timeout-seconds` (default 45). Temperature 0.4, `max_tokens` 700.
 
 Prompts pin a 60-minute arc, forbid breaking character, and demand a single JSON object (optionally fenced). The Java client parses the first `{...}` in the completion. `puzzle_type` values: `linux` \| `ansible` \| `openshift` \| `java`.

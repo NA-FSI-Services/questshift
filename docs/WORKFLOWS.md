@@ -1,6 +1,6 @@
 # QuestShift workflows (v1)
 
-How humans and agents run the stack. LLM is **disabled** in `%dev`.
+How humans and agents run the stack. Committed `%dev` and `%test` keep the LLM **off**. An untracked `application-local.properties` overlay can enable live narration in `quarkus:dev` only.
 
 ## Layout
 
@@ -29,12 +29,12 @@ Listens on `http://localhost:8080`. Swagger: `/q/swagger-ui`. Health: `/q/health
 `application.properties`:
 
 - `questshift.campaigns.dir=../questshift-campaigns/campaigns`
-- `%dev.questshift.llm.enabled=false` ← YAML narration, no vLLM
+- `%dev.questshift.llm.enabled=false` ← YAML narration, no live LLM unless an untracked overlay overrides `%dev.*`
 - `%test.questshift.llm.enabled=false`
 
 Tests: `./mvnw test` (surefire: `*Test.java`). Quality gate: `./mvnw verify` (Spotless, PMD max 0 medium+ violations, failsafe `*IT.java`, JaCoCo 80% line / 70% branch). Format: `./mvnw spotless:apply`. Engine pre-commit: `./.githooks/install` then commit; it runs `./mvnw -Ppre-commit verify` (same gates minus ITs). Engine PRs to `main`: GitHub Actions workflow **Quality** (`./mvnw verify`). Map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`). Phase 1 proof is `GameResourceTest.acceptedExamplesClearTheHourThenExportImport` (LLM off). A live facilitator regex pass is not required to close Phase 1.
 
-To try live Granite **without** leaving the freeze, override only outside `%dev` (phase 3), e.g. a local `application-llm.properties` is not required in v1 — use cluster ConfigMap.
+Phase 3 (live GM narration): copy `questshift-engine/application-local.properties.example` to gitignored `application-local.properties`. Set `%dev.questshift.llm.enabled=true` plus `base-url`, `model`, and `api-key` for an OpenAI-compatible server. Committed defaults stay **vLLM** + `ibm-granite/granite-3.1-8b-instruct` and `questshift.llm.api-key=none`. Cluster ConfigMap is the workshop runtime. Do not commit the overlay. `LLMServiceTest` proves GM JSON keeps the YAML regex and HTTP errors fall back to YAML without calling a real endpoint.
 
 ## UI — `npm run dev`
 
@@ -79,7 +79,8 @@ v1 secrets live in the cluster (or an untracked local file), never in git.
 | Secret | How it exists | What git may contain |
 | --- | --- | --- |
 | Hugging Face hub token | `oc create secret generic questshift-hf --from-literal=token=...` | Secret **name** `questshift-hf` and `secretKeyRef` only |
-| `questshift.llm.api-key` | default `none` in committed `application.properties` | The word `none`, never a real key |
+| `questshift.llm.api-key` | default `none` in committed `application.properties`; real keys only in gitignored `application-local.properties` | The word `none`, never a real key |
+| Local OpenAI-compatible URL / model | gitignored `application-local.properties` (`%dev.questshift.llm.*`) | Example placeholders in `application-local.properties.example` |
 | kubeconfig / registry pull | `oc login` / cluster | nothing |
 
 Do:

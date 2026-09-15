@@ -33,11 +33,13 @@ Board: [questshift#4](https://github.com/NA-FSI-Services/questshift/issues/4) (t
 
 Exit (met): Panel A reads as a 16-bit dungeon; Panel B stays IBM Plex Mono.
 
-## Phase 3 — live vLLM
+## Phase 3 — live vLLM (done)
 
-Point `questshift.llm.base-url` at a reachable vLLM serving `ibm-granite/granite-3.1-8b-instruct`. Enable `questshift.llm.enabled=true` **outside** `%dev` (or override in a `%prod`-style profile). Kill vLLM mid-room and confirm YAML fallback. Do not add Ollama.
+Point `questshift.llm.base-url` at a reachable OpenAI-compatible server. Workshop freeze is **vLLM** serving `ibm-granite/granite-3.1-8b-instruct`. Enable the LLM via untracked `application-local.properties` (`%dev.questshift.llm.*`) or the cluster ConfigMap — committed `%dev`/`%test` stay off and `questshift.llm.api-key` stays `none`. Kill the endpoint mid-room (or return HTTP ≥ 300) and confirm YAML fallback. Do not add Ollama.
 
-Exit: GM JSON narrates; regex still comes from YAML; fallback still wins the hour.
+Board: [questshift#5](https://github.com/NA-FSI-Services/questshift/issues/5) (tracker), [engine#4](https://github.com/NA-FSI-Services/questshift-engine/issues/4) (stubbed client). [questshift#1](https://github.com/NA-FSI-Services/questshift/issues/1) stays the real NVIDIA L4 / Granite 3.1 check.
+
+Exit (met): GM JSON narrates through `LLMService`; room `expected_command_pattern` still comes from YAML (`accepted_examples` still score); unreachable endpoint falls back to authored YAML so the hour still runs. `./mvnw test` never calls a live server.
 
 ## Phase 4 — OpenShift apply
 
