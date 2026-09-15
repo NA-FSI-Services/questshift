@@ -30,7 +30,7 @@ UI: Node 22+, `npm install && npm run dev` in `questshift-ui`. Quality: `npm run
 
 Campaigns: edit YAML, then restart the engine (no reload endpoint in v1). Quality: `./verify.sh` (yamllint, ruff, pytest-cov).
 
-GitOps: `./install.sh` against a 4.20+ cluster (`oc apply -k k8s/` is fallback only). Quality: `./verify.sh` (yamllint, ruff, shellcheck, kustomize, pytest-cov).
+GitOps: `oc login` as cluster-admin, then `./install.sh` against a 4.20+ cluster (`oc apply -k k8s/` is fallback only). Keep cluster API URLs and tokens out of git. Quality: `./verify.sh` (yamllint, ruff, shellcheck, kustomize, pytest-cov).
 
 Docs: `./verify.sh` (ruff + spec checker). Each repo's PRs to `main` run workflow **Quality**; mark that check required so a red run cannot merge.
 

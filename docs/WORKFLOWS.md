@@ -81,18 +81,19 @@ v1 secrets live in the cluster (or an untracked local file), never in git.
 | Hugging Face hub token | `oc create secret generic questshift-hf --from-literal=token=...` | Secret **name** `questshift-hf` and `secretKeyRef` only |
 | `questshift.llm.api-key` | default `none` in committed `application.properties`; real keys only in gitignored `application-local.properties` | The word `none`, never a real key |
 | Local OpenAI-compatible URL / model | gitignored `application-local.properties` (`%dev.questshift.llm.*`) | Example placeholders in `application-local.properties.example` |
-| kubeconfig / registry pull | `oc login` / cluster | nothing |
+| kubeconfig / cluster API / CA | local `oc login`, `KUBECONFIG`, gitignored `.env` | nothing (no hostnames, tokens, or certs) |
 
 Do:
 
 - Create `questshift-hf` with `./install.sh` (or `oc create secret` on the cluster). Docs may show the placeholder `YOUR_HF_TOKEN` only. Never put the token in git.
-- Put local LLM overrides in untracked files (`application-local.properties`, `.env`). Those names are gitignored.
+- Put local LLM overrides and installer secrets in untracked files (`application-local.properties`, `.env`). Copy `questshift-gitops/.env.example` to `.env`. Those names are gitignored.
 - Keep `k8s/` limited to `secretKeyRef` (name + key). Never add a `Secret` manifest with `stringData` or a real token.
+- Log in with `oc login` before `./install.sh`. The installer refuses to run without an existing session and does not accept cluster API URLs or tokens as flags.
 
 Do not:
 
-- Commit `.env`, kubeconfigs, `*.pem`, private keys, Hugging Face tokens, or `Secret` YAML that embeds a token.
-- Paste tokens into campaign YAML, ConfigMaps, README samples, or session export files.
+- Commit `.env`, kubeconfigs, `*.pem`, `*.crt`, private keys, Hugging Face tokens, OpenShift API JWTs, lab hostnames, or `Secret` YAML that embeds a token.
+- Paste tokens, CA certificates, or a specific workshop API URL into campaign YAML, ConfigMaps, README samples, issues, or session export files.
 - Open a PR that changes `questshift.llm.api-key` away from `none`.
 
 If a token is committed, rotate it on Hugging Face / the cluster and purge it from git history before the next push.
@@ -102,7 +103,8 @@ If a token is committed, rotate it on Hugging Face / the cluster and purge it fr
 Cluster install is two steps. See [INSTALL.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/INSTALL.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/INSTALL.md`).
 
 1. Set up OpenShift **4.20+**.
-2. From `questshift-gitops`: `./install.sh` (or `./install.sh --install-operators`).
+2. `oc login` as cluster-admin (`oc whoami` must succeed). Keep that cluster’s API URL, token, and CA out of git.
+3. From `questshift-gitops`: copy `.env.example` to `.env`, set `QUESTSHIFT_HF_TOKEN`, then `./install.sh` (or `./install.sh --install-operators`).
 
 The script checks cluster-admin, worker/GPU/CPU/memory, then OpenShift GitOps, NFD, NVIDIA GPU Operator, and RHOAI. It deploys QuestShift with an Argo CD Application pointing at `k8s/`. Hugging Face token becomes secret `questshift-hf` on the cluster only.
 

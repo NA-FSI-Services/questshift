@@ -31,15 +31,17 @@ Voice / TTS is deferred. v1 is text-only.
 ## Install on OpenShift
 
 1. Set up an OpenShift **4.20+** cluster (NVIDIA L4 worker, cluster-admin).
-2. Run the installer in [questshift-gitops](https://github.com/NA-FSI-Services/questshift-gitops):
+2. Log in (`oc whoami` must succeed). Keep that cluster’s API URL, token, and CA out of git.
+3. Run the installer in [questshift-gitops](https://github.com/NA-FSI-Services/questshift-gitops):
 
 ```bash
 oc login --server=https://api.CLUSTER:6443
 cd questshift-gitops
+cp .env.example .env   # set QUESTSHIFT_HF_TOKEN locally; never commit
 ./install.sh
 ```
 
-Use `./install.sh --install-operators` to install missing GitOps / NFD / NVIDIA GPU / OpenShift AI operators without prompting. Full contract: [docs/INSTALL.md](docs/INSTALL.md).
+`./install.sh` refuses to run without an existing `oc` session and does not accept cluster credentials as flags. Use `./install.sh --install-operators` to install missing GitOps / NFD / NVIDIA GPU / OpenShift AI operators without prompting. Full contract: [docs/INSTALL.md](docs/INSTALL.md).
 
 ## Local layout
 

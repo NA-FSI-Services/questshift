@@ -25,9 +25,12 @@ REQUIRED_SPECS = (
 SECRET_PATTERNS = (
     re.compile(r"BEGIN PRIVATE KEY"),
     re.compile(r"BEGIN OPENSSH PRIVATE KEY"),
+    re.compile(r"BEGIN CERTIFICATE"),
+    re.compile(r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]+\."),
     re.compile(r"AKIA[0-9A-Z]{16}"),
     re.compile(r"hf_[A-Za-z0-9]{16,}"),
     re.compile(r"openshift-v4/"),
+    re.compile(r"opentlc\.com"),
 )
 
 FREEZE_NEEDLES = (

@@ -34,6 +34,20 @@ def test_rejects_secret_token(tmp_path: Path) -> None:
         validate_no_secrets(tmp_path)
 
 
+def test_rejects_cluster_jwt_and_lab_hostname(tmp_path: Path) -> None:
+    docs = tmp_path / "docs"
+    docs.mkdir()
+    (docs / "ARCHITECTURE-ESSENTIALS.md").write_text("ok\n", encoding="utf-8")
+    jwt = "eyJ" + "hbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." + "eyJzdWIiOiIxIn0."
+    (tmp_path / "AGENTS.md").write_text(f"oc login --token={jwt}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="secret"):
+        validate_no_secrets(tmp_path)
+    host = "example." + "opentlc" + ".com"
+    (tmp_path / "AGENTS.md").write_text(f"https://console.apps.{host}\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="secret"):
+        validate_no_secrets(tmp_path)
+
+
 def test_rejects_missing_freeze(tmp_path: Path) -> None:
     docs = tmp_path / "docs"
     docs.mkdir()

@@ -12,7 +12,7 @@ Each of the five repos has:
 2. A repo-local Git hook at `.githooks/` — enable once per clone with `./.githooks/install` (sets `core.hooksPath`, not a global hook).
 3. GitHub Actions workflow **Quality** (`.github/workflows/quality.yml`) on pull requests and pushes to `main`.
 4. Dependabot (`.github/dependabot.yml`) opens weekly PRs that bump GitHub Actions used in those workflows. Grouped into one PR per repo. The Quality job still has to pass before merge.
-5. Secret scan (`.githooks/check-secrets`): staged files on commit, whole tree in CI. Blocks PEM private keys, Hugging Face `hf_` tokens, GitHub pats, AWS `AKIA` keys, `.env` / kubeconfig / `*.pem` filenames, and a `questshift.llm.api-key` that is not `none`.
+5. Secret scan (`.githooks/check-secrets`): staged files on commit, whole tree in CI. Blocks PEM private keys, TLS certificates, OpenShift API JWTs, Hugging Face `hf_` tokens, GitHub pats, AWS `AKIA` keys, `.env` / kubeconfig / `*.pem` / `*.crt` filenames, lab hostnames, and a `questshift.llm.api-key` that is not `none`.
 
 Mark the **Quality** job required on `main` so a red run cannot merge. `SKIP_QUESTSHIFT_HOOKS=1` skips lint/coverage only; `.githooks/check-secrets` still runs. Full bypass: `git commit --no-verify`. Local overrides live in gitignored `.githooks/config` (copy `.githooks/config.example`).
 
@@ -69,7 +69,7 @@ Probe and wait scripts (`install/scripts/cluster_probe.py`, `wait_application.py
 
 `./verify.sh` runs ruff on `tools/` and `tests/`, pytest-cov, then `python3 -m tools.specs`.
 
-The spec checker (`tools/specs.py`) requires the files in `AGENTS.md` (including this one), rejects token-like strings in markdown, and asserts [ARCHITECTURE-ESSENTIALS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/ARCHITECTURE-ESSENTIALS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/ARCHITECTURE-ESSENTIALS.md`) still names vLLM, Granite 3.2 8B Instruct, `nvidia.com/gpu`, and “No Ollama”. It is not a markdownlint pass over prose or tables.
+The spec checker (`tools/specs.py`) requires the files in `AGENTS.md` (including this one), rejects token-like strings in markdown (including JWTs, CA certs, and lab hostnames), and asserts [ARCHITECTURE-ESSENTIALS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/ARCHITECTURE-ESSENTIALS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/ARCHITECTURE-ESSENTIALS.md`) still names vLLM, Granite 3.2 8B Instruct, `nvidia.com/gpu`, and “No Ollama”. It is not a markdownlint pass over prose or tables.
 
 ## What these gates are not
 

@@ -5,9 +5,16 @@
 *.swp
 .env
 .env.*
+!.env.example
 *.pem
+*.crt
+*.key
 kubeconfig
 kubeconfig.*
+.kubeconfig
+*.kubeconfig
+.cluster-ca.crt
+.cluster.env
 
 # Python quality
 .venv/
