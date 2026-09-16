@@ -26,7 +26,7 @@ Agents read this first, then the repo-local `AGENTS.md`. Full system:
                     └─────────────────────────────────────────┘
 ```
 
-One OpenShift deployment **is** one party. No multi-tenant session router in v1.
+One OpenShift deployment **is** one party. No multi-tenant session router in v1. A second browser looks up `GET /api/sessions/{joinCode}` then `POST /api/sessions/{id}/party`; a second Start is 409 while the hour is `active`.
 
 ## Hard rules
 

@@ -14,6 +14,7 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Default model | IBM Granite 3.2 8B Instruct |
 | GPU | NVIDIA L4, `nvidia.com/gpu: 1` |
 | Play mode | One party per deployment |
+| Join | Human-readable `joinCode` (two dungeon words). Second Start is 409 while `active`. Members via `POST /api/sessions/{id}/party`. |
 | Seats | Cosmetic avatars; any player may solve any puzzle |
 | TTS | Deferred (text-only v1) |
 | Native image | Later; JVM first |
@@ -67,6 +68,29 @@ v1 still serves **IBM Granite 3.2 8B Instruct** through the existing **vLLM Depl
 
 - Browser Web Speech / Piper TTS
 - Ollama local sidecar
-- Multi-party / multi-tenant matchmaking
+- Multi-party / multi-tenant matchmaking across deployments (many browsers on **one** party use `joinCode`; see below)
 - Real execution of **player** `oc`, Ansible, or a login node (facilitator `./install.sh` is cluster bootstrap only)
 - Native Quarkus binary
+
+## One-party join codes (2026-09-15)
+
+**Choice:** one live `active` party per engine process. Start returns a shoutable `joinCode` (`thorn-golem`). A second browser joins with existing `GET /api/sessions/{joinCode}` (UUID still works). A second Start is **409** `party_active` until the hour is `complete`, `expired`, or the process is empty. Lookup does not add a member. No extra OpenShift Route, no matchmaking across deployments.
+
+**Rejected**
+
+- **Always create a new `GameSession` on Start.** A second laptop could not share the hour without YAML export/import.
+- **`POST /api/sessions/join`.** Lookup stays `GET /api/sessions/{joinCode}`. Adding a person is `POST /api/sessions/{id}/party` (see below).
+- **Returning the existing party on a second Start.** Hides that someone else already opened the hour; 409 plus the code is explicit.
+- **UUID as the share code.** Facilitators need something they can say aloud.
+
+## Unique alias + cosmetic character (2026-09-16)
+
+**Choice:** Start requires 1–8 real members (no placeholders). Joiners `POST /api/sessions/{id}/party` with `{ name, seatId }`. Aliases are unique (case-insensitive); seats may repeat; cap **8**; pick once (same alias again is idempotent). Suggested names are per-seat lists in [GAME-DESIGN.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/GAME-DESIGN.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/GAME-DESIGN.md`). Picker lives in the topbar.
+
+**Rejected**
+
+- **Four placeholder party members on empty Start.** Silent duplicate labels.
+- **One player per seat.** Seats stay cosmetic.
+- **Overloading Start with `joinCode` to add a member.**
+- **Changing alias or seat after join.**
+- **A dedicated lobby screen.**

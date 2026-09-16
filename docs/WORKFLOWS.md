@@ -53,7 +53,7 @@ Quality: `npm run verify` (Prettier, ESLint, Vitest ≥ 80% lines / 70% branches
 
 1. Edit `questshift-campaigns/campaigns/campaign-devops-dungeon.yaml`.
 2. Restart the engine. `CampaignLibrary` loads YAML **once** into a map; there is no reload endpoint.
-3. Start a **new** session (`POST /api/sessions`). Existing sessions keep old room data in memory.
+3. Start a **new** session (`POST /api/sessions`) only after the previous hour is `complete` or `expired`. An `active` party yields 409; join it with `GET /api/sessions/{joinCode}` instead.
 
 Keep a classpath copy in `questshift-engine/src/main/resources/campaigns/` in sync when you change the canonical file, or local-only runs that miss the sibling dir will serve stale rooms.
 
@@ -70,7 +70,7 @@ curl -s -X POST "http://localhost:8080/api/sessions/import?format=yaml" \
   --data-binary @run.yaml -H 'Content-Type: application/yaml'
 ```
 
-UI: Panel B **export.yaml** downloads `questshift-{id}.yaml`. **import.yaml** is a file picker that posts the file to `POST /api/sessions/import` (works with or without a live session).
+UI: Panel B **export.yaml** downloads `questshift-{id}.yaml`. **import.yaml** is a file picker that posts the file to `POST /api/sessions/import` (works with or without a live session; 409 if it would create a second `active` party). Topbar **Join** loads `GET /api/sessions/{joinCode}`.
 
 ## Secrets — never commit to GitHub
 

@@ -1,6 +1,6 @@
 # QuestShift v1 plan
 
-Phased work for the frozen v1 product only. Scaffold already exists in the five public repos. There are no TTS, Ollama, native-image, or multi-party phases.
+Phased work for the frozen v1 product only. Scaffold already exists in the five public repos. There are no TTS, Ollama, native-image, or multi-party-matchmaking phases. One-party join codes (many browsers, one hour) are in v1.
 
 Board: https://github.com/orgs/NA-FSI-Services/projects/3
 
@@ -47,6 +47,10 @@ Set up OpenShift 4.20+. Log in as cluster-admin (`oc whoami` must succeed) and k
 
 Exit: facilitated 60-minute run on the workshop cluster, export/import survives a pod bounce via PVC `questshift-session-export`.
 
+## One-party join (in v1)
+
+Many browsers on the same hour. Shareable `joinCode`; second Start is 409 while `active`. Joiners add a unique alias via `POST /api/sessions/{id}/party` (cap 8). Tracker: [questshift#6](https://github.com/NA-FSI-Services/questshift/issues/6), [questshift#7](https://github.com/NA-FSI-Services/questshift/issues/7), [questshift#8](https://github.com/NA-FSI-Services/questshift/issues/8).
+
 ## Explicitly not scheduled
 
-TTS, Ollama, native Quarkus, multi-party matchmaking, real command execution, extra campaigns, a database.
+TTS, Ollama, native Quarkus, multi-party matchmaking across deployments, real command execution, extra campaigns, a database.

@@ -5,16 +5,19 @@ Dual-panel 16-bit dungeon. Canvas is pixel art; the terminal stays readable.
 ## Layout
 
 ```text
-┌──────────────────────────────────────────────────────────────┐
-│ QuestShift   The Cluster That Forgot Its Name    [start run] │
-│              [YAML fallback — Game Master unreachable]       │
-├───────────────────────────────────┬──────────────────────────┤
-│ Panel A — Phaser canvas           │ Panel B — terminal       │
-│ 16-bit rooms, four seats, gems    │ IBM Plex Mono, CRT wash  │
-│ loot strip under the board        │ GM log / $ prompt / hint │
-│ (HTML + Phaser loot_* sprites)    │                          │
-└───────────────────────────────────┴──────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│ QuestShift  The Cluster That Forgot Its Name  [start] [join thorn-golem] │
+│             party code thorn-golem [Copy code]                           │
+│             [YAML fallback — Game Master unreachable]                    │
+├────────────────────────────────────────────┬─────────────────────────────┤
+│ Panel A — Phaser canvas                    │ Panel B — terminal          │
+│ 16-bit rooms, four seats, gems             │ IBM Plex Mono, CRT wash     │
+│ loot strip under the board                 │ GM log / $ prompt / hint    │
+│ (HTML + Phaser loot_* sprites)             │                             │
+└────────────────────────────────────────────┴─────────────────────────────┘
 ```
+
+Empty topbar: four **character** buttons, an **alias** field (suggested from the selected seat, skipping names already in a looked-up party), **start 60-minute run**, plus **Join code** / **Join**. Panel A/B stay visible — not a lobby screen. In-session: copyable `joinCode`, **new party** (409 while `active`), and the live roster (alias + seat). A second browser `GET`s the code, then `POST /api/sessions/{id}/party`. Character and alias are chosen once; they cannot be changed later.
 
 - **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place rooms at campaign `mapX` / `mapY`. Seats as sprites, not colored dots. `focus` marks the current room. Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board.
 - **Panel B:** `src/terminal/TerminalPanel.tsx`. Still the command surface. CRT-like background (`#07110c`) and scanline wash in CSS; **typeface is IBM Plex Mono**, not a 8×8 font. Players must read YAML, `oc`, and Java.

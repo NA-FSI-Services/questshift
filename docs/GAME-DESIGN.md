@@ -32,7 +32,14 @@ Win: all five `puzzleCompletion` flags true; throne accepted the annotation; par
 | `ranger` | Cluster Ranger | `#2a6f97` | OpenShift ranger |
 | `artificer` | Artificer | `#7b4ea3` | Java artificer |
 
-Anyone may submit the solving command for any room. The engine does not gate puzzles by `seatId`. WebSocket currently stamps seat `shared`.
+Anyone may submit the solving command for any room. The engine does not gate puzzles by `seatId`. WebSocket currently stamps seat `shared`. One engine process is one party; players share a `joinCode` (`thorn-golem`) so a second browser can join without YAML import. Each player picks a cosmetic seat and a **unique alias** (max 8 people). Same seat may be shared. Suggested aliases, first unused:
+
+| Seat | Suggestions (in order) |
+| --- | --- |
+| `guardian` | Ada, Briar, Helm, Ward, Oak, Granite, Bastion, Aegis |
+| `automancer` | Linus, Ember, Forge, Glyph, Spark, Pipe, Playbook, Ansible |
+| `ranger` | Kelsey, Moss, Trail, Vault, Torch, Cluster, Route, Probe |
+| `artificer` | James, Cipher, Rune, Shard, Tome, Servlet, Quark, Loom |
 
 ## Game Master voice
 

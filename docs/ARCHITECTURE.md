@@ -75,7 +75,7 @@ GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). M
 
 ## Game loop
 
-1. `POST /api/sessions` loads `campaign-devops-dungeon.yaml` (or classpath copy) and creates `GameSession`. Empty party gets four placeholder seats (`guardian`, `automancer`, `ranger`, `artificer`).
+1. `POST /api/sessions` loads `campaign-devops-dungeon.yaml` (or classpath copy) and creates `GameSession` with a unique `joinCode` and the posted party (1–8 members, unique aliases). If a party is already `active`, the engine returns 409 `party_active` instead of a second hour. A second browser `GET`s `/api/sessions/{joinCode}`, then `POST /api/sessions/{id}/party`.
 2. Engine asks `LLMService` for a Game Master turn. The model **must** return a JSON object:
 
    ```json
@@ -122,7 +122,7 @@ Pass → room complete, loot ids added, skills granted, Phaser node unlocks via 
 
 `GameSession` persists in a process-local `ConcurrentHashMap`:
 
-- `id`, `campaignId`, `status` (`active` \| `complete`)
+- `id`, `joinCode`, `campaignId`, `status` (`active` \| `complete` \| `expired`)
 - `currentRoomId`, `startedAt`, `elapsedSeconds`
 - party members (display name + seat id)
 - `inventory`, `skills`

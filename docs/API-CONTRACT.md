@@ -1,6 +1,6 @@
 # QuestShift API contract (v1)
 
-Matches `questshift-engine` as implemented. Do not invent extra routes.
+Matches `questshift-engine` as implemented. Do not invent extra routes unless this file names them.
 
 Engine GitHub: https://github.com/NA-FSI-Services/questshift-engine  
 Engine local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-engine`
@@ -19,25 +19,40 @@ Returns `Collection<Campaign>` currently loaded by `CampaignLibrary`.
 
 ### `POST /api/sessions`
 
-Starts one party. Body optional.
+Starts one party. Body optional. At most one `active` party exists per engine process. If a live party is already `active` (and the campaign hour has not expired), the engine returns **409** instead of creating a second hour:
+
+```json
+{
+  "error": "party_active",
+  "message": "A party is already running. Join with thorn-golem.",
+  "joinCode": "thorn-golem"
+}
+```
+
+A new Start succeeds when there is no `active` party: empty engine, `status` `complete` or `expired`, or elapsed time has reached the campaign `durationMinutes`.
 
 ```json
 {
   "campaignId": "devops-dungeon",
-  "party": [
-    { "name": "Ada", "seatId": "guardian" },
-    { "name": "Linus", "seatId": "automancer" },
-    { "name": "Kelsey", "seatId": "ranger" },
-    { "name": "James", "seatId": "artificer" }
-  ]
+  "party": [{ "name": "Ada", "seatId": "guardian" }]
 }
 ```
 
-Missing/blank `campaignId` → `questshift.campaigns.default-id` (`devops-dungeon`). Empty `party` → four placeholders (Facilitator/`guardian`, Player 2/`automancer`, Player 3/`ranger`, Player 4/`artificer`). Response: `GameSession` after the opening GM turn.
+Missing/blank `campaignId` → `questshift.campaigns.default-id` (`devops-dungeon`). `party` is required and must contain **1–8** members. Each member needs a non-blank `name` (alias, unique in the party, case-insensitive) and a cosmetic `seatId` (`guardian` \| `automancer` \| `ranger` \| `artificer`). Same seat may be chosen more than once. There are **no** placeholder members. Response: `GameSession` after the opening GM turn, including `joinCode`. Invalid party → **400** `invalid_party`.
 
 ### `GET /api/sessions/{id}`
 
-Live snapshot. 404 `NotFoundException` if missing. Side effect: `tickElapsed()`.
+Live snapshot. `{id}` is the session UUID **or** the human-readable `joinCode` (case-insensitive, e.g. `THORN-GOLEM` → `thorn-golem`). 404 `NotFoundException` if missing. Side effect: `tickElapsed()`; if the hour has elapsed, `status` becomes `expired`. Lookup alone does **not** add a party member.
+
+### `POST /api/sessions/{id}/party`
+
+Adds one player to the live party. `{id}` is the UUID **or** `joinCode`. Body:
+
+```json
+{ "name": "Linus", "seatId": "automancer" }
+```
+
+Response: `GameSession`. Alias uniqueness is case-insensitive. Same seat as another player is allowed. Cap **8**. Posting an alias that is already in the party is **idempotent** (200, original `seatId` kept — no character/alias change after join). Duplicate *new* alias → **409** `alias_taken`. Ninth player → **409** `party_full`. Session not `active` → **409** `party_not_active`. Blank alias or unknown `seatId` → **400** `invalid_party`.
 
 ### `POST /api/sessions/{id}/commands`
 
@@ -65,7 +80,7 @@ Default `format=yaml`. Body is serialized `GameSession`. Content-Type `applicati
 
 ### `POST /api/sessions/import?format=yaml|json`
 
-Raw body is YAML or JSON. If `format` is omitted, serializer sniffs `---` / `id:` / `campaignId:` as YAML, else JSON. Restores into the in-memory map (assigns a new `id` if blank). Response: `GameSession`.
+Raw body is YAML or JSON. If `format` is omitted, serializer sniffs `---` / `id:` / `campaignId:` as YAML, else JSON. Restores into the in-memory map (assigns a new `id` if blank; assigns a `joinCode` if blank). If the imported snapshot would be `active` while another party is already `active`, **409** `party_active` (same body as Start). Response: `GameSession`.
 
 There is **no** campaign-reload HTTP route in v1. YAML changes need an engine restart.
 
@@ -106,12 +121,13 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | Field | Type | Notes |
 | --- | --- | --- |
 | `id` | string | UUID |
+| `joinCode` | string | Two dungeon words, hyphenated, lowercase (`thorn-golem`). Unique in this engine process. Lookup is case-insensitive. |
 | `campaignId` | string | `devops-dungeon` |
-| `status` | string | `active` or `complete` |
+| `status` | string | `active`, `complete`, or `expired` (hour reached `durationMinutes`) |
 | `currentRoomId` | string | e.g. `room-01-broken-shell` |
 | `startedAt` | instant | ISO-8601 |
 | `elapsedSeconds` | long | recomputed on tick/export |
-| `partyMembers` | list | `{ name, seatId }` |
+| `partyMembers` | list | `{ name, seatId }`. Max 8. Aliases unique; seats cosmetic. |
 | `inventory` | string list | loot ids (`rune-thorn`, …) |
 | `skills` | string list | flavor (`piping`, …) |
 | `puzzleCompletion` | map | room id → boolean |
@@ -125,6 +141,7 @@ Example YAML fragment:
 
 ```yaml
 id: 11111111-2222-3333-4444-555555555555
+joinCode: thorn-golem
 campaignId: devops-dungeon
 status: active
 currentRoomId: room-02-playbook-of-binding
@@ -148,4 +165,4 @@ yamlFallback: true
 
 ## Errors
 
-Unknown session → 404. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.
+Unknown session or unknown join code → 404. Second Start (or an `active` import) while a party is `active` → 409 `party_active` with `joinCode`. Duplicate alias on `POST …/party` → 409 `alias_taken`. Party already has 8 members → 409 `party_full`. Missing Start party, blank alias, or unknown `seatId` → 400 `invalid_party`. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.

@@ -33,9 +33,9 @@ If vLLM is unavailable, the engine uses authored YAML narrative and hints so the
 
 ### Session
 
-- `POST /api/sessions` creates one in-memory `GameSession` for campaign `devops-dungeon` (or the posted `campaignId`).
-- Session tracks party members, current room, inventory, skills, puzzle flags, elapsed seconds, last GM text, and canvas event.
-- One party per engine process / OpenShift deployment.
+- `POST /api/sessions` creates one in-memory `GameSession` for campaign `devops-dungeon` (or the posted `campaignId`) with 1–8 named members and a shareable `joinCode`. A second Start is 409 while that party is `active`.
+- Session tracks party members (unique alias + cosmetic seat), current room, inventory, skills, puzzle flags, elapsed seconds, last GM text, canvas event, and `joinCode`.
+- One party per engine process / OpenShift deployment. Other browsers look up `GET /api/sessions/{joinCode}` and `POST /api/sessions/{id}/party`.
 
 ### Game Master JSON
 
