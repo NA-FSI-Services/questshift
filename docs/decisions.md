@@ -64,6 +64,17 @@ v1 still serves **IBM Granite 3.2 8B Instruct** through the existing **vLLM Depl
 - **RHOAI Data Science Pipelines (KFP + cluster MinIO).** That stack is for notebook/KServe workflows. Game Master serving stays the vLLM Deployment.
 - **Keeping the ModelCar init on `questshift-llm`.** It worked, but every pod restart competed with the GPU node for a 16Gi pull. Tekton runs once; later vLLM restarts reuse the PVC.
 
+## Walkable rooms (2026-09-16)
+
+**Choice:** Panel A is a walkable overworld. Party `currentRoomId` still gates which puzzle can be **solved**. Players may enter the current room or completed rooms only. Presence is `POST /api/sessions/{id}/presence` with `{ name, mapX, mapY, viewedRoomId, pickupClueId? }`. Clues are YAML fragments on the floor; `foundClues` is party-shared. WASD only while the canvas is focused. Phaser `src/game/**` stays coverage-excluded; movement/unlock/clue-reach lives in `src/map.ts`.
+
+**Rejected**
+
+- **Overloading `POST /party` with positions.** Join is join; walk is presence.
+- **Per-player `currentRoomId` for scoring.** One party, one scoring room.
+- **Entering locked future rooms.** The hour stays sequential.
+- **Full winning commands as clue text.** Fragments feed Panel B; regex still wins.
+
 ## Deliberately not in v1
 
 - Browser Web Speech / Piper TTS

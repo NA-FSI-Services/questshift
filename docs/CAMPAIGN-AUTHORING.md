@@ -42,7 +42,8 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 | `id` | yes | Stable key (`room-01-broken-shell`) |
 | `order` | yes | Integer sequence; `nextRoom` is `order + 1` |
 | `title` | yes | Phaser label |
-| `mapX`, `mapY` | yes | Panel A coordinates |
+| `mapX`, `mapY` | yes | Panel A overworld coordinates |
+| `clues` | yes | List of floor objects players pick up inside the room. Each needs `id`, `label`, `text`, `x`, `y`. Fragments only — do **not** put a full `accepted_examples` command in `text`. |
 | `puzzle_type` | yes | `linux` \| `ansible` \| `openshift` \| `java` |
 | `estimatedMinutes` | no | Facilitator pacing |
 | `narrative` | yes | YAML fallback GM text |
@@ -57,6 +58,10 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 | `skills_granted` | no | Flavor strings |
 | `requires_loot` | no | Inventory ids that must already be held |
 | `sample_output` / `broken_snippet` | no | Ignored by Java; useful for authors and GM context |
+
+## Clues (walkable interiors)
+
+Each room needs at least one `clues` entry. `text` is what Panel B shows after pickup (`grep -i rune`, `hosts: dungeon`). `x` / `y` are interior canvas coordinates (not the overworld `mapX` / `mapY`). Unique `id`s across the campaign. Picking a clue never scores the puzzle.
 
 ## Regex + accepted examples
 

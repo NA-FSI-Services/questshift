@@ -54,6 +54,24 @@ Adds one player to the live party. `{id}` is the UUID **or** `joinCode`. Body:
 
 Response: `GameSession`. Alias uniqueness is case-insensitive. Same seat as another player is allowed. Cap **8**. Posting an alias that is already in the party is **idempotent** (200, original `seatId` kept — no character/alias change after join). Duplicate *new* alias → **409** `alias_taken`. Ninth player → **409** `party_full`. Session not `active` → **409** `party_not_active`. Blank alias or unknown `seatId` → **400** `invalid_party`.
 
+### `POST /api/sessions/{id}/presence`
+
+Walk, enter a room, or pick up a YAML clue. `{id}` is the UUID **or** `joinCode`. Body:
+
+```json
+{
+  "name": "Ada",
+  "mapX": 120,
+  "mapY": 276,
+  "viewedRoomId": "room-01-broken-shell",
+  "pickupClueId": "shell-log"
+}
+```
+
+`name` must already be in `partyMembers`. `viewedRoomId` empty (or omitted) means the overworld. A non-empty id must be the party’s `currentRoomId` or a completed room — locked future rooms are refused. `pickupClueId` is optional; when set, that clue must belong to `viewedRoomId` and is appended to party-shared `foundClues` (idempotent). Response: `GameSession`. This does **not** change `currentRoomId` or score a puzzle.
+
+Unknown alias, unknown room, locked room, or unknown clue → **400** `invalid_presence`. Session not `active` → **409** `party_not_active`. Blank alias → **400** `invalid_presence`.
+
 ### `POST /api/sessions/{id}/commands`
 
 ```json
@@ -127,7 +145,7 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `currentRoomId` | string | e.g. `room-01-broken-shell` |
 | `startedAt` | instant | ISO-8601 |
 | `elapsedSeconds` | long | recomputed on tick/export |
-| `partyMembers` | list | `{ name, seatId }`. Max 8. Aliases unique; seats cosmetic. |
+| `partyMembers` | list | `{ name, seatId, mapX, mapY, viewedRoomId }`. Max 8. Aliases unique; seats cosmetic. `viewedRoomId` empty = overworld. Positions are last presence. |
 | `inventory` | string list | loot ids (`rune-thorn`, …) |
 | `skills` | string list | flavor (`piping`, …) |
 | `puzzleCompletion` | map | room id → boolean |
@@ -136,7 +154,8 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `lastHint` | string | last hint |
 | `lastCanvasEvent` | string | last canvas event |
 | `yamlFallback` | boolean | `true` when the last GM turn used campaign YAML because vLLM was disabled, unreachable, or returned HTTP ≥ 300 |
-| `commandLog` | list | `{ roomId, name, seatId, command, passed, message }`. Attempts in this hour. Panel B shows the **current room** only. Attribution only; seats do not gate scoring. |
+| `commandLog` | list | `{ roomId, name, seatId, command, passed, message }`. Attempts in this hour. Panel B shows the **current scoring room** only. Attribution only; seats do not gate scoring. |
+| `foundClues` | string list | Party-shared YAML clue ids picked up on the map. Fragments only; they do not pass the evaluator. |
 
 Example YAML fragment:
 
@@ -150,6 +169,9 @@ elapsedSeconds: 780
 partyMembers:
   - name: Ada
     seatId: guardian
+    mapX: 120
+    mapY: 276
+    viewedRoomId: ""
 inventory:
   - rune-thorn
 skills:
@@ -169,8 +191,10 @@ commandLog:
     command: cat /var/log/quest.log
     passed: false
     message: The dungeon rejects the command.
+foundClues:
+  - shell-log
 ```
 
 ## Errors
 
-Unknown session or unknown join code → 404. Second Start (or an `active` import) while a party is `active` → 409 `party_active` with `joinCode`. Duplicate alias on `POST …/party` → 409 `alias_taken`. Party already has 8 members → 409 `party_full`. Missing Start party, blank alias, or unknown `seatId` → 400 `invalid_party`. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.
+Unknown session or unknown join code → 404. Second Start (or an `active` import) while a party is `active` → 409 `party_active` with `joinCode`. Duplicate alias on `POST …/party` → 409 `alias_taken`. Party already has 8 members → 409 `party_full`. Missing Start party, blank alias, or unknown `seatId` → 400 `invalid_party`. Presence with unknown alias, locked room, or unknown clue → 400 `invalid_presence`. Presence while the hour is not `active` → 409 `party_not_active`. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.

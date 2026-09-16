@@ -56,7 +56,7 @@ If vLLM is unavailable, the engine uses authored YAML narrative and hints so the
 
 ### Dual panel
 
-- Panel A: Phaser 3 16-bit dungeon — five rooms, four seat sprites, status gems. Kenney Tiny Dungeon sheet in `questshift-ui/public/assets/`.
+- Panel A: Phaser 3 16-bit dungeon — five walkable rooms, Kenney seat sprites, authored clues, status gems. Kenney Tiny Dungeon sheet in `questshift-ui/public/assets/`.
 - Panel B: readable IBM Plex Mono terminal — GM log, command box, seat chips, elapsed clock, export control.
 
 ## Success bar

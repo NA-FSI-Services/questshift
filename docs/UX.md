@@ -19,8 +19,8 @@ Dual-panel 16-bit dungeon. Canvas is pixel art; the terminal stays readable.
 
 Empty topbar: four **character** buttons, an **alias** field (suggested from the selected seat, skipping names already in a looked-up party), **start 60-minute run**, plus **Join code** / **Join**. Panel A/B stay visible — not a lobby screen. In-session: copyable `joinCode`, **new party** (409 while `active`), and the live roster (alias + seat). A second browser `GET`s the code, then `POST /api/sessions/{id}/party`. Character and alias are chosen once; they cannot be changed later.
 
-- **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place rooms at campaign `mapX` / `mapY`. Seats as sprites, not colored dots. `focus` marks the current room. Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board.
-- **Panel B:** `src/terminal/TerminalPanel.tsx`. Still the command surface. CRT-like background (`#07110c`) and scanline wash in CSS; **typeface is IBM Plex Mono**, not a 8×8 font. Players must read YAML, `oc`, and Java. The GM log is followed by the **shared room board**: each attempt in the current room shows alias, seat, command, and accepted/failed. Other rooms’ attempts stay on the session but are hidden until the party is in that room. The 1s `GET` poll (and WebSocket snapshot) carry `commandLog`, so browser B sees browser A’s submit without a refresh.
+- **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place rooms at campaign `mapX` / `mapY`. Seat sprites **walk** (WASD / arrows while the canvas is focused). `focus` marks the current scoring room. E / Enter enters a nearby unlocked room or picks a nearby `clue` sprite (clicking the room, chest, or south door also works); Esc or the south door leaves the interior. Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board. Other party members render at their last `mapX` / `mapY` when they share the overworld or the same interior. Movement math lives in `src/map.ts` (Vitest); Phaser `src/game/**` stays coverage-excluded.
+- **Panel B:** `src/terminal/TerminalPanel.tsx`. Still the command surface. CRT-like background (`#07110c`) and scanline wash in CSS; **typeface is IBM Plex Mono**, not a 8×8 font. Players must read YAML, `oc`, and Java. When a player is inside a room, the log shows that room’s authored `narrative` plus collected clue fragments. The GM log is followed by the **shared room board**: each attempt in the current scoring room shows alias, seat, command, and accepted/failed. Other rooms’ attempts stay on the session but are hidden until the party is scoring that room. The 1s `GET` poll (and WebSocket snapshot) carry `commandLog`, `foundClues`, and member positions.
 
 On viewports under 960px, stack Panel A above Panel B.
 
@@ -97,6 +97,15 @@ Load atlas key `tiny-dungeon`. Named keys below are what `DungeonScene` must use
 | `seat_ranger` | 87 | `tile_0087` | `ranger` — Cluster Ranger |
 | `seat_guardian` | 96 | `tile_0096` | `guardian` — helmed knight |
 
+### Clues and interior
+
+| Phaser key | Frame | Kenney tile | Use |
+| --- | --- | --- | --- |
+| `clue` | 89 | `tile_0089` | Uncollected YAML clue (chest) |
+| `door` | 52 | `tile_0052` | South exit inside a room |
+
+Interior spawn is `(450, 360)`; the south door is `(450, 470)`. Overworld spawn is the current room node, 56px south (inside the 64px enter radius).
+
 ### Status gems and loot
 
 | Phaser key | Frame | Kenney tile | Use |
@@ -118,7 +127,7 @@ When `session.yamlFallback` is true (vLLM down, `%dev`, or HTTP ≥ 300), show *
 
 ## Accessibility
 
-- `aria-label="Game canvas"` on Panel A; `aria-live="polite"` on the GM log.
+- `aria-label="Game canvas"` on Panel A; canvas `tabindex="0"` so WASD is not captured while the terminal is focused. `aria-live="polite"` on the GM log.
 - Command field has a visible label (sr-only is acceptable).
 - Seat list in HTML under the canvas so color is not the only cue (`<i>` swatch + title).
 - Contrast: IBM Plex Mono on `#07110c` meets readable ops output; do not drop font size below 14px in the log.

@@ -43,6 +43,14 @@ Anyone may submit the solving command for any room. The engine does not gate puz
 
 Submitted commands for the **current room** appear on a shared board (alias, seat, command, pass/fail) via `session.commandLog`. YAML still scores; the LLM still narrates only. Other rooms’ attempts stay on the session but are not shown until the party is in that room.
 
+## Walkable map
+
+Panel A is a walkable Kenney overworld. Each player moves their own seat sprite (WASD or arrows while the canvas is focused). `currentRoomId` still gates which puzzle the engine will **score**; walking does not change it. A player may **enter** the current room or any completed room, not a locked future room.
+
+Inside a room, YAML `clues` sit on the floor. Picking one appends its `id` to party-shared `foundClues` and shows the fragment on Panel B. Clues are authored snippets (`grep -i rune`, `hosts: dungeon`), never the full winning command. Regex / `accepted_examples` remain the scorer. Other members appear at their `mapX` / `mapY` when they share the overworld or the same interior.
+
+Spawn is the current room’s `mapX` / `mapY`. E or Enter enters a nearby unlocked room or picks a nearby clue. Esc or the south door returns to the overworld. Keyboard is ignored while the terminal is focused so typing `oc` is not stolen.
+
 ## Game Master voice
 
 Terse fantasy Dungeon Master who also knows ops. Stay in character. Never dump the full `expected_command_pattern` unless the party is stuck (failed attempt + hint). Always one JSON object. Do not invent a `puzzle_type`. Do not rewrite the regex. Sample register: “Sixty minutes. Five rooms. The cluster forgot its name. You will remind it.”

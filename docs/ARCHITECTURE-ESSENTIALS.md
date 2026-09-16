@@ -26,7 +26,7 @@ Agents read this first, then the repo-local `AGENTS.md`. Full system:
                     └─────────────────────────────────────────┘
 ```
 
-One OpenShift deployment **is** one party. No multi-tenant session router in v1. A second browser looks up `GET /api/sessions/{joinCode}` then `POST /api/sessions/{id}/party`; a second Start is 409 while the hour is `active`. Submitted commands persist on `session.commandLog` so every client in the same room sees alias, seat, command, and pass/fail.
+One OpenShift deployment **is** one party. No multi-tenant session router in v1. A second browser looks up `GET /api/sessions/{joinCode}` then `POST /api/sessions/{id}/party`; a second Start is 409 while the hour is `active`. Submitted commands persist on `session.commandLog` so every client in the same scoring room sees alias, seat, command, and pass/fail. Walk positions and YAML clue pickups use `POST /api/sessions/{id}/presence`; they never score a puzzle.
 
 ## Hard rules
 
