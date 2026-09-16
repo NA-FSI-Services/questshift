@@ -47,9 +47,24 @@ Submitted commands for the **current room** appear on a shared board (alias, sea
 
 Panel A is a walkable Kenney overworld. Each player moves their own seat sprite (WASD or arrows while the canvas is focused). `currentRoomId` still gates which puzzle the engine will **score**; walking does not change it. A player may **enter** the current room or any completed room, not a locked future room.
 
-Inside a room, YAML `clues` sit on the floor. Picking one appends its `id` to party-shared `foundClues` and shows the fragment on Panel B. Clues are authored snippets (`grep -i rune`, `hosts: dungeon`), never the full winning command. Regex / `accepted_examples` remain the scorer. Other members appear at their `mapX` / `mapY` when they share the overworld or the same interior.
+Inside a room, YAML `clues` sit on the floor. Picking one appends its `id` to party-shared `foundClues` and shows the fragment on Panel B. Clues are authored snippets (`grep -i rune`, `hosts: dungeon`), never the full winning command. Regex / `accepted_examples` remain the scorer.
 
-Spawn is the current room’s `mapX` / `mapY`. E or Enter enters a nearby unlocked room or picks a nearby clue. Esc or the south door returns to the overworld. Keyboard is ignored while the terminal is focused so typing `oc` is not stolen.
+Overworld spawn is 56px south of the current room node (inside the 64px enter radius), so a four-seat party stacks on the same pixel. E or Enter enters a nearby unlocked room or picks a nearby clue. Esc or the south door returns to the overworld. Keyboard is ignored while the terminal is focused so typing `oc` is not stolen.
+
+### Where is Linus? (Panel A occupancy)
+
+Panel A shows **people**, not only your own sprite. Every party member has a **visible unique alias** next to their Kenney seat sprite. Seat color and sprite are not enough: two Guardians must still read as Ada and Briar. Seats stay cosmetic; drawing is not gated by `seatId`.
+
+| You are | Linus is | Where you look |
+| --- | --- | --- |
+| Overworld (`viewedRoomId` empty) | Overworld | Walker: Kenney sprite at last presence `mapX` / `mapY`, alias beside it |
+| Same interior (`viewedRoomId` matches) | Same interior | Walker: sprite + alias at last interior `mapX` / `mapY` |
+| Overworld | Inside The Broken Shell (`viewedRoomId` = that room) | Occupancy on that **room icon** (alias, and a small seat sprite if there is room). You do not enter the room to know Linus is there. |
+| Inside a room | Overworld or another interior | Overworld occupancy is N/A until you leave. Only walkers who share your interior are drawn. |
+
+Same-layer members (both overworld, or both in the same `viewedRoomId`) draw at last presence `mapX` / `mapY`. If two would overlap (distance under 24px, including stacked spawn), offset later members in `partyMembers` order by 16px right, wrapping down after four, so two sprites are distinguishable. Do not hide one sprite on top of another.
+
+Presence stays `POST /api/sessions/{id}/presence`. No occupancy REST route. Walking, entering, and clue pickup never change `currentRoomId` and never score a puzzle. Live walks use the existing `/ws/sessions/{id}` snapshot; the 1s `GET` remains a fallback. Drawing rules: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 
 ## Game Master voice
 

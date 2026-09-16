@@ -124,7 +124,7 @@ Pass → room complete, loot ids added, skills granted, Phaser node unlocks via 
 
 - `id`, `joinCode`, `campaignId`, `status` (`active` \| `complete` \| `expired`)
 - `currentRoomId`, `startedAt`, `elapsedSeconds`
-- party members (display name + seat id + `mapX` / `mapY` / `viewedRoomId`)
+- party members (unique alias + cosmetic seat + `mapX` / `mapY` / `viewedRoomId`; Panel A labels aliases and shows overworld occupancy from `viewedRoomId`)
 - `inventory`, `skills`
 - `puzzleCompletion` map (room id → boolean)
 - `hintCount`
@@ -140,12 +140,12 @@ Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshi
 
 Dual panel:
 
-- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), rooms at `mapX` / `mapY`, walkable seat sprites, YAML `clue` chests inside interiors, status gems, `focus` reticle. Sprite keys in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
+- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), rooms at `mapX` / `mapY`, walkable seat sprites with unique alias labels, occupancy on a room icon when a teammate is inside, YAML `clue` chests inside interiors, status gems, `focus` reticle. Sprite keys and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 - **Panel B** — CRT-like terminal: Game Master log, command prompt, seat chips, elapsed clock. Font is IBM Plex Mono (readable; not a bitmap font).
 
 Voice is out of scope for v1.
 
-Vite (`npm run dev`) proxies `/api` and `/ws` to `localhost:8080`. nginx in cluster does the same against `questshift-engine:8080`.
+Vite (`npm run dev`) proxies `/api` and `/ws` to `localhost:8080`. nginx in cluster does the same against `questshift-engine:8080`. The UI opens `/ws/sessions/{id}` for live presence snapshots; `GET /api/sessions/{id}` once a second remains the fallback.
 
 ## Quality
 

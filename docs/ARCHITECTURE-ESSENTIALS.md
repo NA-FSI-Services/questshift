@@ -26,7 +26,7 @@ Agents read this first, then the repo-local `AGENTS.md`. Full system:
                     └─────────────────────────────────────────┘
 ```
 
-One OpenShift deployment **is** one party. No multi-tenant session router in v1. A second browser looks up `GET /api/sessions/{joinCode}` then `POST /api/sessions/{id}/party`; a second Start is 409 while the hour is `active`. Submitted commands persist on `session.commandLog` so every client in the same scoring room sees alias, seat, command, and pass/fail. Walk positions and YAML clue pickups use `POST /api/sessions/{id}/presence`; they never score a puzzle.
+One OpenShift deployment **is** one party. No multi-tenant session router in v1. A second browser looks up `GET /api/sessions/{joinCode}` then `POST /api/sessions/{id}/party`; a second Start is 409 while the hour is `active`. Submitted commands persist on `session.commandLog` so every client in the same scoring room sees alias, seat, command, and pass/fail. Walk positions and YAML clue pickups use `POST /api/sessions/{id}/presence`; they never score a puzzle. Panel A shows **people**: unique alias beside each Kenney seat sprite, same-layer walkers at last `mapX` / `mapY` (offset if stacked), and occupancy on a room icon when someone is inside so you do not have to enter The Broken Shell to know Linus is there. `currentRoomId` still gates scoring. Live walks fan out the existing `/ws/sessions/{id}` snapshot to every open socket for that party; the 1s `GET` remains a fallback. No new REST routes.
 
 ## Hard rules
 

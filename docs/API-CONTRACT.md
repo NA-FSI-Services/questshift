@@ -70,6 +70,8 @@ Walk, enter a room, or pick up a YAML clue. `{id}` is the UUID **or** `joinCode`
 
 `name` must already be in `partyMembers`. `viewedRoomId` empty (or omitted) means the overworld. A non-empty id must be the party’s `currentRoomId` or a completed room — locked future rooms are refused. `pickupClueId` is optional; when set, that clue must belong to `viewedRoomId` and is appended to party-shared `foundClues` (idempotent). Response: `GameSession`. This does **not** change `currentRoomId` or score a puzzle.
 
+Panel A derives walkers and room occupancy from `partyMembers` (`name`, `mapX`, `mapY`, `viewedRoomId`). There is **no** occupancy REST route. After a successful presence update, the engine fans the same JSON snapshot out on the existing WebSocket (see below). Clients that are not subscribed still see the new positions on the next `GET /api/sessions/{id}` (the 1s poll).
+
 Unknown alias, unknown room, locked room, or unknown clue → **400** `invalid_presence`. Session not `active` → **409** `party_not_active`. Blank alias → **400** `invalid_presence`.
 
 ### `POST /api/sessions/{id}/commands`
@@ -104,15 +106,18 @@ There is **no** campaign-reload HTTP route in v1. YAML changes need an engine re
 
 ## WebSocket
 
-`GameSocket` `@ServerEndpoint("/ws/sessions/{sessionId}")`.
+`GameSocket` `@ServerEndpoint("/ws/sessions/{sessionId}")`. `{sessionId}` is the session UUID (clients already have it from REST). Do not invent a second socket path.
 
 | Event | Payload |
 | --- | --- |
 | On open | JSON snapshot (`export(..., "json")`) |
-| Client text frame | Treated as a **command string** (not JSON). Engine calls `submit(sessionId, command, "shared")` |
-| Server reply | JSON snapshot after evaluate |
+| Client text frame | Treated as a **command string** (not JSON). Engine calls `submit(sessionId, command, "shared")`. Presence is **not** sent as a socket frame. |
+| Server reply after command | JSON snapshot after evaluate, to the sender. Seat on this path is always `"shared"`. Prefer REST commands when you need a real `seatId` and alias. |
+| After `POST /api/sessions/{id}/presence` | Same JSON `GameSession` snapshot to **every** open `/ws/sessions/{sessionId}` for that party (walk, enter/leave room, clue pickup). `{id}` on the POST may be UUID or `joinCode`; fan-out is keyed by the `GameSession`. |
 
-Seat on the socket path is always `"shared"`. Prefer REST commands when you need a real `seatId` and alias. Socket replies are the same `GameSession` JSON, including `commandLog`.
+Live Panel A walks use this fan-out so other browsers do not wait for the 1s poll. The poll remains a valid fallback when no socket is open (UI occupancy can ship against GET before the engine child lands). Socket payloads are the same `GameSession` JSON, including `partyMembers` (`mapX` / `mapY` / `viewedRoomId`), `commandLog`, and `foundClues`.
+
+Do not add a presence opcode, a second WebSocket, or an occupancy REST route.
 
 ## Game Master JSON
 
@@ -145,7 +150,7 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `currentRoomId` | string | e.g. `room-01-broken-shell` |
 | `startedAt` | instant | ISO-8601 |
 | `elapsedSeconds` | long | recomputed on tick/export |
-| `partyMembers` | list | `{ name, seatId, mapX, mapY, viewedRoomId }`. Max 8. Aliases unique; seats cosmetic. `viewedRoomId` empty = overworld. Positions are last presence. |
+| `partyMembers` | list | `{ name, seatId, mapX, mapY, viewedRoomId }`. Max 8. Aliases unique; seats cosmetic. `viewedRoomId` empty = overworld. Positions are last presence. Panel A labels each `name` and treats a non-empty `viewedRoomId` as occupancy on that room icon when the local view is the overworld. |
 | `inventory` | string list | loot ids (`rune-thorn`, …) |
 | `skills` | string list | flavor (`piping`, …) |
 | `puzzleCompletion` | map | room id → boolean |
