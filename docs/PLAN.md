@@ -49,7 +49,7 @@ Exit: facilitated 60-minute run on the workshop cluster, export/import survives 
 
 ## One-party join (in v1)
 
-Many browsers on the same hour. Shareable `joinCode`; second Start is 409 while `active`. Joiners add a unique alias via `POST /api/sessions/{id}/party` (cap 8). Tracker: [questshift#6](https://github.com/NA-FSI-Services/questshift/issues/6), [questshift#7](https://github.com/NA-FSI-Services/questshift/issues/7), [questshift#8](https://github.com/NA-FSI-Services/questshift/issues/8).
+Many browsers on the same hour. Shareable `joinCode`; second Start is 409 while `active`. Joiners add a unique alias via `POST /api/sessions/{id}/party` (cap 8). Shared room board is `session.commandLog`. Tracker: [questshift#6](https://github.com/NA-FSI-Services/questshift/issues/6), [questshift#9](https://github.com/NA-FSI-Services/questshift/issues/9).
 
 ## Explicitly not scheduled
 

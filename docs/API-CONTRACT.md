@@ -57,7 +57,7 @@ Response: `GameSession`. Alias uniqueness is case-insensitive. Same seat as anot
 ### `POST /api/sessions/{id}/commands`
 
 ```json
-{ "command": "grep -i rune /var/log/quest.log | awk '{print $NF}'", "seatId": "guardian" }
+{ "command": "grep -i rune /var/log/quest.log | awk '{print $NF}'", "seatId": "guardian", "name": "Ada" }
 ```
 
 Response `CommandResult`:
@@ -72,7 +72,7 @@ Response `CommandResult`:
 }
 ```
 
-`session` is the updated `GameSession`. `seatId` is recorded on the result only; it does not gate the puzzle.
+`session` is the updated `GameSession`. `seatId` and optional `name` (alias) are recorded on the result and appended to `session.commandLog` for the **current room**. They do not gate the puzzle. Blank `name` is filled from the first party member with that `seatId`, else `shared`.
 
 ### `GET /api/sessions/{id}/export?format=yaml|json`
 
@@ -94,7 +94,7 @@ There is **no** campaign-reload HTTP route in v1. YAML changes need an engine re
 | Client text frame | Treated as a **command string** (not JSON). Engine calls `submit(sessionId, command, "shared")` |
 | Server reply | JSON snapshot after evaluate |
 
-Seat on the socket path is always `"shared"`. Prefer REST commands when you need a real `seatId`.
+Seat on the socket path is always `"shared"`. Prefer REST commands when you need a real `seatId` and alias. Socket replies are the same `GameSession` JSON, including `commandLog`.
 
 ## Game Master JSON
 
@@ -136,6 +136,7 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `lastHint` | string | last hint |
 | `lastCanvasEvent` | string | last canvas event |
 | `yamlFallback` | boolean | `true` when the last GM turn used campaign YAML because vLLM was disabled, unreachable, or returned HTTP ≥ 300 |
+| `commandLog` | list | `{ roomId, name, seatId, command, passed, message }`. Attempts in this hour. Panel B shows the **current room** only. Attribution only; seats do not gate scoring. |
 
 Example YAML fragment:
 
@@ -161,6 +162,13 @@ lastNarrative: The golem cracks.
 lastHint: The golem hates cat-only answers.
 lastCanvasEvent: unlock_room_02
 yamlFallback: true
+commandLog:
+  - roomId: room-01-broken-shell
+    name: Ada
+    seatId: guardian
+    command: cat /var/log/quest.log
+    passed: false
+    message: The dungeon rejects the command.
 ```
 
 ## Errors

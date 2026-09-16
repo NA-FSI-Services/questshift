@@ -20,7 +20,7 @@ Dual-panel 16-bit dungeon. Canvas is pixel art; the terminal stays readable.
 Empty topbar: four **character** buttons, an **alias** field (suggested from the selected seat, skipping names already in a looked-up party), **start 60-minute run**, plus **Join code** / **Join**. Panel A/B stay visible — not a lobby screen. In-session: copyable `joinCode`, **new party** (409 while `active`), and the live roster (alias + seat). A second browser `GET`s the code, then `POST /api/sessions/{id}/party`. Character and alias are chosen once; they cannot be changed later.
 
 - **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place rooms at campaign `mapX` / `mapY`. Seats as sprites, not colored dots. `focus` marks the current room. Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board.
-- **Panel B:** `src/terminal/TerminalPanel.tsx`. Still the command surface. CRT-like background (`#07110c`) and scanline wash in CSS; **typeface is IBM Plex Mono**, not a 8×8 font. Players must read YAML, `oc`, and Java.
+- **Panel B:** `src/terminal/TerminalPanel.tsx`. Still the command surface. CRT-like background (`#07110c`) and scanline wash in CSS; **typeface is IBM Plex Mono**, not a 8×8 font. Players must read YAML, `oc`, and Java. The GM log is followed by the **shared room board**: each attempt in the current room shows alias, seat, command, and accepted/failed. Other rooms’ attempts stay on the session but are hidden until the party is in that room. The 1s `GET` poll (and WebSocket snapshot) carry `commandLog`, so browser B sees browser A’s submit without a refresh.
 
 On viewports under 960px, stack Panel A above Panel B.
 

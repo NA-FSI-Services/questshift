@@ -89,7 +89,7 @@ GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). M
    ```
 
 3. Authored campaign rooms are the source of truth for `puzzle_type` and `expected_command_pattern`. The LLM supplies narration and optional hint flavor. `LLMService.parseTurn` **overwrites** `expectedCommandPattern` with the room regex after parse. If vLLM is down, `%dev`, HTTP ≥ 300, or JSON unparseable, the engine falls back to YAML text so the hour can still run.
-4. Players submit a command via REST or a WebSocket text frame. `CommandEvaluator` scores it, updates flags/inventory, and emits a canvas event from the room (`unlock_room_02` … `campaign_complete`) or `focus_room`.
+4. Players submit a command via REST or a WebSocket text frame. `CommandEvaluator` scores it, appends `commandLog` (alias, seat, command, pass/fail) for the current room, updates flags/inventory, and emits a canvas event from the room (`unlock_room_02` … `campaign_complete`) or `focus_room`.
 5. `StateSerializer` dumps or restores the session as YAML or JSON.
 
 ## LLM contract
@@ -129,6 +129,7 @@ Pass → room complete, loot ids added, skills granted, Phaser node unlocks via 
 - `puzzleCompletion` map (room id → boolean)
 - `hintCount`
 - `lastNarrative`, `lastHint`, `lastCanvasEvent`
+- `commandLog` (shared room board; UI filters to `currentRoomId`)
 
 Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshift-session-export` at `/work/exports` as the restart story until a real database is justified. Import via `POST /api/sessions/import` rehydrates the map.
 

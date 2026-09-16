@@ -94,3 +94,13 @@ v1 still serves **IBM Granite 3.2 8B Instruct** through the existing **vLLM Depl
 - **Overloading Start with `joinCode` to add a member.**
 - **Changing alias or seat after join.**
 - **A dedicated lobby screen.**
+
+## Shared command board (2026-09-16)
+
+**Choice:** persist `commandLog` on `GameSession` (alias, seat, command, pass/fail, room). REST GET, the 1s poll, WebSocket snapshot, and export all carry the same rows. Panel B shows the **current room** only. No new route.
+
+**Rejected**
+
+- **WebSocket-only flashes.** Lost after refresh.
+- **A second live channel.** The existing snapshot is enough.
+- **Showing every room’s attempts at once.** The board is the room the party is in.

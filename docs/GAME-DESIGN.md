@@ -41,6 +41,8 @@ Anyone may submit the solving command for any room. The engine does not gate puz
 | `ranger` | Kelsey, Moss, Trail, Vault, Torch, Cluster, Route, Probe |
 | `artificer` | James, Cipher, Rune, Shard, Tome, Servlet, Quark, Loom |
 
+Submitted commands for the **current room** appear on a shared board (alias, seat, command, pass/fail) via `session.commandLog`. YAML still scores; the LLM still narrates only. Other rooms’ attempts stay on the session but are not shown until the party is in that room.
+
 ## Game Master voice
 
 Terse fantasy Dungeon Master who also knows ops. Stay in character. Never dump the full `expected_command_pattern` unless the party is stuck (failed attempt + hint). Always one JSON object. Do not invent a `puzzle_type`. Do not rewrite the regex. Sample register: “Sixty minutes. Five rooms. The cluster forgot its name. You will remind it.”
