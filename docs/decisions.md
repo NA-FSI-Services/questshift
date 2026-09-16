@@ -75,6 +75,18 @@ v1 still serves **IBM Granite 3.2 8B Instruct** through the existing **vLLM Depl
 - **Entering locked future rooms.** The hour stays sequential.
 - **Full winning commands as clue text.** Fragments feed Panel B; regex still wins.
 
+## Party aliases and room occupancy (2026-09-16)
+
+**Choice:** Panel A shows people. Every member has a visible unique alias next to their Kenney seat sprite. Same-layer walkers draw at last presence `mapX` / `mapY`; overlapping sprites offset. If Linus is inside The Broken Shell and you are on the overworld, occupancy on that room icon shows he is there — you do not enter to know. Inside a room, only walkers who share that interior are drawn. Presence stays `POST /api/sessions/{id}/presence`. Live walks fan out the existing `/ws/sessions/{id}` `GameSession` snapshot; the 1s `GET` is a fallback. No new REST routes. Seats stay cosmetic. Tracker: [questshift#11](https://github.com/NA-FSI-Services/questshift/issues/11), spec [questshift#12](https://github.com/NA-FSI-Services/questshift/issues/12).
+
+**Rejected**
+
+- **Sprite and seat color without an alias.** Two Guardians look like one avatar.
+- **Hiding a player who entered a room from everyone still on the overworld.** Occupancy belongs on the room icon.
+- **A second occupancy REST route or a second WebSocket.** Presence POST plus the existing snapshot is enough.
+- **Gating who is drawn by cosmetic `seatId`.**
+- **Per-player scoring rooms.** `currentRoomId` still gates the puzzle; walking still does not solve it.
+
 ## Deliberately not in v1
 
 - Browser Web Speech / Piper TTS
