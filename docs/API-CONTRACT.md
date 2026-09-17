@@ -66,7 +66,7 @@ Walk, enter a room, or pick up a YAML clue. `{id}` is the UUID **or** `joinCode`
 }
 ```
 
-`name` must already be in `partyMembers`. `viewedRoomId` empty (or omitted) means the overworld. A non-empty id must be the party’s `currentRoomId` or a completed room — locked future rooms are refused. `pickupClueId` is optional; when set, that clue must belong to `viewedRoomId` and is appended to **that member’s** `foundClues` (idempotent). Session `foundClues` is the union of those ids for export. The fragment is not a shared terminal dump — the opener’s UI shows a map dialog. Response: `GameSession`. This does **not** change `currentRoomId` or score a puzzle.
+`name` must already be in `partyMembers`. `viewedRoomId` empty (or omitted) means the overworld. A non-empty id must be the party’s `currentRoomId` or a completed room — locked future rooms are refused. `pickupClueId` is optional; when set, that clue must belong to `viewedRoomId` and is appended to **that member’s** `foundClues` (idempotent). Session `foundClues` is the union of those ids for export. The fragment is not a shared terminal dump — the opener’s UI shows a map dialog, and the chest stays on the floor. Response: `GameSession`. This does **not** change `currentRoomId` or score a puzzle.
 
 Panel A derives walkers and room occupancy from `partyMembers` (`name`, `mapX`, `mapY`, `viewedRoomId`). There is **no** occupancy REST route. After a successful presence update, the engine fans the same JSON snapshot out on the existing WebSocket (see below). Clients that are not subscribed still see the new positions on the next `GET /api/sessions/{id}` (the 1s poll).
 
@@ -148,7 +148,7 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `currentRoomId` | string | e.g. `room-01-broken-shell` |
 | `startedAt` | instant | ISO-8601 |
 | `elapsedSeconds` | long | recomputed on tick/export |
-| `partyMembers` | list | `{ name, seatId, mapX, mapY, viewedRoomId, foundClues }`. Max 8. Aliases unique; seats cosmetic. `viewedRoomId` empty = overworld. Positions are last presence. `foundClues` are YAML clue ids **this alias** opened; Panel A hides those chests and shows the dialog only on that client. |
+| `partyMembers` | list | `{ name, seatId, mapX, mapY, viewedRoomId, foundClues }`. Max 8. Aliases unique; seats cosmetic. `viewedRoomId` empty = overworld. Positions are last presence. `foundClues` are YAML clue ids **this alias** opened. Panel A keeps those chests on the floor so every player can still open them; the dialog is only on that client. |
 | `foundClues` | string list | Union of member pickups for export. Fragments only; they do not pass the evaluator. |
 | `inventory` | string list | loot ids (`rune-thorn`, …) |
 | `skills` | string list | flavor (`piping`, …) |

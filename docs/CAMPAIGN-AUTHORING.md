@@ -43,7 +43,7 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 | `order` | yes | Integer sequence; `nextRoom` is `order + 1` |
 | `title` | yes | Phaser label |
 | `mapX`, `mapY` | yes | Panel A overworld coordinates |
-| `clues` | yes | List of floor chests inside the room. Each needs `id`, `label`, `text`, `x`, `y`. Fragments only — do **not** put a full `accepted_examples` command in `text`. Opening a chest shows a map dialog to **that player only**; it does not dump the text on Panel B. |
+| `clues` | yes | List of floor chests inside the room. Each needs `id`, `label`, `text`, `x`, `y`. Fragments only — do **not** put a full `accepted_examples` command in `text`. Opening a chest shows a map dialog to **that player only**; it does not dump the text on Panel B. Chests stay on the floor after open. |
 | `miss_beats` | no | Ordered `{ pattern, message }` fails after regex/examples/soft match miss. First matching pattern supplies the GM miss line (YAML wins; no LLM rewrite). Room 1 uses these for a shouted name and a grep without awk. |
 | `puzzle_type` | yes | `linux` \| `ansible` \| `openshift` \| `java` |
 | `estimatedMinutes` | no | Facilitator pacing |
@@ -62,7 +62,7 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 
 ## Clues (walkable interiors)
 
-Each room needs at least one `clues` entry. `text` is what a **private map dialog** shows after that player opens the chest (`/var/log/quest.log` tree, `hosts: dungeon`). `x` / `y` are interior canvas coordinates (not the overworld `mapX` / `mapY`). Unique `id`s across the campaign. Opening a chest never scores the puzzle and never copies the fragment onto the shared terminal.
+Each room needs at least one `clues` entry. `text` is what a **private map dialog** shows after that player opens the chest (`/var/log/quest.log` tree, `hosts: dungeon`). `x` / `y` are interior canvas coordinates (not the overworld `mapX` / `mapY`). Unique `id`s across the campaign. Opening a chest never scores the puzzle, never copies the fragment onto the shared terminal, and never removes the chest from the floor.
 
 ## Regex + accepted examples
 

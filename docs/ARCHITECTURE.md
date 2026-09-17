@@ -130,7 +130,7 @@ Pass → room complete, loot ids added, skills granted, Phaser node unlocks via 
 - `hintCount`
 - `lastNarrative`, `lastHint`, `lastCanvasEvent`
 - `commandLog` (shared room board; UI filters to `currentRoomId`)
-- `foundClues` (union of YAML clue ids for export; display is per-player)
+- `foundClues` (union of YAML clue ids for export; chests stay on the floor)
 
 Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshift-session-export` at `/work/exports` as the restart story until a real database is justified. Import via `POST /api/sessions/import` rehydrates the map.
 
