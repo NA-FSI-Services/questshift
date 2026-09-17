@@ -41,7 +41,7 @@ The kickoff filename `docs/architecture.md` is `docs/ARCHITECTURE.md` (same path
 - Seats are cosmetic. Many parties per engine; one OpenShift stack (one Route).
 - Match `io.questshift.*` APIs named in API-CONTRACT.md; do not invent extra Routes.
 - Cite both GitHub blob URL and local path when mentioning a markdown spec.
-- Apache-2.0 on every repo. Do not add a second license except the Kenney CC0 NOTICE for sprites.
+- Apache-2.0 on every repo. Do not add a second license except the Kenney CC0 NOTICE for sprites and SFX.
 - Do not start phase work that PLAN.md marks out of v1.
 - Never commit secrets (Hugging Face tokens, `.env`, kubeconfigs, CA certs, workshop API URLs or tokens, real `questshift.llm.api-key`). Granite weights use the ModelCar catalog via Tekton; do not create `questshift-hf` or MinIO. `./install.sh` requires an existing `oc login`. Details: [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
 - Quality: `./verify.sh` (ruff + spec checker, pytest-cov ≥ 80% on `tools/`). Pre-commit: `./.githooks/install` (secret scan always runs). CI: `.github/workflows/quality.yml`. Dependabot: `.github/dependabot.yml` (weekly GitHub Actions). Map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).

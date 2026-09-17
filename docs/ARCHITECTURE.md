@@ -70,6 +70,7 @@ UI split:
 | `src/terminal/TerminalPanel.tsx` | Panel B IBM Plex Mono terminal |
 | `src/api/client.ts` | REST helpers (`/api/campaigns`, sessions, party join/leave/delete, commands, export) |
 | `public/assets/kenney/tiny-dungeon/` | CC0 sprite sheet |
+| `public/assets/kenney/sfx/` | CC0 door / room / chest / quest clips |
 
 GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). Manifests: `k8s/granite-pipeline.yaml` (Tekton ModelCar copy), `k8s/llm-deployment.yaml` (vLLM + L4), `game-backend-deployment.yaml`, `game-ui-deployment.yaml`, `configmap.yaml`, `pvc.yaml`, `openshift-route.yaml`, campaign ConfigMap generator.
 
@@ -140,10 +141,10 @@ Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshi
 
 Dual panel:
 
-- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), rooms at `mapX` / `mapY`, walkable seat sprites with unique alias labels, occupancy on a room icon when a teammate is inside, YAML `clue` chests with a private map dialog, a `golem` on The Broken Shell door until that room is solved, status gems, `focus` reticle. Sprite keys and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
+- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), rooms at `mapX` / `mapY`, walkable seat sprites with unique alias labels, occupancy on a room icon when a teammate is inside, YAML `clue` chests with a private map dialog, a `golem` on The Broken Shell door until that room is solved, status gems, `focus` reticle, Kenney CC0 SFX on door / room / chest / quest. Sprite keys, SFX keys, and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 - **Panel B** — CRT-like terminal: Game Master log, command prompt, seat chips, elapsed clock. Font is IBM Plex Mono (readable; not a bitmap font).
 
-Voice is out of scope for v1.
+Voice / TTS is out of scope for v1. Short Kenney CC0 map SFX are in v1.
 
 Vite (`npm run dev`) proxies `/api` and `/ws` to `localhost:8080`. nginx in cluster does the same against `questshift-engine:8080`. The UI opens `/ws/sessions/{id}` for live presence snapshots; `GET /api/sessions/{id}` once a second remains the fallback.
 

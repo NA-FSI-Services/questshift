@@ -26,7 +26,7 @@ All repositories are public under the [Apache License 2.0](LICENSE).
 4. Commands are typed in the shared terminal and scored by the Java evaluator.
 5. Session state can be exported/imported as YAML or JSON so a cluster bounce does not wipe the run.
 
-Voice / TTS is deferred. v1 is text-only.
+Voice / TTS is deferred. Game Master copy stays text. Panel A plays short Kenney CC0 map SFX.
 
 ## Install on OpenShift
 

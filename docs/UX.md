@@ -18,7 +18,7 @@ Dual-panel 16-bit dungeon. Canvas is pixel art; the terminal stays readable.
 
 Empty topbar: four **character** buttons, an **alias** field (suggested from the selected seat, skipping names already in a looked-up party), **start 60-minute run**, plus **Join code** / **Join**. Panel A/B stay visible — not a lobby screen. After Start, those party actions collapse into a **Party {joinCode}** dropdown: **Copy code**, **Switch party** (type another code such as `iron-ward`), **new party**, **Abandon party**, and **Delete party** (danger zone: type the join code). Session restore only reapplies an `active` stored party. Character and alias stay yours until you switch or abandon.
 
-- **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place rooms at campaign `mapX` / `mapY`. Seat sprites **walk** (WASD / arrows while the canvas is focused). `focus` marks the current scoring room. E / Enter enters a nearby unlocked room or opens a nearby `clue` chest (clicking the room, chest, or south door also works); Esc or the south door leaves the interior. Opening a chest shows an emerging IBM Plex Mono dialog on **that** canvas only — teammates do not see the text on Panel B — and the chest stays on the floor so they can still open it. In The Broken Shell, a `golem` sprite stands on the south door until the room is solved. Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board. Every party member (including you) shows a unique **alias** next to their Kenney seat sprite. Same-layer walkers draw at last presence `mapX` / `mapY`; overlapping sprites offset. Overworld occupancy marks who is inside each named room. Movement math lives in `src/map.ts` (Vitest); occupancy / label / offset / private-clue helpers follow the same pattern. Phaser `src/game/**` stays coverage-excluded.
+- **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place rooms at campaign `mapX` / `mapY`. Seat sprites **walk** (WASD / arrows while the canvas is focused). `focus` marks the current scoring room. E / Enter enters a nearby unlocked room or opens a nearby `clue` chest (clicking the room, chest, or south door also works); Esc or the south door leaves the interior. Door, room, chest, and quest SFX use named Kenney CC0 keys (below). Opening a chest shows an emerging IBM Plex Mono dialog on **that** canvas only — teammates do not see the text on Panel B — and the chest stays on the floor so they can still open it. In The Broken Shell, a `golem` sprite stands on the south door until the room is solved. Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board. Every party member (including you) shows a unique **alias** next to their Kenney seat sprite. Same-layer walkers draw at last presence `mapX` / `mapY`; overlapping sprites offset. Overworld occupancy marks who is inside each named room. Movement math lives in `src/map.ts` (Vitest); occupancy / label / offset / private-clue helpers follow the same pattern. Phaser `src/game/**` stays coverage-excluded.
 - **Panel B:** `src/terminal/TerminalPanel.tsx`. Still the command surface. CRT-like background (`#07110c`) and scanline wash in CSS; **typeface is IBM Plex Mono**, not a 8×8 font. Players must read YAML, `oc`, and Java. When a player is inside a room, the log shows that room’s authored `narrative`. Chest fragments stay on the map dialog. The GM log is followed by the **shared room board**: each attempt in the current scoring room shows alias, seat, command, and accepted/failed. Other rooms’ attempts stay on the session but are hidden until the party is scoring that room. The 1s `GET` poll is a fallback; live walks use the existing `/ws/sessions/{id}` `GameSession` snapshot. Both carry `commandLog`, `foundClues`, `partyMembers` positions, and per-member `foundClues`.
 
 On viewports under 960px, stack Panel A above Panel B.
@@ -40,7 +40,7 @@ CSS tokens in `src/index.css`:
 
 Seat colors from campaign YAML (cosmetic): Guardian `#3d7a4a`, Automancer `#c45c26`, Cluster Ranger `#2a6f97`, Artificer `#7b4ea3`.
 
-Motion: nearest-neighbor scale on sprites (`pixelArt: true`). Display tiles at **3×** (48px). Current room pulses 1.0 → 1.15. Completed rooms swap to `gem_complete`. After a miss, the current room shows `gem_hint` until the next pass or room change. No screen shake, no particle spam. Canvas events (`unlock_room_02` … `campaign_complete`, `focus_room`) drive gem and focus updates only — do not paint the event name as debug text on the canvas.
+Motion: nearest-neighbor scale on sprites (`pixelArt: true`). Display tiles at **3×** (48px). Current room pulses 1.0 → 1.15. Completed rooms swap to `gem_complete`. After a miss, the current room shows `gem_hint` until the next pass or room change. No screen shake, no particle spam. Canvas events (`unlock_room_02` … `campaign_complete`, `focus_room`) drive gem and focus updates and the `quest_complete` SFX — do not paint the event name as debug text on the canvas.
 
 Title face `UnifrakturMaguntia` is header-only. Body and terminal stay IBM Plex Mono.
 
@@ -54,6 +54,8 @@ Vendored CC0 1.0 sheet. Do not replace with AI-generated images.
 | Grid notes | `questshift-ui/public/assets/kenney/tiny-dungeon/Tilesheet.txt` |
 | Kenney license | `questshift-ui/public/assets/kenney/tiny-dungeon/LICENSE.txt` |
 | NOTICE | `questshift-ui/public/assets/NOTICE` |
+| SFX clips | `questshift-ui/public/assets/kenney/sfx/` |
+| SFX license | `questshift-ui/public/assets/kenney/sfx/LICENSE.txt` |
 
 GitHub tree: https://github.com/NA-FSI-Services/questshift-ui/tree/main/public/assets  
 Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-ui/public/assets/`
@@ -106,7 +108,7 @@ Load atlas key `tiny-dungeon`. Named keys below are what `DungeonScene` must use
 
 Interior spawn is `(450, 360)`; the south door is `(450, 470)`. The shell golem stands at `(450, 430)` on that door while The Broken Shell is unsolved. Overworld spawn is the current room node, 56px south (inside the 64px enter radius). Because that spawn stacks, Panel A must offset overlapping sprites.
 
-Chest pickup opens a local dialog on the canvas (label + `text`, IBM Plex Mono). Esc / E / click the well closes it. The chest **stays on the floor** so every player can still click it; the dialog is still private to the opener. `partyMembers[].foundClues` records who opened what for export. It does not hide sprites.
+Chest pickup opens a local dialog on the canvas (label + `text`, IBM Plex Mono). Esc / E / click the well closes it. The chest **stays on the floor** so every player can still click it; the dialog is still private to the opener. `partyMembers[].foundClues` records who opened what for export. It does not hide sprites. Opening plays `chest_open`.
 
 ### Status gems and loot
 
@@ -120,6 +122,22 @@ Chest pickup opens a local dialog on the canvas (label + `text`, IBM Plex Mono).
 | `loot_ash` | 113 | `tile_0113` | Rune ASH — draw when `rune-ash` is in inventory |
 | `loot_oak` | 114 | `tile_0114` | Rune OAK — draw when `rune-oak` is in inventory |
 | `loot_iron` | 116 | `tile_0116` | Rune IRON — draw when `rune-iron` is in inventory |
+
+## Sound effects (Kenney CC0)
+
+Short map cues only. Game Master copy stays text; no TTS, mic, or Web Speech. Phaser loads OGG then WAV so Safari can play the same clip. Audio unlocks on the first canvas click or key (browser autoplay). Missing files fail open — the board still works. Named keys below are what `DungeonScene` must use (`src/sounds.ts`).
+
+| Phaser key | Event | Pack | Kenney file | What you hear |
+| --- | --- | --- | --- | --- |
+| `sfx_door_open` | Opening a door (enter from the overworld, or leave through the south door) | [RPG Audio](https://kenney.nl/assets/rpg-audio) | `doorOpen_1.ogg` | Heavy wooden dungeon door swinging on iron fittings, latch scrape, ~0.9s |
+| `sfx_room_enter` | Entering a room (280ms after the door) | [RPG Audio](https://kenney.nl/assets/rpg-audio) | `footstep00.ogg` | One boot on stone as you cross the threshold, ~0.25s |
+| `sfx_quest_complete` | Completing a room (`puzzleCompletion` flips true) | [Music Jingles](https://kenney.nl/assets/music-jingles) | `jingles_NES03.ogg` | Short 8-bit rising victory arpeggio, ~0.6s |
+| `sfx_chest_open` | Opening a YAML clue chest | [RPG Audio](https://kenney.nl/assets/rpg-audio) | `metalLatch.ogg` | Metal hasp click on a wooden chest, ~0.26s |
+
+Vendored copies (renamed): `questshift-ui/public/assets/kenney/sfx/{door_open,room_enter,quest_complete,chest_open}.{ogg,wav}`. GitHub tree: https://github.com/NA-FSI-Services/questshift-ui/tree/main/public/assets/kenney/sfx  
+Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-ui/public/assets/kenney/sfx/`
+
+Door and chest cues are **local** (your sprite). Quest complete is **party-wide** (every client hears it when the shared `puzzleCompletion` map gains a room). Session restore primes already-complete rooms so it does not replay five jingles. Do not add music beds, footsteps on WASD, or spoken GM lines.
 
 ## Party occupancy on Panel A
 
@@ -149,3 +167,4 @@ When `session.yamlFallback` is true (vLLM down, `%dev`, or HTTP ≥ 300), show *
 - Command field has a visible label (sr-only is acceptable).
 - Seat list in HTML under the canvas so color is not the only cue (`<i>` swatch + title). Canvas alias labels are the sprite cue: two players who share a seat still read as different people.
 - Contrast: IBM Plex Mono on `#07110c` meets readable ops output; do not drop font size below 14px in the log.
+- SFX are extra confirmation of gems, interiors, and chest dialogs. The hour is playable muted; browsers stay silent until the canvas is clicked or a walk key is pressed.

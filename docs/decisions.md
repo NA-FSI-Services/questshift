@@ -16,7 +16,8 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Play mode | One OpenShift stack (one Route); many in-memory parties per engine |
 | Join | Human-readable `joinCode` (two dungeon words). Start always creates a new hour. Members via `POST /api/sessions/{id}/party`. Leave `DELETE …/party?name=`. Delete `DELETE /api/sessions/{id}`. |
 | Seats | Cosmetic avatars; any player may solve any puzzle |
-| TTS | Deferred (text-only v1) |
+| TTS | Deferred (Game Master stays text; no Web Speech) |
+| Map SFX | Kenney CC0 clips on door / room enter / chest / quest complete; no music bed |
 | Native image | Later; JVM first |
 | Puzzle source of truth | Campaign YAML; LLM narrates only; YAML fallback if vLLM is down |
 | Terminal | Simulated; never execute player `oc` / Ansible / Linux / Java on the cluster |
@@ -27,7 +28,7 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Granite weights | Red Hat AI services ModelCar OCI image, copied by a Tekton PipelineRun onto PVC `questshift-llm-cache`. No Hugging Face token. No MinIO/S3. vLLM remains the Game Master runtime. |
 | GPU MachineSet | If NFD sees no NVIDIA GPU, clone `g6.4xlarge` (L4) from the first MachineSet. `--no-add-gpu-nodes` opts out. Rendered YAML is gitignored. |
 | Cursor | Always-on `.cursor/rules/questshift.mdc` in each repo, plus glob rules (Java / TSX / YAML) |
-| Look | 16-bit pixel dungeon; Kenney Tiny Dungeon CC0 sheet in `questshift-ui/public/assets/` |
+| Look | 16-bit pixel dungeon; Kenney Tiny Dungeon CC0 sheet plus Kenney RPG Audio / Music Jingles SFX in `questshift-ui/public/assets/` |
 | Dual panel | Panel A Phaser pixel canvas; Panel B CRT-like terminal in IBM Plex Mono |
 | Session restore | Terminal footer file picker (`import.yaml`) posts to existing `POST /api/sessions/import` |
 | Phase 1 proof | QuarkusTest submits all five YAML `accepted_examples` then export/import; no live facilitator pass |
@@ -87,6 +88,18 @@ v1 still serves **IBM Granite 3.2 8B Instruct** through the existing **vLLM Depl
 - **A second occupancy REST route or a second WebSocket.** Presence POST plus the existing snapshot is enough.
 - **Gating who is drawn by cosmetic `seatId`.**
 - **Per-player scoring rooms.** `currentRoomId` still gates the puzzle; walking still does not solve it.
+
+## Kenney map SFX, not TTS (2026-09-17)
+
+**Choice:** Panel A plays four short Kenney CC0 clips (RPG Audio + Music Jingles) on door, room enter, chest, and room complete. Game Master narration stays text. No Web Speech, Piper, or spoken GM lines.
+
+**Rejected**
+
+- **TTS / Web Speech for GM copy.** Still deferred. SFX are map confirmation, not voice.
+- **AI-generated audio or a second audio license.** Same Kenney CC0 exception as the sprite sheet.
+- **Music beds or WASD footsteps.** Too noisy for a facilitated hour.
+
+Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 
 ## Deliberately not in v1
 
