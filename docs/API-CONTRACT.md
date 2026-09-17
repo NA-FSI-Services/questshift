@@ -19,17 +19,7 @@ Returns `Collection<Campaign>` currently loaded by `CampaignLibrary`.
 
 ### `POST /api/sessions`
 
-Starts one party. Body optional. At most one `active` party exists per engine process. If a live party is already `active` (and the campaign hour has not expired), the engine returns **409** instead of creating a second hour:
-
-```json
-{
-  "error": "party_active",
-  "message": "A party is already running. Join with thorn-golem.",
-  "joinCode": "thorn-golem"
-}
-```
-
-A new Start succeeds when there is no `active` party: empty engine, `status` `complete` or `expired`, or elapsed time has reached the campaign `durationMinutes`.
+Starts one party. Body optional. Many `active` parties may exist in the same engine process; each Start allocates a new unique `joinCode`. There is no 409 `party_active`.
 
 ```json
 {
@@ -53,6 +43,14 @@ Adds one player to the live party. `{id}` is the UUID **or** `joinCode`. Body:
 ```
 
 Response: `GameSession`. Alias uniqueness is case-insensitive. Same seat as another player is allowed. Cap **8**. Posting an alias that is already in the party is **idempotent** (200, original `seatId` kept — no character/alias change after join). Duplicate *new* alias → **409** `alias_taken`. Ninth player → **409** `party_full`. Session not `active` → **409** `party_not_active`. Blank alias or unknown `seatId` → **400** `invalid_party`.
+
+### `DELETE /api/sessions/{id}/party?name={alias}`
+
+Removes that alias from the party. `{id}` is the UUID **or** `joinCode`. Unknown alias is **idempotent** (200, party unchanged). Blank `name` → **400** `invalid_party`. The hour stays in memory so others can keep playing; this is abandon, not delete. After a successful leave the engine fans the JSON snapshot on `/ws/sessions/{sessionId}`.
+
+### `DELETE /api/sessions/{id}`
+
+Destroys the party for everyone. `{id}` is the UUID **or** `joinCode`. Response **204** with no body. Unknown id → **404**. Drops in-memory state and every WebSocket attached to that hour. Later `GET /api/sessions/{id}` is 404.
 
 ### `POST /api/sessions/{id}/presence`
 
@@ -100,7 +98,7 @@ Default `format=yaml`. Body is serialized `GameSession`. Content-Type `applicati
 
 ### `POST /api/sessions/import?format=yaml|json`
 
-Raw body is YAML or JSON. If `format` is omitted, serializer sniffs `---` / `id:` / `campaignId:` as YAML, else JSON. Restores into the in-memory map (assigns a new `id` if blank; assigns a `joinCode` if blank). If the imported snapshot would be `active` while another party is already `active`, **409** `party_active` (same body as Start). Response: `GameSession`.
+Raw body is YAML or JSON. If `format` is omitted, serializer sniffs `---` / `id:` / `campaignId:` as YAML, else JSON. Restores into the in-memory map (assigns a new `id` if blank; assigns a `joinCode` if blank). An imported `active` snapshot sits beside other live parties. Response: `GameSession`.
 
 There is **no** campaign-reload HTTP route in v1. YAML changes need an engine restart.
 
@@ -202,4 +200,4 @@ foundClues:
 
 ## Errors
 
-Unknown session or unknown join code → 404. Second Start (or an `active` import) while a party is `active` → 409 `party_active` with `joinCode`. Duplicate alias on `POST …/party` → 409 `alias_taken`. Party already has 8 members → 409 `party_full`. Missing Start party, blank alias, or unknown `seatId` → 400 `invalid_party`. Presence with unknown alias, locked room, or unknown clue → 400 `invalid_presence`. Presence while the hour is not `active` → 409 `party_not_active`. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.
+Unknown session or unknown join code → 404. Duplicate alias on `POST …/party` → 409 `alias_taken`. Party already has 8 members → 409 `party_full`. Missing Start party, blank alias, or unknown `seatId` → 400 `invalid_party`. Presence with unknown alias, locked room, or unknown clue → 400 `invalid_presence`. Presence while the hour is not `active` → 409 `party_not_active`. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.

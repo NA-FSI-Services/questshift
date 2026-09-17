@@ -1,6 +1,6 @@
 # QuestShift v1 plan
 
-Phased work for the frozen v1 product only. Scaffold already exists in the five public repos. There are no TTS, Ollama, native-image, or multi-party-matchmaking phases. One-party join codes (many browsers, one hour) are in v1.
+Phased work for the frozen v1 product only. Scaffold already exists in the five public repos. There are no TTS, Ollama, native-image, or extra-Route matchmaking phases. Join codes (many browsers per hour, many hours per engine) are in v1.
 
 Board: https://github.com/orgs/NA-FSI-Services/projects/3
 
@@ -43,13 +43,13 @@ Exit (met): GM JSON narrates through `LLMService`; room `expected_command_patter
 
 ## Phase 4 — OpenShift apply
 
-Set up OpenShift 4.20+. Log in as cluster-admin (`oc whoami` must succeed) and keep that cluster’s API URL, token, and CA in a local kubeconfig / gitignored `.env` — never in git. From `questshift-gitops` run `./install.sh` (or `./install.sh --install-operators`). The script refuses to run without an existing `oc` session, checks hardware, installs GitOps / NFD / NVIDIA GPU / RHOAI / OpenShift Pipelines if needed, and syncs `k8s/` through OpenShift GitOps. Granite 3.2 8B Instruct is copied from the ModelCar catalog by a Tekton PipelineRun (no Hugging Face token, no MinIO). Publish JVM and nginx images to the in-cluster registry (placeholders today). One party.
+Set up OpenShift 4.20+. Log in as cluster-admin (`oc whoami` must succeed) and keep that cluster’s API URL, token, and CA in a local kubeconfig / gitignored `.env` — never in git. From `questshift-gitops` run `./install.sh` (or `./install.sh --install-operators`). The script refuses to run without an existing `oc` session, checks hardware, installs GitOps / NFD / NVIDIA GPU / RHOAI / OpenShift Pipelines if needed, and syncs `k8s/` through OpenShift GitOps. Granite 3.2 8B Instruct is copied from the ModelCar catalog by a Tekton PipelineRun (no Hugging Face token, no MinIO). Publish JVM and nginx images to the in-cluster registry (placeholders today). One OpenShift stack; many in-memory parties.
 
 Exit: facilitated 60-minute run on the workshop cluster, export/import survives a pod bounce via PVC `questshift-session-export`.
 
-## One-party join (in v1)
+## Party join (in v1)
 
-Many browsers on the same hour. Shareable `joinCode`; second Start is 409 while `active`. Joiners add a unique alias via `POST /api/sessions/{id}/party` (cap 8). Shared room board is `session.commandLog`. Walkable map + YAML clues: [questshift#10](https://github.com/NA-FSI-Services/questshift/issues/10). Party aliases and room occupancy on Panel A: [questshift#11](https://github.com/NA-FSI-Services/questshift/issues/11) (spec [questshift#12](https://github.com/NA-FSI-Services/questshift/issues/12), UI [questshift#13](https://github.com/NA-FSI-Services/questshift/issues/13), engine [questshift#14](https://github.com/NA-FSI-Services/questshift/issues/14)). Tracker: [questshift#6](https://github.com/NA-FSI-Services/questshift/issues/6).
+Many browsers on the same hour, and many hours on the same engine. Shareable `joinCode`; Start always creates another party. Joiners add a unique alias via `POST /api/sessions/{id}/party` (cap 8). Leave and delete are named in [API-CONTRACT.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/API-CONTRACT.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/API-CONTRACT.md`). Shared room board is `session.commandLog`. Walkable map + YAML clues: [questshift#10](https://github.com/NA-FSI-Services/questshift/issues/10). Party aliases and room occupancy on Panel A: [questshift#11](https://github.com/NA-FSI-Services/questshift/issues/11) (spec [questshift#12](https://github.com/NA-FSI-Services/questshift/issues/12), UI [questshift#13](https://github.com/NA-FSI-Services/questshift/issues/13), engine [questshift#14](https://github.com/NA-FSI-Services/questshift/issues/14)). Tracker: [questshift#6](https://github.com/NA-FSI-Services/questshift/issues/6).
 
 ## Explicitly not scheduled
 

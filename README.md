@@ -20,7 +20,7 @@ All repositories are public under the [Apache License 2.0](LICENSE).
 
 ## How a session runs
 
-1. A facilitator deploys one QuestShift stack on OpenShift (one party per deployment).
+1. A facilitator deploys one QuestShift stack on OpenShift (one Route; many parties).
 2. Players pick cosmetic seats: Guardian, Automancer, Cluster Ranger, Artificer.
 3. The Game Master walks a 60-minute, five-room campaign.
 4. Commands are typed in the shared terminal and scored by the Java evaluator.
@@ -87,7 +87,7 @@ Also: [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [CLAUDE.md](CL
 - **Engine:** Quarkus 3 + Java 21
 - **UI:** Phaser 3 + React + TypeScript
 - **LLM:** vLLM only, IBM Granite 3.2 8B Instruct, NVIDIA L4 (`nvidia.com/gpu: 1`)
-- **Play mode:** one party per deployment, cosmetic seats, shared canvas + terminal
+- **Play mode:** many parties per engine, one OpenShift Route, cosmetic seats, shared canvas + terminal
 - **License:** Apache-2.0
 
 ## Quality gates

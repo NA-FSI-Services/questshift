@@ -26,7 +26,7 @@ Agents read this first, then the repo-local `AGENTS.md`. Full system:
                     └─────────────────────────────────────────┘
 ```
 
-One OpenShift deployment **is** one party. No multi-tenant session router in v1. A second browser looks up `GET /api/sessions/{joinCode}` then `POST /api/sessions/{id}/party`; a second Start is 409 while the hour is `active`. Submitted commands persist on `session.commandLog` so every client in the same scoring room sees alias, seat, command, and pass/fail. Walk positions and YAML clue pickups use `POST /api/sessions/{id}/presence`; they never score a puzzle. Panel A shows **people**: unique alias beside each Kenney seat sprite, same-layer walkers at last `mapX` / `mapY` (offset if stacked), and occupancy on a room icon when someone is inside so you do not have to enter The Broken Shell to know Linus is there. `currentRoomId` still gates scoring. Live walks fan out the existing `/ws/sessions/{id}` snapshot to every open socket for that party; the 1s `GET` remains a fallback. No new REST routes.
+One OpenShift stack (one Route) hosts **many** in-memory parties. No extra Route or session router. A second browser looks up `GET /api/sessions/{joinCode}` then `POST /api/sessions/{id}/party`. A second Start creates another hour. Leave is `DELETE /api/sessions/{id}/party?name=…`; delete is `DELETE /api/sessions/{id}` (204). Submitted commands persist on `session.commandLog` so every client in the same scoring room sees alias, seat, command, and pass/fail. Walk positions and YAML clue pickups use `POST /api/sessions/{id}/presence`; they never score a puzzle. Panel A shows **people**: unique alias beside each Kenney seat sprite, same-layer walkers at last `mapX` / `mapY` (offset if stacked), and occupancy on a room icon when someone is inside so you do not have to enter The Broken Shell to know Linus is there. `currentRoomId` still gates scoring. Live walks fan out the existing `/ws/sessions/{id}` snapshot to every open socket for that party; the 1s `GET` remains a fallback.
 
 ## Hard rules
 
@@ -35,7 +35,7 @@ One OpenShift deployment **is** one party. No multi-tenant session router in v1.
 3. Terminal is **simulated**. Never execute player `oc`, Ansible, Linux, or Java against the cluster.
 4. Serving is **vLLM only**. Model: `ibm-granite/granite-3.2-8b-instruct`. GPU: NVIDIA L4, `nvidia.com/gpu: 1`. No Ollama.
 5. Seats (Guardian, Automancer, Cluster Ranger, Artificer) are cosmetic. Any player may solve any puzzle.
-6. v1 is JVM, text-only, one party. No TTS, native image, or multi-party.
+6. v1 is JVM, text-only. One OpenShift Route; many in-memory parties. No TTS, native image, or extra Routes.
 7. Never commit secrets to GitHub. Granite weights come from the ModelCar catalog via a Tekton PipelineRun (no Hugging Face token, no MinIO). Workshop API URLs, tokens, kubeconfigs, and CA certs stay in a local `oc` session or gitignored `.env`. See [WORKFLOWS.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/WORKFLOWS.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/WORKFLOWS.md`).
 
 ## Where code lives

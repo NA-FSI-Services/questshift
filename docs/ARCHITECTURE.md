@@ -37,7 +37,7 @@ HTTP/WebSocket shapes:
                     └─────────────────────────────────────────┘
 ```
 
-One OpenShift deployment **is** one party. There is no multi-tenant session router in v1. The UI Route proxies `/api/` and `/ws/` to the engine Service.
+One OpenShift stack **is** one Route. Many in-memory parties share that engine. There is no extra session router in v1. The UI Route proxies `/api/` and `/ws/` to the engine Service.
 
 ## Repos and runtime mapping
 
@@ -68,14 +68,14 @@ UI split:
 | `src/App.tsx` | Dual-panel shell, session start, loot strip |
 | `src/game/DungeonScene.ts` | Panel A Phaser board |
 | `src/terminal/TerminalPanel.tsx` | Panel B IBM Plex Mono terminal |
-| `src/api/client.ts` | REST helpers (`/api/campaigns`, sessions, commands, export) |
+| `src/api/client.ts` | REST helpers (`/api/campaigns`, sessions, party join/leave/delete, commands, export) |
 | `public/assets/kenney/tiny-dungeon/` | CC0 sprite sheet |
 
 GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). Manifests: `k8s/granite-pipeline.yaml` (Tekton ModelCar copy), `k8s/llm-deployment.yaml` (vLLM + L4), `game-backend-deployment.yaml`, `game-ui-deployment.yaml`, `configmap.yaml`, `pvc.yaml`, `openshift-route.yaml`, campaign ConfigMap generator.
 
 ## Game loop
 
-1. `POST /api/sessions` loads `campaign-devops-dungeon.yaml` (or classpath copy) and creates `GameSession` with a unique `joinCode` and the posted party (1–8 members, unique aliases). If a party is already `active`, the engine returns 409 `party_active` instead of a second hour. A second browser `GET`s `/api/sessions/{joinCode}`, then `POST /api/sessions/{id}/party`.
+1. `POST /api/sessions` loads `campaign-devops-dungeon.yaml` (or classpath copy) and creates `GameSession` with a unique `joinCode` and the posted party (1–8 members, unique aliases). A second Start creates another hour. A second browser `GET`s `/api/sessions/{joinCode}`, then `POST /api/sessions/{id}/party`. Leave is `DELETE /api/sessions/{id}/party?name=…`; delete is `DELETE /api/sessions/{id}`.
 2. Engine asks `LLMService` for a Game Master turn. The model **must** return a JSON object:
 
    ```json

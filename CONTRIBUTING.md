@@ -20,7 +20,7 @@ Track work on the [QuestShift project board](https://github.com/orgs/NA-FSI-Serv
 2. Keep the Game Master output schema stable. If you add a field, make it optional.
 3. Campaign YAML is the puzzle source of truth. Do not hide win conditions only in LLM prompts.
 4. Do not execute player commands on the cluster in v1.
-5. One party per deployment until the engine grows a session router.
+5. Many in-memory parties per engine; one OpenShift Route until a session router exists.
 
 ## Dev loop
 

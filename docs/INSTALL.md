@@ -6,7 +6,7 @@ Workshop clusters are ephemeral. Every install uses a different API URL, token, 
 
 ## 1. Set up an OpenShift 4.20+ cluster
 
-Provide a cluster that can host one party:
+Provide a cluster that can host the QuestShift stack:
 
 - OpenShift Container Platform **4.20 or newer**
 - At least **one worker** (two recommended: GPU + general). If the cluster has no NVIDIA GPU, `./install.sh` clones a GPU MachineSet (`g6.4xlarge` / L4) unless you pass `--no-add-gpu-nodes`.

@@ -19,7 +19,7 @@ Seats are Guardian, Automancer, Cluster Ranger, and Artificer. They are avatars 
 
 ## Journey
 
-1. Facilitator applies one QuestShift stack to one OpenShift project (one party per deployment).
+1. Facilitator applies one QuestShift stack to one OpenShift project (one Route; many parties).
 2. Party opens the UI Route. Dual panel: Phaser dungeon (Panel A) and CRT-like terminal (Panel B).
 3. Facilitator starts a 60-minute session for campaign `devops-dungeon` (*The Cluster That Forgot Its Name*).
 4. Game Master narrates the current room as JSON. Players type a command, playbook, `oc` line, or Java snippet.
@@ -33,9 +33,9 @@ If vLLM is unavailable, the engine uses authored YAML narrative and hints so the
 
 ### Session
 
-- `POST /api/sessions` creates one in-memory `GameSession` for campaign `devops-dungeon` (or the posted `campaignId`) with 1–8 named members and a shareable `joinCode`. A second Start is 409 while that party is `active`.
+- `POST /api/sessions` creates one in-memory `GameSession` for campaign `devops-dungeon` (or the posted `campaignId`) with 1–8 named members and a shareable `joinCode`. Start may run while other parties are `active`.
 - Session tracks party members (unique alias + cosmetic seat), current room, inventory, skills, puzzle flags, elapsed seconds, last GM text, canvas event, `joinCode`, and `commandLog` (shared board for the current room).
-- One party per engine process / OpenShift deployment. Other browsers look up `GET /api/sessions/{joinCode}` and `POST /api/sessions/{id}/party`.
+- Many parties per engine process / OpenShift stack. Other browsers look up `GET /api/sessions/{joinCode}` and `POST /api/sessions/{id}/party`. Leave and delete are `DELETE /api/sessions/{id}/party` and `DELETE /api/sessions/{id}`.
 
 ### Game Master JSON
 

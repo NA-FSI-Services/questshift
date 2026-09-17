@@ -35,11 +35,11 @@ The kickoff filename `docs/architecture.md` is `docs/ARCHITECTURE.md` (same path
 
 ## Coding constraints
 
-- v1 freeze: Quarkus 3 + Java 21, Phaser 3 + React + TypeScript, vLLM + Granite 3.2 8B Instruct on NVIDIA L4. No Ollama, TTS, native image, or multi-party.
+- v1 freeze: Quarkus 3 + Java 21, Phaser 3 + React + TypeScript, vLLM + Granite 3.2 8B Instruct on NVIDIA L4. No Ollama, TTS, native image, or extra Routes.
 - Campaign YAML is puzzle source of truth. LLM narrates only. YAML fallback if vLLM is down.
 - Never execute player `oc` / Ansible / Linux / Java against the cluster.
-- Seats are cosmetic. One party per deployment.
-- Match existing `io.questshift.*` APIs; do not invent routes.
+- Seats are cosmetic. Many parties per engine; one OpenShift stack (one Route).
+- Match `io.questshift.*` APIs named in API-CONTRACT.md; do not invent extra Routes.
 - Cite both GitHub blob URL and local path when mentioning a markdown spec.
 - Apache-2.0 on every repo. Do not add a second license except the Kenney CC0 NOTICE for sprites.
 - Do not start phase work that PLAN.md marks out of v1.
