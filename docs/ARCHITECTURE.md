@@ -124,13 +124,14 @@ Pass → room complete, loot ids added, skills granted, Phaser node unlocks via 
 `GameSession` persists in a process-local `ConcurrentHashMap`:
 
 - `id`, `joinCode`, `campaignId`, `status` (`active` \| `complete` \| `expired`)
-- `currentRoomId`, `startedAt`, `elapsedSeconds`
+- `currentRoomId`, `startedAt`, `elapsedSeconds` (frozen when `complete` or `expired`)
 - party members (unique alias + cosmetic seat + `mapX` / `mapY` / `viewedRoomId` / per-player `foundClues`; Panel A labels aliases and shows overworld occupancy from `viewedRoomId`)
 - `inventory`, `skills`
 - `puzzleCompletion` map (room id → boolean)
 - `hintCount`
 - `lastNarrative`, `lastHint`, `lastCanvasEvent`
 - `commandLog` (shared room board; UI filters to `currentRoomId`)
+- `adventureSummary` (set on `complete`: most questions, most commands, first passer per room)
 - `foundClues` (union of YAML clue ids for export; chests stay on the floor)
 
 Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshift-session-export` at `/work/exports` as the restart story until a real database is justified. Import via `POST /api/sessions/import` rehydrates the map.

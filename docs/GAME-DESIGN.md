@@ -21,7 +21,7 @@ Campaign id `devops-dungeon`. Title: **The Cluster That Forgot Its Name**. Premi
 | 46–54 | The Operator's Throne | `room-05-operators-throne` | `openshift` annotate | `cluster-name` |
 | 54–60 | Debrief + export YAML | — | — | — |
 
-Win: all five `puzzleCompletion` flags true; throne accepted the annotation; party exports session YAML. Fail: hour ends with the boss unsolved. Export still works so the next party can resume.
+Win: all five `puzzleCompletion` flags true; throne accepted the annotation; the clock **stops**; Panel B shows an adventure recap (most questions, most commands, first accepted command per room); party exports session YAML. Fail: hour ends with the boss unsolved (`expired`, clock capped). Export still works so the next party can resume.
 
 ## Cosmetic seats
 
@@ -85,7 +85,7 @@ System prompt lives on `game_master.system_prompt` in the campaign YAML.
 
 1. Player submits text (pipeline, playbook, `oc`/`kubectl`, or Java).
 2. Evaluator rejects empty input, missing boss loot, or `forbidden_patterns` (example: bare `cat` on the log; `/readyz`; `greeting.toUpperCase`; `/helo`). Authored `miss_beats` fire after a pass miss: a shouted `THORN` is not filesystem evidence; a grep without awk is too long.
-3. Pass → success narrative, loot, `canvas_event`, next room (or `status: complete` after the throne). The GM turn that opens the **next** room is a scene beat: do not send the previous winning command (or that room's `accepted_examples`) as if they were an attempt at the new puzzle.
+3. Pass → success narrative, loot, `canvas_event`, next room (or `status: complete` after the throne). The GM turn that opens the **next** room is a scene beat: do not send the previous winning command (or that room's `accepted_examples`) as if they were an attempt at the new puzzle. Completing the throne freezes `elapsedSeconds` and writes `adventureSummary` from `commandLog`.
 4. Fail → `hintCount++`, miss beat from LLM (or YAML `hint` / evaluator message on fallback), party retries. No HP, no permadeath, no lockout. The GM prompt includes the player submission and the first `accepted_examples` as **private** coaching so Granite can answer in character (a “Hello” should get a Game Master line asking for a command / YAML / `oc` / Java snippet). Never dump the winning command unless they asked for a hint after a fail. Authored `miss_beats` still skip the LLM.
 5. Soft match exists as a second chance when the regex misses a reasonable alias; still never execute the command.
 

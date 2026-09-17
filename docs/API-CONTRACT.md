@@ -32,7 +32,7 @@ Missing/blank `campaignId` → `questshift.campaigns.default-id` (`devops-dungeo
 
 ### `GET /api/sessions/{id}`
 
-Live snapshot. `{id}` is the session UUID **or** the human-readable `joinCode` (case-insensitive, e.g. `THORN-GOLEM` → `thorn-golem`). 404 `NotFoundException` if missing. Side effect: `tickElapsed()`; if the hour has elapsed, `status` becomes `expired`. Lookup alone does **not** add a party member.
+Live snapshot. `{id}` is the session UUID **or** the human-readable `joinCode` (case-insensitive, e.g. `THORN-GOLEM` → `thorn-golem`). 404 `NotFoundException` if missing. Side effect: `tickElapsed()` while `status` is `active`; if the hour has elapsed, `status` becomes `expired`. `complete` and `expired` skip the tick (clock stays frozen; `complete` also keeps `adventureSummary`). Lookup alone does **not** add a party member.
 
 ### `POST /api/sessions/{id}/party`
 
@@ -90,7 +90,7 @@ Response `CommandResult`:
 }
 ```
 
-`session` is the updated `GameSession`. `seatId` and optional `name` (alias) are recorded on the result and appended to `session.commandLog` for the **current room**. They do not gate the puzzle. Blank `name` is filled from the first party member with that `seatId`, else `shared`.
+`session` is the updated `GameSession`. `seatId` and optional `name` (alias) are recorded on the result and appended to `session.commandLog` for the **current room**. They do not gate the puzzle. Blank `name` is filled from the first party member with that `seatId`, else `shared`. Clearing the throne sets `status: complete`, freezes `elapsedSeconds`, and writes `adventureSummary`. Session not `active` → **409** `party_not_active`.
 
 ### `GET /api/sessions/{id}/export?format=yaml|json`
 
@@ -147,7 +147,7 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `status` | string | `active`, `complete`, or `expired` (hour reached `durationMinutes`) |
 | `currentRoomId` | string | e.g. `room-01-broken-shell` |
 | `startedAt` | instant | ISO-8601 |
-| `elapsedSeconds` | long | recomputed on tick/export |
+| `elapsedSeconds` | long | wall time since `startedAt` while `status` is `active`. Frozen when `complete` or `expired` (expired caps at `durationMinutes`) |
 | `partyMembers` | list | `{ name, seatId, mapX, mapY, viewedRoomId, foundClues }`. Max 8. Aliases unique; seats cosmetic. `viewedRoomId` empty = overworld. Positions are last presence. `foundClues` are YAML clue ids **this alias** opened. Panel A keeps those chests on the floor so every player can still open them; the dialog is only on that client. |
 | `foundClues` | string list | Union of member pickups for export. Fragments only; they do not pass the evaluator. |
 | `inventory` | string list | loot ids (`rune-thorn`, …) |
@@ -159,6 +159,7 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `lastCanvasEvent` | string | last canvas event |
 | `yamlFallback` | boolean | `true` when the last GM turn used campaign YAML because vLLM was disabled, unreachable, or returned HTTP ≥ 300 |
 | `commandLog` | list | `{ roomId, name, seatId, command, passed, message }`. Attempts in this hour. Panel B shows the **current scoring room** only. Attribution only; seats do not gate scoring. |
+| `adventureSummary` | object or null | Set when `status` is `complete`. `{ mostQuestions, mostQuestionsCount, mostCommands, mostCommandsCount, stages[{ roomId, roomTitle, name }], prose }`. Questions are chatter/misses that are not command-like; commands are ops snippets (and any pass). `stages` is the first passer per room in campaign order. |
 
 Example YAML fragment:
 
@@ -202,4 +203,4 @@ foundClues:
 
 ## Errors
 
-Unknown session or unknown join code → 404. Duplicate alias on `POST …/party` → 409 `alias_taken`. Party already has 8 members → 409 `party_full`. Missing Start party, blank alias, or unknown `seatId` → 400 `invalid_party`. Presence with unknown alias, locked room, or unknown clue → 400 `invalid_presence`. Presence while the hour is not `active` → 409 `party_not_active`. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.
+Unknown session or unknown join code → 404. Duplicate alias on `POST …/party` → 409 `alias_taken`. Party already has 8 members → 409 `party_full`. Missing Start party, blank alias, or unknown `seatId` → 400 `invalid_party`. Presence with unknown alias, locked room, or unknown clue → 400 `invalid_presence`. Presence or a command while the hour is not `active` → 409 `party_not_active`. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.
