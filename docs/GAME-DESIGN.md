@@ -47,7 +47,7 @@ Submitted commands for the **current room** appear on a shared board (alias, sea
 
 Panel A is a walkable Kenney overworld. Each player moves their own seat sprite (WASD or arrows while the canvas is focused). `currentRoomId` still gates which puzzle the engine will **score**; walking does not change it. A player may **enter** the current room or any completed room, not a locked future room.
 
-Inside a room, YAML `clues` sit on the floor. Picking one appends its `id` to party-shared `foundClues` and shows the fragment on Panel B. Clues are authored snippets (`grep -i rune`, `hosts: dungeon`), never the full winning command. Regex / `accepted_examples` remain the scorer.
+Inside a room, YAML `clues` sit on the floor as chests. Opening one shows an emerging dialog **on that player's map only** (IBM Plex Mono). The fragment never lands on Panel B and other browsers do not receive the text. Pickup appends the `id` to that member's `foundClues` (session `foundClues` is the union for export). The Broken Shell chests are a filesystem tree, the log leaf that contains `rune=THORN`, and a grep/awk man page — never the full winning command. Regex / `accepted_examples` remain the scorer. A shell golem sprite stands on the south door until that room is solved.
 
 Overworld spawn is 56px south of the current room node (inside the 64px enter radius), so a four-seat party stacks on the same pixel. E or Enter enters a nearby unlocked room or picks a nearby clue. Esc or the south door returns to the overworld. Keyboard is ignored while the terminal is focused so typing `oc` is not stolen.
 
@@ -75,7 +75,7 @@ System prompt lives on `game_master.system_prompt` in the campaign YAML.
 ## Fail / hint loop
 
 1. Player submits text (pipeline, playbook, `oc`/`kubectl`, or Java).
-2. Evaluator rejects empty input, missing boss loot, or `forbidden_patterns` (example: bare `cat` on the log; `/readyz`; `greeting.toUpperCase`; `/helo`).
+2. Evaluator rejects empty input, missing boss loot, or `forbidden_patterns` (example: bare `cat` on the log; `/readyz`; `greeting.toUpperCase`; `/helo`). Authored `miss_beats` fire after a pass miss: a shouted `THORN` is not filesystem evidence; a grep without awk is too long.
 3. Pass → success narrative, loot, `canvas_event`, next room (or `status: complete` after the throne).
 4. Fail → `hintCount++`, miss beat from LLM (or YAML `hint` on fallback), party retries. No HP, no permadeath, no lockout.
 5. Soft match exists as a second chance when the regex misses a reasonable alias; still never execute the command.
@@ -105,7 +105,7 @@ Win conditions are regex + examples in YAML. This table is flavor only.
 
 | Room | Player-facing job |
 | --- | --- |
-| Broken Shell | Extract the last field on the `rune` line from `/var/log/quest.log` |
+| Broken Shell | Extract the last field on the `rune` line from `/var/log/quest.log`. Chests teach the tree, the log leaf, and grep/awk. The golem rejects a shouted name. |
 | Playbook | `hosts: dungeon`, `gather_facts: true`, named `copy`/`template` to `/etc/questshift/name` |
 | Pod | `oc`/`kubectl set probe` HTTP GET `/healthz` on `pod/crashing-wizard` in `dungeon` |
 | Servlet | Repair the Quarkus resource; no null `greeting` |

@@ -66,14 +66,15 @@ v1 still serves **IBM Granite 3.2 8B Instruct** through the existing **vLLM Depl
 
 ## Walkable rooms (2026-09-16)
 
-**Choice:** Panel A is a walkable overworld. Party `currentRoomId` still gates which puzzle can be **solved**. Players may enter the current room or completed rooms only. Presence is `POST /api/sessions/{id}/presence` with `{ name, mapX, mapY, viewedRoomId, pickupClueId? }`. Clues are YAML fragments on the floor; `foundClues` is party-shared. WASD only while the canvas is focused. Phaser `src/game/**` stays coverage-excluded; movement/unlock/clue-reach lives in `src/map.ts`.
+**Choice:** Panel A is a walkable overworld. Party `currentRoomId` still gates which puzzle can be **solved**. Players may enter the current room or completed rooms only. Presence is `POST /api/sessions/{id}/presence` with `{ name, mapX, mapY, viewedRoomId, pickupClueId? }`. Clues are YAML fragments in floor chests. Opening a chest shows a map dialog to **that player only**; `partyMembers[].foundClues` tracks who opened what. Session `foundClues` is the export union. WASD only while the canvas is focused. Phaser `src/game/**` stays coverage-excluded; movement/unlock/clue-reach lives in `src/map.ts`.
 
 **Rejected**
 
 - **Overloading `POST /party` with positions.** Join is join; walk is presence.
 - **Per-player `currentRoomId` for scoring.** One party, one scoring room.
 - **Entering locked future rooms.** The hour stays sequential.
-- **Full winning commands as clue text.** Fragments feed Panel B; regex still wins.
+- **Full winning commands as clue text.** Fragments feed a private map dialog; regex still wins.
+- **Dumping chest text on the shared terminal.** Only the opener reads the well.
 
 ## Party aliases and room occupancy (2026-09-16)
 

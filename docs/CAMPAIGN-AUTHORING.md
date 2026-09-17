@@ -43,7 +43,8 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 | `order` | yes | Integer sequence; `nextRoom` is `order + 1` |
 | `title` | yes | Phaser label |
 | `mapX`, `mapY` | yes | Panel A overworld coordinates |
-| `clues` | yes | List of floor objects players pick up inside the room. Each needs `id`, `label`, `text`, `x`, `y`. Fragments only — do **not** put a full `accepted_examples` command in `text`. |
+| `clues` | yes | List of floor chests inside the room. Each needs `id`, `label`, `text`, `x`, `y`. Fragments only — do **not** put a full `accepted_examples` command in `text`. Opening a chest shows a map dialog to **that player only**; it does not dump the text on Panel B. |
+| `miss_beats` | no | Ordered `{ pattern, message }` fails after regex/examples/soft match miss. First matching pattern supplies the GM miss line (YAML wins; no LLM rewrite). Room 1 uses these for a shouted name and a grep without awk. |
 | `puzzle_type` | yes | `linux` \| `ansible` \| `openshift` \| `java` |
 | `estimatedMinutes` | no | Facilitator pacing |
 | `narrative` | yes | YAML fallback GM text |
@@ -61,7 +62,7 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 
 ## Clues (walkable interiors)
 
-Each room needs at least one `clues` entry. `text` is what Panel B shows after pickup (`grep -i rune`, `hosts: dungeon`). `x` / `y` are interior canvas coordinates (not the overworld `mapX` / `mapY`). Unique `id`s across the campaign. Picking a clue never scores the puzzle.
+Each room needs at least one `clues` entry. `text` is what a **private map dialog** shows after that player opens the chest (`/var/log/quest.log` tree, `hosts: dungeon`). `x` / `y` are interior canvas coordinates (not the overworld `mapX` / `mapY`). Unique `id`s across the campaign. Opening a chest never scores the puzzle and never copies the fragment onto the shared terminal.
 
 ## Regex + accepted examples
 
@@ -73,7 +74,9 @@ Write **one obvious intended command** plus a regex that still accepts reasonabl
 2. Reject if `requires_loot` missing from inventory
 3. Reject if any `forbidden_patterns` matches
 4. Pass if regex **or** an accepted example matches
-5. Else puzzle-type soft match (last resort)
+5. Else puzzle-type soft match
+6. Else first matching `miss_beats` pattern (authored miss line)
+7. Else generic fail
 
 If the regex is invalid Java, the engine falls back to a case-insensitive `contains` on the pattern string — do not rely on that. Test examples with `CommandEvaluatorTest` or a local session.
 
@@ -86,6 +89,15 @@ Use these to block the known-broken command the room is teaching against:
 - Room 4: `greeting\.toUpperCase`, `/helo`
 
 Forbidden beats a regex pass. Do not list the winning command here.
+
+## Miss beats (authored golem lines)
+
+Optional `miss_beats` run **after** a pass check fails. Use them when a near-miss needs a specific line instead of the generic hint:
+
+- Room 1 name-only (`THORN`, `rune=THORN`): the golem rejects a shouted name with no filesystem evidence.
+- Room 1 grep without awk: the resolved line is too long; only part of it is relevant.
+
+The engine copies that `message` onto `lastNarrative` / `lastHint` and does not ask vLLM to rewrite it.
 
 ## YAML wins (authoring rule)
 

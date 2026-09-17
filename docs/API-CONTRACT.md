@@ -66,7 +66,7 @@ Walk, enter a room, or pick up a YAML clue. `{id}` is the UUID **or** `joinCode`
 }
 ```
 
-`name` must already be in `partyMembers`. `viewedRoomId` empty (or omitted) means the overworld. A non-empty id must be the party’s `currentRoomId` or a completed room — locked future rooms are refused. `pickupClueId` is optional; when set, that clue must belong to `viewedRoomId` and is appended to party-shared `foundClues` (idempotent). Response: `GameSession`. This does **not** change `currentRoomId` or score a puzzle.
+`name` must already be in `partyMembers`. `viewedRoomId` empty (or omitted) means the overworld. A non-empty id must be the party’s `currentRoomId` or a completed room — locked future rooms are refused. `pickupClueId` is optional; when set, that clue must belong to `viewedRoomId` and is appended to **that member’s** `foundClues` (idempotent). Session `foundClues` is the union of those ids for export. The fragment is not a shared terminal dump — the opener’s UI shows a map dialog. Response: `GameSession`. This does **not** change `currentRoomId` or score a puzzle.
 
 Panel A derives walkers and room occupancy from `partyMembers` (`name`, `mapX`, `mapY`, `viewedRoomId`). There is **no** occupancy REST route. After a successful presence update, the engine fans the same JSON snapshot out on the existing WebSocket (see below). Clients that are not subscribed still see the new positions on the next `GET /api/sessions/{id}` (the 1s poll).
 
@@ -113,7 +113,7 @@ There is **no** campaign-reload HTTP route in v1. YAML changes need an engine re
 | Server reply after command | JSON snapshot after evaluate, to the sender. Seat on this path is always `"shared"`. Prefer REST commands when you need a real `seatId` and alias. |
 | After `POST /api/sessions/{id}/presence` | Same JSON `GameSession` snapshot to **every** open `/ws/sessions/{sessionId}` for that party (walk, enter/leave room, clue pickup). `{id}` on the POST may be UUID or `joinCode`; fan-out is keyed by the `GameSession`. |
 
-Live Panel A walks use this fan-out so other browsers do not wait for the 1s poll. The poll remains a valid fallback when no socket is open (UI occupancy can ship against GET before the engine child lands). Socket payloads are the same `GameSession` JSON, including `partyMembers` (`mapX` / `mapY` / `viewedRoomId`), `commandLog`, and `foundClues`.
+Live Panel A walks use this fan-out so other browsers do not wait for the 1s poll. The poll remains a valid fallback when no socket is open (UI occupancy can ship against GET before the engine child lands). Socket payloads are the same `GameSession` JSON, including `partyMembers` (`mapX` / `mapY` / `viewedRoomId` / `foundClues`), `commandLog`, and session `foundClues`.
 
 Do not add a presence opcode, a second WebSocket, or an occupancy REST route.
 
@@ -148,7 +148,8 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `currentRoomId` | string | e.g. `room-01-broken-shell` |
 | `startedAt` | instant | ISO-8601 |
 | `elapsedSeconds` | long | recomputed on tick/export |
-| `partyMembers` | list | `{ name, seatId, mapX, mapY, viewedRoomId }`. Max 8. Aliases unique; seats cosmetic. `viewedRoomId` empty = overworld. Positions are last presence. Panel A labels each `name` and treats a non-empty `viewedRoomId` as occupancy on that room icon when the local view is the overworld. |
+| `partyMembers` | list | `{ name, seatId, mapX, mapY, viewedRoomId, foundClues }`. Max 8. Aliases unique; seats cosmetic. `viewedRoomId` empty = overworld. Positions are last presence. `foundClues` are YAML clue ids **this alias** opened; Panel A hides those chests and shows the dialog only on that client. |
+| `foundClues` | string list | Union of member pickups for export. Fragments only; they do not pass the evaluator. |
 | `inventory` | string list | loot ids (`rune-thorn`, …) |
 | `skills` | string list | flavor (`piping`, …) |
 | `puzzleCompletion` | map | room id → boolean |
@@ -158,7 +159,6 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `lastCanvasEvent` | string | last canvas event |
 | `yamlFallback` | boolean | `true` when the last GM turn used campaign YAML because vLLM was disabled, unreachable, or returned HTTP ≥ 300 |
 | `commandLog` | list | `{ roomId, name, seatId, command, passed, message }`. Attempts in this hour. Panel B shows the **current scoring room** only. Attribution only; seats do not gate scoring. |
-| `foundClues` | string list | Party-shared YAML clue ids picked up on the map. Fragments only; they do not pass the evaluator. |
 
 Example YAML fragment:
 
@@ -175,6 +175,8 @@ partyMembers:
     mapX: 120
     mapY: 276
     viewedRoomId: ""
+    foundClues:
+      - shell-log
 inventory:
   - rune-thorn
 skills:

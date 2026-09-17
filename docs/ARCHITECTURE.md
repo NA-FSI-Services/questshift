@@ -124,13 +124,13 @@ Pass → room complete, loot ids added, skills granted, Phaser node unlocks via 
 
 - `id`, `joinCode`, `campaignId`, `status` (`active` \| `complete` \| `expired`)
 - `currentRoomId`, `startedAt`, `elapsedSeconds`
-- party members (unique alias + cosmetic seat + `mapX` / `mapY` / `viewedRoomId`; Panel A labels aliases and shows overworld occupancy from `viewedRoomId`)
+- party members (unique alias + cosmetic seat + `mapX` / `mapY` / `viewedRoomId` / per-player `foundClues`; Panel A labels aliases and shows overworld occupancy from `viewedRoomId`)
 - `inventory`, `skills`
 - `puzzleCompletion` map (room id → boolean)
 - `hintCount`
 - `lastNarrative`, `lastHint`, `lastCanvasEvent`
 - `commandLog` (shared room board; UI filters to `currentRoomId`)
-- `foundClues` (party-shared YAML clue ids)
+- `foundClues` (union of YAML clue ids for export; display is per-player)
 
 Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshift-session-export` at `/work/exports` as the restart story until a real database is justified. Import via `POST /api/sessions/import` rehydrates the map.
 
@@ -140,7 +140,7 @@ Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshi
 
 Dual panel:
 
-- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), rooms at `mapX` / `mapY`, walkable seat sprites with unique alias labels, occupancy on a room icon when a teammate is inside, YAML `clue` chests inside interiors, status gems, `focus` reticle. Sprite keys and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
+- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), rooms at `mapX` / `mapY`, walkable seat sprites with unique alias labels, occupancy on a room icon when a teammate is inside, YAML `clue` chests with a private map dialog, a `golem` on The Broken Shell door until that room is solved, status gems, `focus` reticle. Sprite keys and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 - **Panel B** — CRT-like terminal: Game Master log, command prompt, seat chips, elapsed clock. Font is IBM Plex Mono (readable; not a bitmap font).
 
 Voice is out of scope for v1.
