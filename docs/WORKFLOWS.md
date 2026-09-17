@@ -70,7 +70,7 @@ curl -s -X POST "http://localhost:8080/api/sessions/import?format=yaml" \
   --data-binary @run.yaml -H 'Content-Type: application/yaml'
 ```
 
-UI: Panel B **export.yaml** downloads `questshift-{id}.yaml`. **import.yaml** is a file picker that posts the file to `POST /api/sessions/import` (works with or without a live session; an imported `active` hour sits beside others). Topbar **Join** / **Switch party** loads `GET /api/sessions/{joinCode}`. **Abandon party** leaves. **Delete party** requires typing the join code.
+UI: Panel B **export.yaml** downloads `questshift-{id}.yaml`. **import.yaml** is a file picker that posts the file to `POST /api/sessions/import` (works with or without a live session; an imported `active` hour sits beside others). After Start, topbar **Party {joinCode}** holds Join / Switch, Copy code, new party, Abandon, and Delete (type the join code).
 
 ## Secrets — never commit to GitHub
 
