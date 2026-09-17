@@ -18,7 +18,7 @@ Dual-panel 16-bit dungeon. Canvas is pixel art; the terminal stays readable.
 
 Empty topbar: four **character** buttons, an **alias** field (suggested from the selected seat, skipping names already in a looked-up party), **start 60-minute run**, plus **Join code** / **Join**. Panel A/B stay visible — not a lobby screen. After Start, those party actions collapse into a **Party {joinCode}** dropdown: **Copy code**, **Switch party** (type another code such as `iron-ward`), **new party**, **Abandon party**, and **Delete party** (danger zone: type the join code). Session restore only reapplies an `active` stored party. Character and alias stay yours until you switch or abandon.
 
-- **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place rooms at campaign `mapX` / `mapY`. Seat sprites **walk** (WASD / arrows while the canvas is focused). `focus` marks the current scoring room. E / Enter enters a nearby unlocked room or opens a nearby `clue` chest (clicking the room, chest, or south lobby door also works); Esc or the south lobby door leaves the interior. Door, room, chest, and quest SFX use named Kenney CC0 keys (below). Opening a chest shows an emerging IBM Plex Mono dialog on **that** canvas only — teammates do not see the text on Panel B — and the chest stays on the floor so they can still open it. Every challenge room has **two interior doors**: a south `door` always open back to the lobby, and a north challenge door (`door_locked` plus that room’s YAML `guardian` until the puzzle is solved; `door` after). Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board. Every party member (including you) shows a unique **alias** next to their Kenney seat sprite. Same-layer walkers draw at last presence `mapX` / `mapY`; overlapping sprites offset. Overworld occupancy marks who is inside each named room. Movement math lives in `src/map.ts` (Vitest); occupancy / label / offset / private-clue helpers follow the same pattern. Phaser `src/game/**` stays coverage-excluded.
+- **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place each challenge room as a wooden gate (`lobby_gate` / `lobby_gate_open`) at campaign `mapX` / `mapY`. A `path` / `path_rocks` snake of hard floor tiles connects those rooms (cosmetic). Seat sprites **walk** (WASD / arrows while the canvas is focused). `focus` marks the current scoring room. E / Enter enters a nearby unlocked room or opens a nearby `clue` chest (clicking the room, chest, or south lobby door also works); Esc or the south lobby door leaves the interior. Door, room, chest, and quest SFX use named Kenney CC0 keys (below). Opening a chest shows an emerging IBM Plex Mono dialog on **that** canvas only — teammates do not see the text on Panel B — and the chest stays on the floor so they can still open it. Every challenge room has **two interior doors**: a south `door` always open back to the lobby, and a north challenge door (`door_locked` plus that room’s YAML `guardian` until the puzzle is solved; `door` after). Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board. Every party member (including you) shows a unique **alias** next to their Kenney seat sprite. Same-layer walkers draw at last presence `mapX` / `mapY`; overlapping sprites offset. Overworld occupancy marks who is inside each named room. Movement math lives in `src/map.ts` (Vitest); occupancy / label / offset / private-clue helpers follow the same pattern. Phaser `src/game/**` stays coverage-excluded.
 - **Panel B:** `src/terminal/TerminalPanel.tsx`. Still the command surface. CRT-like background (`#07110c`) and scanline wash in CSS; **typeface is IBM Plex Mono**, not a 8×8 font. Players must read YAML, `oc`, and Java. When a player is inside a room, the log shows that room’s authored `narrative`. Chest fragments stay on the map dialog. The GM log is followed by the **shared room board**: each attempt in the current scoring room shows alias, seat, command, and accepted/failed. Other rooms’ attempts stay on the session but are hidden until the party is scoring that room. The 1s `GET` poll is a fallback; live walks use the existing `/ws/sessions/{id}` `GameSession` snapshot. Both carry `commandLog`, `foundClues`, `partyMembers` positions, and per-member `foundClues`.
 
 On viewports under 960px, stack Panel A above Panel B.
@@ -76,17 +76,18 @@ Frame index equals Kenney `tile_NNNN` number. Phaser must use the **Canvas** ren
 
 Load atlas key `tiny-dungeon`. Named keys below are what `DungeonScene` must use.
 
-### Rooms (five dungeon nodes)
+### Rooms (five lobby gates)
 
-| Phaser key | Frame | Kenney tile | Room |
+Each overworld node is a wooden **gate** (`lobby_gate`, tile 9), not a flask, chair, workbench, or wall lintel. The current scoring room uses `lobby_gate_open` so you can see which gate to enter; **resolved** rooms stay on `lobby_gate` (tile 9) — they do not switch to an open door. Locked future rooms also use `lobby_gate`. Status gems sit beside the gate. A snake of top-left Kenney hard floor tiles (`path` and `path_rocks`, alternating) connects the five rooms in campaign order — cosmetic only; it does not change walking or scoring.
+
+| Phaser key | Frame | Kenney tile | Use |
 | --- | --- | --- | --- |
-| `room_01_broken_shell` | 29 | `tile_0029` | The Broken Shell (wall rune) |
-| `room_02_playbook` | 56 | `tile_0056` | The Playbook of Binding (tome) |
-| `room_03_pod` | 80 | `tile_0080` | The Pod That Would Not Wake (ladder/tracks) |
-| `room_04_servlet` | 54 | `tile_0054` | The Cursed Servlet (workbench) |
-| `room_05_throne` | 72 | `tile_0072` | The Operator's Throne (chair) |
 | `floor` | 48 | `tile_0048` | Sand floor fill |
+| `path` | 24 | `tile_0024` | Hard floor (sheet top-left) on the lobby snake |
+| `path_rocks` | 12 | `tile_0012` | Hard floor with rocks; alternates with `path` |
 | `wall` | 28 | `tile_0028` | Stone brick |
+| `lobby_gate` | 9 | `tile_0009` | Closed wooden door: locked future rooms **and** resolved rooms |
+| `lobby_gate_open` | 10 | `tile_0010` | Open wooden door: current scoring room only |
 | `focus` | 60 | `tile_0060` | Current-room reticle |
 
 ### Seats (cosmetic avatars)
@@ -103,8 +104,8 @@ Load atlas key `tiny-dungeon`. Named keys below are what `DungeonScene` must use
 | Phaser key | Frame | Kenney tile | Use |
 | --- | --- | --- | --- |
 | `clue` | 89 | `tile_0089` | YAML clue chest; stays on the floor after open |
-| `door` | 52 | `tile_0052` | Open interior door: south lobby exit (always), and north challenge door after the room is solved |
-| `door_locked` | 6 | `tile_0006` | North challenge door while the room is unsolved |
+| `door` | 45 | `tile_0045` | Open interior door (south lobby exit always; north challenge door after the room is solved) |
+| `door_locked` | 21 | `tile_0021` | Closed interior door: north challenge door while unsolved |
 | `guardian_shell` | 97 | `tile_0097` | Broken Shell golem; bars the north door until that puzzle is solved |
 | `guardian_playbook` | 98 | `tile_0098` | Playbook of Binding familiar |
 | `guardian_pod` | 100 | `tile_0100` | Pod That Would Not Wake ghost |
@@ -152,7 +153,7 @@ Panel A answers “where is Linus?” without a second REST route. Read `session
 
 **Same layer (walkers).** Draw a member as a walker when their `viewedRoomId` matches yours (both empty, or both the same room id) at last presence `mapX` / `mapY`. If two walkers are within 24px, offset later members in `partyMembers` order by 16px on X, wrapping to +16px Y after four, so stacked spawn still shows two sprites. Extract occupancy / label / offset helpers to Vitest (same pattern as `src/map.ts`); Phaser `src/game/**` stays coverage-excluded.
 
-**Overworld occupancy.** While you are on the overworld, members whose `viewedRoomId` is a room id do **not** vanish. Mark that room icon: cluster their aliases (and a small `seat_*` sprite if space) north of the room so the 64px enter radius stays clickable. Example: Linus entered The Broken Shell → occupancy on `room_01_broken_shell`, not a walker on the sand. You do not enter the room to know they exist. If more than three occupants, stack aliases; do not omit a name.
+**Overworld occupancy.** While you are on the overworld, members whose `viewedRoomId` is a room id do **not** vanish. Mark that gate: cluster their aliases (and a small `seat_*` sprite if space) north of the door so the 64px enter radius stays clickable. Example: Linus entered The Broken Shell → occupancy on `room-01-broken-shell`, not a walker on the sand. You do not enter the room to know they exist. If more than three occupants, stack aliases; do not omit a name.
 
 **Interior view.** While you are inside a room, draw only walkers who share that `viewedRoomId`. Overworld occupancy is N/A until you leave (Esc or the south lobby door). Teammates in a different room or on the overworld are not drawn on the interior.
 

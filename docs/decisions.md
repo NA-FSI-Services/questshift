@@ -33,7 +33,7 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Session restore | Terminal footer file picker (`import.yaml`) posts to existing `POST /api/sessions/import` |
 | Phase 1 proof | QuarkusTest submits all five YAML `accepted_examples` then export/import; no live facilitator pass |
 | Kenney sheet load | Packed `tilemap_packed.png` is 192×176; Phaser `spacing: 0`. Ignore `Tilesheet.txt` 1px gap |
-| Phase 2 board | Full Kenney tilemap: fill Panel A with `floor` / `wall`, place five rooms at `mapX` / `mapY`, plus gems, seat sprites, and `focus` reticle. Not a polyline of circles. |
+| Phase 2 board | Full Kenney tilemap: fill Panel A with `floor` / `wall`, wooden gates at `mapX` / `mapY` (`lobby_gate`; current room `lobby_gate_open`; resolved rooms stay closed), a `path` / `path_rocks` snake between rooms, plus gems, seat sprites, and `focus` reticle. Not a polyline of circles. Interior doors use `door` / `door_locked` (tiles 45 / 21). |
 | Phase 2 loot | HTML inventory strip stays; also draw `loot_*` sprites on Panel A as runes are collected (e.g. along the bottom of the tilemap) |
 | Phase 2 gem_hint | Show `gem_hint` on the current room after a failed command (`passed=false`) until the next pass or room change. No new engine field — UI keeps last command result. |
 | Phase 2 sprite scale | 3× (48px tiles), `pixelArt: true`, current-room pulse 1.0 → 1.15 |

@@ -45,7 +45,7 @@ Submitted commands for the **current room** appear on a shared board (alias, sea
 
 ## Walkable map
 
-Panel A is a walkable Kenney overworld. Each player moves their own seat sprite (WASD or arrows while the canvas is focused). `currentRoomId` still gates which puzzle the engine will **score**; walking does not change it. A player may **enter** the current room or any completed room, not a locked future room.
+Panel A is a walkable Kenney overworld. Each challenge room is a wooden gate (`lobby_gate_open` for the current room, `lobby_gate` for locked and resolved rooms). A hard-floor snake (`path` / `path_rocks`) connects the five rooms in campaign order; it is paint only. Each player moves their own seat sprite (WASD or arrows while the canvas is focused). `currentRoomId` still gates which puzzle the engine will **score**; walking does not change it. A player may **enter** the current room or any completed room, not a locked future room.
 
 Inside a room, YAML `clues` sit on the floor as chests. Opening one shows an emerging dialog **on that player's map only** (IBM Plex Mono). The fragment never lands on Panel B and other browsers do not receive the text. The chest stays on the floor so every player can still open it. Pickup appends the `id` to that member's `foundClues` (session `foundClues` is the union for export) but does not hide the sprite. The Broken Shell chests are a filesystem tree, the log leaf that contains `rune=THORN`, and a grep/awk man page — never the full winning command. Regex / `accepted_examples` remain the scorer.
 
@@ -68,7 +68,7 @@ Panel A shows **people**, not only your own sprite. Every party member has a **v
 | --- | --- | --- |
 | Overworld (`viewedRoomId` empty) | Overworld | Walker: Kenney sprite at last presence `mapX` / `mapY`, alias beside it |
 | Same interior (`viewedRoomId` matches) | Same interior | Walker: sprite + alias at last interior `mapX` / `mapY` |
-| Overworld | Inside The Broken Shell (`viewedRoomId` = that room) | Occupancy on that **room icon** (alias, and a small seat sprite if there is room). You do not enter the room to know Linus is there. |
+| Overworld | Inside The Broken Shell (`viewedRoomId` = that room) | Occupancy on that **doorway** (alias, and a small seat sprite if there is room). You do not enter the room to know Linus is there. |
 | Inside a room | Overworld or another interior | Overworld occupancy is N/A until you leave. Only walkers who share your interior are drawn. |
 
 Same-layer members (both overworld, or both in the same `viewedRoomId`) draw at last presence `mapX` / `mapY`. If two would overlap (distance under 24px, including stacked spawn), offset later members in `partyMembers` order by 16px right, wrapping down after four, so two sprites are distinguishable. Do not hide one sprite on top of another.
