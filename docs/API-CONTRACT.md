@@ -15,7 +15,7 @@ JSON field names on Java beans are **camelCase** unless noted. Campaign YAML use
 
 ### `GET /api/campaigns`
 
-Returns `Collection<Campaign>` currently loaded by `CampaignLibrary`.
+Returns `Collection<Campaign>` currently loaded by `CampaignLibrary`. Each room includes authored `guardian` (`id`, `title`, `sprite`) for the locked north challenge door, plus `clues`. Puzzle fields stay snake_case as in YAML (`puzzle_type`).
 
 ### `POST /api/sessions`
 

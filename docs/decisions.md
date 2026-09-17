@@ -149,3 +149,13 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 - **WebSocket-only flashes.** Lost after refresh.
 - **A second live channel.** The existing snapshot is enough.
 - **Showing every room’s attempts at once.** The board is the room the party is in.
+
+## Challenge doors and guardians (2026-09-17)
+
+**Choice:** Every challenge room has two interior doors. South is the lobby door, always open (`door` at `(450, 470)`); Esc / click / E on it returns to the overworld. North is the challenge door: `door_locked` plus that room’s YAML `guardian` until the puzzle is solved, then an open `door` with no guardian. Beating the guardian is the YAML command in the terminal, not a combat system. The open north door is cosmetic; sequential unlock still goes through the lobby / overworld. Distinct Kenney sprites per room (`guardian_shell` / `guardian_playbook` / `guardian_pod` / `guardian_servlet` / `guardian_throne`). Author `guardian: { id, title, sprite }` on every room.
+
+**Rejected**
+
+- **Guardian on the south lobby door.** Players must always be able to leave.
+- **A real combat minigame.** YAML regex still wins.
+- **North door walking into the next interior.** Room order stays sequential on the overworld.

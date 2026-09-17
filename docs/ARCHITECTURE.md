@@ -141,7 +141,7 @@ Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshi
 
 Dual panel:
 
-- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), rooms at `mapX` / `mapY`, walkable seat sprites with unique alias labels, occupancy on a room icon when a teammate is inside, YAML `clue` chests with a private map dialog, a `golem` on The Broken Shell door until that room is solved, status gems, `focus` reticle, Kenney CC0 SFX on door / room / chest / quest. Sprite keys, SFX keys, and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
+- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), rooms at `mapX` / `mapY`, walkable seat sprites with unique alias labels, occupancy on a room icon when a teammate is inside, YAML `clue` chests with a private map dialog, two interior doors per room (south lobby `door` always open; north `door_locked` plus YAML `guardian` until that puzzle is solved), status gems, `focus` reticle, Kenney CC0 SFX on door / room / chest / quest. Sprite keys, SFX keys, and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 - **Panel B** — CRT-like terminal: Game Master log, command prompt, seat chips, elapsed clock. Font is IBM Plex Mono (readable; not a bitmap font).
 
 Voice / TTS is out of scope for v1. Short Kenney CC0 map SFX are in v1.

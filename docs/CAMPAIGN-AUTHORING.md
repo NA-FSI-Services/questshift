@@ -44,6 +44,7 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 | `title` | yes | Phaser label |
 | `mapX`, `mapY` | yes | Panel A overworld coordinates |
 | `clues` | yes | List of floor chests inside the room. Each needs `id`, `label`, `text`, `x`, `y`. Fragments only — do **not** put a full `accepted_examples` command in `text`. Opening a chest shows a map dialog to **that player only**; it does not dump the text on Panel B. Chests stay on the floor after open. |
+| `guardian` | yes | `{ id, title, sprite }` for the north challenge door. `sprite` must be one of `guardian_shell`, `guardian_playbook`, `guardian_pod`, `guardian_servlet`, `guardian_throne`. Distinct `id` and `sprite` per room. The guardian bars `door_locked` until the puzzle is solved; beating it is the YAML command, not combat. |
 | `miss_beats` | no | Ordered `{ pattern, message }` fails after regex/examples/soft match miss. First matching pattern supplies the GM miss line (YAML wins; no LLM rewrite). Room 1 uses these for a shouted name and a grep without awk. |
 | `puzzle_type` | yes | `linux` \| `ansible` \| `openshift` \| `java` |
 | `estimatedMinutes` | no | Facilitator pacing |
@@ -59,6 +60,25 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 | `skills_granted` | no | Flavor strings |
 | `requires_loot` | no | Inventory ids that must already be held |
 | `sample_output` / `broken_snippet` | no | Ignored by Java; useful for authors and GM context |
+
+## Challenge doors and guardians
+
+Every challenge room has two interior doors. Author them in `narrative` / `success_narrative`; Panel A draws them from this contract (coordinates in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`)):
+
+1. **Lobby door (south).** Always open (`door`). Returns to the overworld. Never put the guardian on this door.
+2. **Challenge door (north).** Locked (`door_locked`) with `guardian.sprite` until `puzzleCompletion[roomId]`. After a pass, the guardian is gone and the north door shows open (`door`). That open door is cosmetic; sequential play still goes lobby → next overworld node.
+
+v1 *The Cluster That Forgot Its Name* guardians:
+
+| Room | `guardian.id` | `sprite` |
+| --- | --- | --- |
+| The Broken Shell | `shell-golem` | `guardian_shell` |
+| The Playbook of Binding | `bound-familiar` | `guardian_playbook` |
+| The Pod That Would Not Wake | `crashing-wizard-ghost` | `guardian_pod` |
+| The Cursed Servlet | `servlet-slime` | `guardian_servlet` |
+| The Operator's Throne | `nameless-wraith` | `guardian_throne` |
+
+Do not hide the win only in the guardian's flavor text. Regex + `accepted_examples` still score.
 
 ## Clues (walkable interiors)
 
@@ -90,11 +110,11 @@ Use these to block the known-broken command the room is teaching against:
 
 Forbidden beats a regex pass. Do not list the winning command here.
 
-## Miss beats (authored golem lines)
+## Miss beats (authored guardian lines)
 
 Optional `miss_beats` run **after** a pass check fails. Use them when a near-miss needs a specific line instead of the generic hint:
 
-- Room 1 name-only (`THORN`, `rune=THORN`): the golem rejects a shouted name with no filesystem evidence.
+- Room 1 name-only (`THORN`, `rune=THORN`): the shell golem rejects a shouted name with no filesystem evidence.
 - Room 1 grep without awk: the resolved line is too long; only part of it is relevant.
 
 The engine copies that `message` onto `lastNarrative` / `lastHint` and does not ask vLLM to rewrite it.
@@ -112,4 +132,4 @@ Do not add `required_seat` or class checks. Blurbs already say anyone may solve 
 
 ## Validate locally
 
-From `questshift-campaigns`: `python3 -m pip install -r requirements-dev.txt && ./verify.sh`. That yamllints the adventure, runs ruff, and checks the contract above (`tools/campaign.py`: one campaign, five rooms, cosmetic seats, compiling regexes, no secret-looking text). Pre-commit: `./.githooks/install`. Full quality map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
+From `questshift-campaigns`: `python3 -m pip install -r requirements-dev.txt && ./verify.sh`. That yamllints the adventure, runs ruff, and checks the contract above (`tools/campaign.py`: one campaign, five rooms, cosmetic seats, compiling regexes, per-room `guardian`, no secret-looking text). Pre-commit: `./.githooks/install`. Full quality map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).

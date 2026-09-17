@@ -47,9 +47,18 @@ Submitted commands for the **current room** appear on a shared board (alias, sea
 
 Panel A is a walkable Kenney overworld. Each player moves their own seat sprite (WASD or arrows while the canvas is focused). `currentRoomId` still gates which puzzle the engine will **score**; walking does not change it. A player may **enter** the current room or any completed room, not a locked future room.
 
-Inside a room, YAML `clues` sit on the floor as chests. Opening one shows an emerging dialog **on that player's map only** (IBM Plex Mono). The fragment never lands on Panel B and other browsers do not receive the text. The chest stays on the floor so every player can still open it. Pickup appends the `id` to that member's `foundClues` (session `foundClues` is the union for export) but does not hide the sprite. The Broken Shell chests are a filesystem tree, the log leaf that contains `rune=THORN`, and a grep/awk man page — never the full winning command. Regex / `accepted_examples` remain the scorer. A shell golem sprite stands on the south door until that room is solved.
+Inside a room, YAML `clues` sit on the floor as chests. Opening one shows an emerging dialog **on that player's map only** (IBM Plex Mono). The fragment never lands on Panel B and other browsers do not receive the text. The chest stays on the floor so every player can still open it. Pickup appends the `id` to that member's `foundClues` (session `foundClues` is the union for export) but does not hide the sprite. The Broken Shell chests are a filesystem tree, the log leaf that contains `rune=THORN`, and a grep/awk man page — never the full winning command. Regex / `accepted_examples` remain the scorer.
 
-Overworld spawn is 56px south of the current room node (inside the 64px enter radius), so a four-seat party stacks on the same pixel. E or Enter enters a nearby unlocked room or picks a nearby clue. Esc or the south door returns to the overworld. Keyboard is ignored while the terminal is focused so typing `oc` is not stolen. Panel A plays Kenney CC0 SFX on those map beats (door, threshold step, chest latch, room-complete jingle). Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`). The Game Master stays text; this is not TTS.
+Every challenge room has **two interior doors**:
+
+| Door | Sprite | Where | Rule |
+| --- | --- | --- | --- |
+| Lobby | `door` | South `(450, 470)` | Always open. Esc, click, or E on it returns to the overworld. |
+| Challenge | `door_locked` + YAML `guardian`, then `door` | North `(450, 70)` | Locked with that room's guardian until `puzzleCompletion[roomId]`. Beat the guardian by solving the YAML puzzle in the terminal. After a pass, the guardian vanishes and the north door shows open (cosmetic; the next scoring room is still entered from the lobby). |
+
+Do not put the guardian on the lobby door. Named keys and coordinates: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
+
+Overworld spawn is 56px south of the current room node (inside the 64px enter radius), so a four-seat party stacks on the same pixel. E or Enter enters a nearby unlocked room or picks a nearby clue. Esc or the south lobby door returns to the overworld. Keyboard is ignored while the terminal is focused so typing `oc` is not stolen. Panel A plays Kenney CC0 SFX on those map beats (door, threshold step, chest latch, room-complete jingle). Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`). The Game Master stays text; this is not TTS.
 
 ### Where is Linus? (Panel A occupancy)
 
@@ -86,7 +95,7 @@ Room order is the name of the cluster:
 
 | Order | Rune | Inventory id | How it drops |
 | --- | --- | --- | --- |
-| 1 | **THORN** | `rune-thorn` | grep/awk the log; golem yields |
+| 1 | **THORN** | `rune-thorn` | grep/awk the log; shell golem yields |
 | 2 | **ASH** | `rune-ash` | Named Ansible task writes `/etc/questshift/name` |
 | 3 | **OAK** | `rune-oak` | Liveness probe `/healthz` on `crashing-wizard` |
 | 4 | **IRON** | `rune-iron` | GET `/hello` returns `QuestShift lives` |
@@ -103,10 +112,10 @@ Trophy loot: `cluster-name` (*The Remembered Name*). Skills granted along the wa
 
 Win conditions are regex + examples in YAML. This table is flavor only.
 
-| Room | Player-facing job |
-| --- | --- |
-| Broken Shell | Extract the last field on the `rune` line from `/var/log/quest.log`. Chests teach the tree, the log leaf, and grep/awk. The golem rejects a shouted name. |
-| Playbook | `hosts: dungeon`, `gather_facts: true`, named `copy`/`template` to `/etc/questshift/name` |
-| Pod | `oc`/`kubectl set probe` HTTP GET `/healthz` on `pod/crashing-wizard` in `dungeon` |
-| Servlet | Repair the Quarkus resource; no null `greeting` |
-| Throne | Annotate namespace `dungeon` with the four-rune name |
+| Room | Guardian (`sprite`) | Player-facing job |
+| --- | --- | --- |
+| Broken Shell | Shell golem (`guardian_shell`) | Extract the last field on the `rune` line from `/var/log/quest.log`. Chests teach the tree, the log leaf, and grep/awk. The golem rejects a shouted name. |
+| Playbook | Bound familiar (`guardian_playbook`) | `hosts: dungeon`, `gather_facts: true`, named `copy`/`template` to `/etc/questshift/name` |
+| Pod | Crashing-wizard ghost (`guardian_pod`) | `oc`/`kubectl set probe` HTTP GET `/healthz` on `pod/crashing-wizard` in `dungeon` |
+| Servlet | Cursed servlet-slime (`guardian_servlet`) | Repair the Quarkus resource; no null `greeting` |
+| Throne | Nameless wraith (`guardian_throne`) | Annotate namespace `dungeon` with the four-rune name |
