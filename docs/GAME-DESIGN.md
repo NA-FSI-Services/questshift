@@ -85,8 +85,8 @@ System prompt lives on `game_master.system_prompt` in the campaign YAML.
 
 1. Player submits text (pipeline, playbook, `oc`/`kubectl`, or Java).
 2. Evaluator rejects empty input, missing boss loot, or `forbidden_patterns` (example: bare `cat` on the log; `/readyz`; `greeting.toUpperCase`; `/helo`). Authored `miss_beats` fire after a pass miss: a shouted `THORN` is not filesystem evidence; a grep without awk is too long.
-3. Pass → success narrative, loot, `canvas_event`, next room (or `status: complete` after the throne).
-4. Fail → `hintCount++`, miss beat from LLM (or YAML `hint` on fallback), party retries. No HP, no permadeath, no lockout.
+3. Pass → success narrative, loot, `canvas_event`, next room (or `status: complete` after the throne). The GM turn that opens the **next** room is a scene beat: do not send the previous winning command (or that room's `accepted_examples`) as if they were an attempt at the new puzzle.
+4. Fail → `hintCount++`, miss beat from LLM (or YAML `hint` / evaluator message on fallback), party retries. No HP, no permadeath, no lockout. The GM prompt includes the player submission and the first `accepted_examples` as **private** coaching so Granite can answer in character (a “Hello” should get a Game Master line asking for a command / YAML / `oc` / Java snippet). Never dump the winning command unless they asked for a hint after a fail. Authored `miss_beats` still skip the LLM.
 5. Soft match exists as a second chance when the regex misses a reasonable alias; still never execute the command.
 
 ## Loot runes

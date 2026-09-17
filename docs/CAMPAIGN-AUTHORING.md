@@ -123,7 +123,7 @@ The engine copies that `message` onto `lastNarrative` / `lastHint` and does not 
 
 - Put the win in `expected_command_pattern` and `accepted_examples`.
 - Put the miss in `forbidden_patterns` and `hint`.
-- `system_prompt` may say “never reveal the full pattern unless they asked for a hint after a fail.” It must **not** be the only place the answer lives.
+- `system_prompt` may say “never reveal the full pattern unless they asked for a hint after a fail.” It must **not** be the only place the answer lives. The engine also sends the player submission and the first `accepted_examples` to the LLM as private coaching so the Game Master can react in character (greetings still need a solving command). Do not dump that example in `narrative`.
 - `LLMService` copies YAML `puzzle_type` and regex onto the GM turn even if the model hallucinates new ones.
 
 ## Seats

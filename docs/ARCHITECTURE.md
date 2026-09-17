@@ -117,7 +117,7 @@ The terminal is **simulated**. Commands are not executed against the workshop cl
 5. Puzzle-type soft checkers (Linux `grep`+`rune`+`awk`; Ansible `hosts: dungeon` + `gather_facts` + `/etc/questshift/name`; OpenShift `oc`/`kubectl` probe or annotate; Java `@Path("/hello")` + `@GET` + `QuestShift lives` without `greeting.toUpperCase`) → pass
 6. Else fail
 
-Pass → room complete, loot ids added, skills granted, Phaser node unlocks via `canvas_event`. Fail → `hintCount` increments; Game Master narrates a miss. Do not hide win conditions only in prompts.
+Pass → room complete, loot ids added, skills granted, Phaser node unlocks via `canvas_event`. Fail → `hintCount` increments; Game Master narrates a miss (player submission + first `accepted_examples` go to the LLM as private coaching; YAML still scores). Do not hide win conditions only in prompts.
 
 ## State
 
