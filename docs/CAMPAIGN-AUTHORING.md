@@ -128,7 +128,7 @@ Optional `miss_beats` run **after** a pass check fails. Use them when a near-mis
 - Room 1 name-only (`THORN`, `rune=THORN`): the shell golem rejects a shouted name with no filesystem evidence.
 - Room 1 grep without awk: the resolved line is too long; only part of it is relevant.
 
-The engine copies that `message` onto `lastNarrative` / `lastHint` and does not ask vLLM to rewrite it.
+The engine copies that `message` onto the attempt’s `commandLog.narrative` (addressed to `name`) and onto `lastNarrative` / `lastHint`. It does not ask vLLM to rewrite it.
 
 ## YAML wins (authoring rule)
 

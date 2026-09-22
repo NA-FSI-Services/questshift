@@ -200,6 +200,17 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 - **`lobby_gate_open` on the active gate.** Same closed door as locked and resolved rooms.
 - **A painted trail between rooms.** The lobby is `floor` / `wall` fill plus gates.
 
+## Game Master addressee (2026-09-22)
+
+**Choice:** Two kinds of Game Master turn. A **scene beat** (Start, or the opening of the next room) appends `gmLog` as `{ roomId, narrative }` with no alias. An **attempt reply** (`POST /api/sessions/{id}/commands`, including authored `miss_beats`) stamps `narrative` on that `commandLog` row. `name` is the addressee — the same `resolveAlias` the board already uses. `lastNarrative` stays the latest line and is not the history. Replies stay on the shared scoring-room board. The LLM prompt includes the speaker alias and must not rewrite `expected_command_pattern`. Export and import carry `narrative` and `gmLog`. Spec: [API-CONTRACT.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/API-CONTRACT.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/API-CONTRACT.md`), [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`). Tracker [questshift#32](https://github.com/NA-FSI-Services/questshift/issues/32) (spec [#33](https://github.com/NA-FSI-Services/questshift/issues/33), engine [#34](https://github.com/NA-FSI-Services/questshift/issues/34), UI [#35](https://github.com/NA-FSI-Services/questshift/issues/35)).
+
+**Rejected**
+
+- **One session-wide `lastNarrative` as the only GM history.** Refresh dropped every reply but the last, and none of them named who asked.
+- **Storing the next-room opening on the passer’s `commandLog` row.** That beat is to the room.
+- **A private whisper, or a new REST route.** Ada still sees Linus’s reply. Chest dialogs stay the private channel.
+- **Letting Granite invent a traveler or rewrite the regex.** YAML still scores.
+
 ## Respect for turns (2026-09-22)
 
 **Choice:** The Game Master grants **the floor**. Persist `turnName` on `GameSession`. Only that alias may `POST /api/sessions/{id}/commands`. After a scored attempt (pass or fail) the engine rotates to the next `partyMembers` alias (circular; solo keeps the floor) and the GM prose announces the grant. Start grants the first Start alias. Joiners wait. Leave of the holder grants the next remaining member. Import restores `turnName` if that alias is still in the party. Presence, walking, occupancy, and chest dialogs stay ungated. Seats stay cosmetic; YAML still scores; no extra REST route. Tracker [questshift#36](https://github.com/NA-FSI-Services/questshift/issues/36) (spec [#37](https://github.com/NA-FSI-Services/questshift/issues/37), engine [#38](https://github.com/NA-FSI-Services/questshift/issues/38), UI [#39](https://github.com/NA-FSI-Services/questshift/issues/39)); follow-on to GM addressee [questshift#32](https://github.com/NA-FSI-Services/questshift/issues/32). The LLM does **not** pick the speaker.

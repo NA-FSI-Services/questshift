@@ -92,7 +92,7 @@ GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). M
    ```
 
 3. Authored campaign rooms are the source of truth for `puzzle_type` and `expected_command_pattern`. The LLM supplies narration and optional hint flavor. `LLMService.parseTurn` **overwrites** `expectedCommandPattern` with the room regex after parse. If vLLM is down, `%dev`, HTTP ≥ 300, or JSON unparseable, the engine falls back to YAML text so the hour can still run.
-4. The player who holds `turnName` submits a command via REST (`POST /api/sessions/{id}/commands` with `name`). `CommandEvaluator` scores it, appends `commandLog` (alias, seat, command, pass/fail) for the current room, updates flags/inventory, and emits a canvas event from the room (`unlock_room_02` … `campaign_complete`) or `focus_room`. The engine then rotates the floor (solo keeps it) and the GM announces the next holder. Anyone else is **409** `not_your_turn`. WebSocket text frames stamp seat `shared` and must not score. Presence stays ungated.
+4. The player who holds `turnName` submits a command via REST (`POST /api/sessions/{id}/commands` with `name`). `CommandEvaluator` scores it, appends `commandLog` (alias, seat, command, pass/fail, and GM `narrative` addressed to that alias) for the current room, updates flags/inventory, and emits a canvas event from the room (`unlock_room_02` … `campaign_complete`) or `focus_room`. Scene beats (Start, next-room opening) append `gmLog` with no alias; they are not attached to whoever passed the previous room. `LLMService` is told the speaker alias on a scored attempt and must not rewrite the regex. The engine then rotates the floor (solo keeps it) and the GM announces the next holder. Anyone else is **409** `not_your_turn`. WebSocket text frames stamp seat `shared` and must not score. Presence stays ungated.
 5. `StateSerializer` dumps or restores the session as YAML or JSON.
 
 ## LLM contract
@@ -131,9 +131,10 @@ Pass → room complete, loot ids added, skills granted, Phaser node unlocks via 
 - `inventory`, `skills`
 - `puzzleCompletion` map (room id → boolean)
 - `hintCount`
-- `lastNarrative`, `lastHint`, `lastCanvasEvent`
+- `lastNarrative` (latest GM line only; not the history), `lastHint`, `lastCanvasEvent`
 - `turnName` (engine-owned floor; only that alias may POST a command)
-- `commandLog` (shared room board; UI filters to `currentRoomId`)
+- `gmLog` (room-addressed scene beats: `roomId` + `narrative`, no player name)
+- `commandLog` (shared room board; `name` is the addressee and `narrative` is the GM reply; UI filters to `currentRoomId`)
 - `adventureSummary` (set on `complete`: most questions, most commands, first passer per room)
 - `foundClues` (union of YAML clue ids for export — lobby `story.clues` and room `clues`; chests stay on the floor; pickup is layer-scoped)
 
@@ -147,7 +148,7 @@ Dual panel:
 
 - **Quest lobby** — React pre-run screen (not a second Phaser dungeon). Quest cards from `GET /api/campaigns` (v1: `devops-dungeon`), cosmetic character + unique alias, Start / Join. Dual panel stays hidden until this browser is in a party.
 - **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), each challenge room as a wooden gate at `mapX` / `mapY` (`lobby_gate` for current, locked, and resolved rooms), walkable seat sprites with unique alias labels, occupancy on a room gate when a teammate is inside, YAML `clue` chests with a private map dialog (lobby `story.clues` on the overworld; that room’s `clues` inside), two interior doors per room (south lobby `door` always open; north `door_locked` plus YAML `guardian` until that puzzle is solved, then an open `door` into the next YAML room), status gems, `focus` reticle, Kenney CC0 SFX on door / room / chest / quest. Sprite keys, SFX keys, music keys, and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
-- **Panel B** — CRT-like terminal: Game Master log, command prompt (enabled only for `turnName`), seat chips, elapsed clock. Font is IBM Plex Mono (readable; not a bitmap font).
+- **Panel B** — CRT-like terminal: Game Master log (`GM>` for a scene beat, `GM> {alias}` for an attempt reply), command prompt (enabled only for `turnName`), seat chips, elapsed clock. Font is IBM Plex Mono (readable; not a bitmap font). History comes from `gmLog` and `commandLog.narrative`, not a browser-only buffer.
 
 Voice / TTS is out of scope for v1. Short Kenney CC0 map SFX and a looping Kenney CC0 music bed are in v1.
 
