@@ -23,6 +23,7 @@ seats: []                     # cosmetic; ids guardian|automancer|ranger|artific
 story:
   premise: ...
   opening: ...
+  clues: []                 # lobby-map chests (overworld x/y); empty viewedRoomId
   winCondition: ...
   failCondition: ...
 rooms: []
@@ -43,7 +44,7 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 | `order` | yes | Integer sequence; `nextRoom` is `order + 1` |
 | `title` | yes | Phaser label |
 | `mapX`, `mapY` | yes | Panel A overworld coordinates |
-| `clues` | yes | List of floor chests inside the room. Each needs `id`, `label`, `text`, `x`, `y`. Fragments only — do **not** put a full `accepted_examples` command in `text`. Opening a chest shows a map dialog to **that player only**; it does not dump the text on Panel B. Chests stay on the floor after open. |
+| `clues` | yes | List of floor chests **inside this room**. Each needs `id`, `label`, `text`, `x`, `y`. `x` / `y` are interior canvas coordinates. Fragments only — do **not** put a full `accepted_examples` command in `text`. Opening a chest shows a map dialog to **that player only**; it does not dump the text on Panel B. Chests stay on the floor after open. Do not put these on the overworld. |
 | `guardian` | yes | `{ id, title, sprite }` for the north challenge door. `sprite` must be one of `guardian_shell`, `guardian_playbook`, `guardian_pod`, `guardian_servlet`, `guardian_throne`. Distinct `id` and `sprite` per room. The guardian is a **cosmetic** sprite on `door_locked` until the puzzle is solved; beating it is the YAML command, not combat. Do not author weapons or battle stats. |
 | `miss_beats` | no | Ordered `{ pattern, message }` fails after regex/examples/soft match miss. First matching pattern supplies the GM miss line (YAML wins; no LLM rewrite). Room 1 uses these for a shouted name and a grep without awk. |
 | `puzzle_type` | yes | `linux` \| `ansible` \| `openshift` \| `java` |
@@ -66,7 +67,7 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 Every challenge room has two interior doors. Author them in `narrative` / `success_narrative`; Panel A draws them from this contract (coordinates in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`)):
 
 1. **Lobby door (south).** Always open (`door`). Returns to the overworld. Never put the guardian on this door.
-2. **Challenge door (north).** Locked (`door_locked`) with `guardian.sprite` until `puzzleCompletion[roomId]`. After a pass, the guardian is gone and the north door shows open (`door`). That open door is cosmetic; sequential play still goes lobby → next overworld node.
+2. **Challenge door (north).** Locked (`door_locked`) with `guardian.sprite` until `puzzleCompletion[roomId]`. After a pass, the guardian is gone and the north door shows open (`door`). That open door enters the next YAML room (`order + 1`) when that room is unlocked. The throne has no successor. Sequential scoring still goes through YAML; the lobby remains an alternate path.
 
 v1 *The Cluster That Forgot Its Name* guardians:
 
@@ -80,9 +81,19 @@ v1 *The Cluster That Forgot Its Name* guardians:
 
 Do not hide the win only in the guardian's flavor text. Regex + `accepted_examples` still score.
 
-## Clues (walkable interiors)
+## Clues (layer-scoped map dialogs)
 
-Each room needs at least one `clues` entry. `text` is what a **private map dialog** shows after that player opens the chest (`/var/log/quest.log` tree, `hosts: dungeon`). `x` / `y` are interior canvas coordinates (not the overworld `mapX` / `mapY`). Unique `id`s across the campaign. Opening a chest never scores the puzzle, never copies the fragment onto the shared terminal, and never removes the chest from the floor.
+Dialogs belong to **one layer**. A player may open and read only the layer they are on. Empty `viewedRoomId` is the in-run Kenney overworld (the lobby map after Start), not the pre-run Start screen.
+
+| Layer | YAML | Coordinates | Panel B flavor |
+| --- | --- | --- | --- |
+| Overworld (`viewedRoomId` empty) | `story.clues` | Overworld `x` / `y` (same space as room `mapX` / `mapY`) | `story.opening` (and premise) — not a challenge room’s `narrative` |
+| Interior (`viewedRoomId` = that room) | that room’s `clues` | Interior canvas `x` / `y` | that room’s `narrative` |
+| Leave through the south lobby door | close the open dialog | — | drop the interior dump; return to lobby copy |
+
+`story.clues` is required. Author at least one lobby chest (hour rules, which gate is open, premise fragments — never a winning command). Keep each room’s existing chests on that room. Do not reuse a room clue `id` on the lobby. Do not place room-1 log fragments on the overworld.
+
+Each room still needs at least one `clues` entry. `text` is what a **private map dialog** shows after that player opens the chest (`/var/log/quest.log` tree, `hosts: dungeon`). Unique `id`s across the campaign, including lobby. Opening a chest never scores the puzzle, never copies the fragment onto the shared terminal, and never removes the chest from the floor. Do not open a dialog whose layer is not the current `viewedRoomId`. Shared `commandLog` stays the current scoring room; it is not a map dialog.
 
 ## Regex + accepted examples
 
@@ -132,4 +143,4 @@ Do not add `required_seat` or class checks. Blurbs already say anyone may solve 
 
 ## Validate locally
 
-From `questshift-campaigns`: `python3 -m pip install -r requirements-dev.txt && ./verify.sh`. That yamllints the adventure, runs ruff, and checks the contract above (`tools/campaign.py`: one campaign, five rooms, cosmetic seats, compiling regexes, per-room `guardian`, no secret-looking text). Pre-commit: `./.githooks/install`. Full quality map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
+From `questshift-campaigns`: `python3 -m pip install -r requirements-dev.txt && ./verify.sh`. That yamllints the adventure, runs ruff, and checks the contract above (`tools/campaign.py`: one campaign, five rooms, cosmetic seats, compiling regexes, `story.clues`, per-room `guardian` and `clues`, unique clue ids, no secret-looking text). Pre-commit: `./.githooks/install`. Full quality map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).

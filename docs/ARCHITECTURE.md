@@ -135,7 +135,7 @@ Pass → room complete, loot ids added, skills granted, Phaser node unlocks via 
 - `turnName` (engine-owned floor; only that alias may POST a command)
 - `commandLog` (shared room board; UI filters to `currentRoomId`)
 - `adventureSummary` (set on `complete`: most questions, most commands, first passer per room)
-- `foundClues` (union of YAML clue ids for export; chests stay on the floor)
+- `foundClues` (union of YAML clue ids for export — lobby `story.clues` and room `clues`; chests stay on the floor; pickup is layer-scoped)
 
 Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshift-session-export` at `/work/exports` as the restart story until a real database is justified. Import via `POST /api/sessions/import` rehydrates the map.
 
@@ -146,12 +146,12 @@ Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshi
 Dual panel:
 
 - **Quest lobby** — React pre-run screen (not a second Phaser dungeon). Quest cards from `GET /api/campaigns` (v1: `devops-dungeon`), cosmetic character + unique alias, Start / Join. Dual panel stays hidden until this browser is in a party.
-- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), each challenge room as a wooden gate at `mapX` / `mapY` (`lobby_gate` for current, locked, and resolved rooms), walkable seat sprites with unique alias labels, occupancy on a room gate when a teammate is inside, YAML `clue` chests with a private map dialog, two interior doors per room (south lobby `door` always open; north `door_locked` plus YAML `guardian` until that puzzle is solved), status gems, `focus` reticle, Kenney CC0 SFX on door / room / chest / quest. Sprite keys, SFX keys, music keys, and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
+- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), each challenge room as a wooden gate at `mapX` / `mapY` (`lobby_gate` for current, locked, and resolved rooms), walkable seat sprites with unique alias labels, occupancy on a room gate when a teammate is inside, YAML `clue` chests with a private map dialog (lobby `story.clues` on the overworld; that room’s `clues` inside), two interior doors per room (south lobby `door` always open; north `door_locked` plus YAML `guardian` until that puzzle is solved, then an open `door` into the next YAML room), status gems, `focus` reticle, Kenney CC0 SFX on door / room / chest / quest. Sprite keys, SFX keys, music keys, and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 - **Panel B** — CRT-like terminal: Game Master log, command prompt (enabled only for `turnName`), seat chips, elapsed clock. Font is IBM Plex Mono (readable; not a bitmap font).
 
 Voice / TTS is out of scope for v1. Short Kenney CC0 map SFX and a looping Kenney CC0 music bed are in v1.
 
-Vite (`npm run dev`) proxies `/api` and `/ws` to `localhost:8080`. nginx in cluster does the same against `questshift-engine:8080`. The UI opens `/ws/sessions/{id}` for live presence snapshots; `GET /api/sessions/{id}` once a second remains the fallback.
+Vite (`npm run dev`) proxies `/api` and `/ws` to `localhost:8080`. nginx in cluster does the same against `questshift-engine:8080`. The UI opens `/ws/sessions/{id}` for live presence **and** scored-command snapshots so every party member sees the shared board and GM prose; `GET /api/sessions/{id}` once a second remains the fallback.
 
 ## Quality
 

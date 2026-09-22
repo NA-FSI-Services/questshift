@@ -79,6 +79,19 @@ v1 still serves **IBM Granite 3.2 8B Instruct** through the existing **vLLM Depl
 - **Full winning commands as clue text.** Fragments feed a private map dialog; regex still wins.
 - **Dumping chest text on the shared terminal.** Only the opener reads the well.
 
+## Layer-scoped map dialogs (2026-09-22)
+
+**Choice:** Map dialogs belong to the current layer. Overworld (`viewedRoomId` empty) reads `story.clues` only, at overworld `x` / `y`. An interior reads that room’s `clues` only. Leave or enter another room closes the open dialog. Panel B shows lobby copy (`story.opening`) or that room’s `narrative` — not another room’s dump. Pickup is still `POST /api/sessions/{id}/presence`; empty `viewedRoomId` may pick a lobby id and still refuses room ids. Chests stay on the floor; text stays private to the opener; pickup never scores. Tracker: [questshift#21](https://github.com/NA-FSI-Services/questshift/issues/21) (spec [#22](https://github.com/NA-FSI-Services/questshift/issues/22), campaigns [#23](https://github.com/NA-FSI-Services/questshift/issues/23), UI [#24](https://github.com/NA-FSI-Services/questshift/issues/24) [#25](https://github.com/NA-FSI-Services/questshift/issues/25), engine [#26](https://github.com/NA-FSI-Services/questshift/issues/26)). Follow-on to [questshift#10](https://github.com/NA-FSI-Services/questshift/issues/10). This is the in-run Kenney lobby map, not the pre-run Start screen in [questshift#16](https://github.com/NA-FSI-Services/questshift/issues/16).
+
+**Rejected**
+
+- **Flattening every room’s chests onto Panel A.** Each layer has its own authored set.
+- **Opening a foreign-layer chest id** (Playbook from the Shell, or `shell-log` from the lobby).
+- **Refusing all pickups when `viewedRoomId` is empty.** That blocked lobby clues.
+- **A new REST route for lobby pickup.** Presence grows only by allowing `story.clues` on the overworld.
+- **Dumping chest `text` or another room’s `narrative` on Panel B** after you leave through the south door.
+- **TTS.**
+
 ## Party aliases and room occupancy (2026-09-16)
 
 **Choice:** Panel A shows people. Every member has a visible unique alias next to their Kenney seat sprite. Same-layer walkers draw at last presence `mapX` / `mapY`; overlapping sprites offset. If Linus is inside The Broken Shell and you are on the overworld, occupancy on that room icon shows he is there — you do not enter to know. Inside a room, only walkers who share that interior are drawn. Presence stays `POST /api/sessions/{id}/presence`. Live walks fan out the existing `/ws/sessions/{id}` `GameSession` snapshot; the 1s `GET` is a fallback. No new REST routes. Seats stay cosmetic. Tracker: [questshift#11](https://github.com/NA-FSI-Services/questshift/issues/11), spec [questshift#12](https://github.com/NA-FSI-Services/questshift/issues/12).
@@ -143,7 +156,7 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 
 ## Shared command board (2026-09-16)
 
-**Choice:** persist `commandLog` on `GameSession` (alias, seat, command, pass/fail, room). REST GET, the 1s poll, WebSocket snapshot, and export all carry the same rows. Panel B shows the **current room** only. No new route.
+**Choice:** persist `commandLog` on `GameSession` (alias, seat, command, pass/fail, room). REST GET, the 1s poll, WebSocket snapshot, and export all carry the same rows. `POST /api/sessions/{id}/commands` fans that snapshot to every open `/ws/sessions/{id}` so every browser in the party sees the attempt and GM prose without waiting. Panel B shows the **current room** only. No new route.
 
 **Rejected**
 
@@ -153,13 +166,22 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 
 ## Challenge doors and guardians (2026-09-17)
 
-**Choice:** Every challenge room has two interior doors. South is the lobby door, always open (`door` at `(450, 470)`); Esc / click / E on it returns to the overworld. North is the challenge door: `door_locked` plus that room’s YAML `guardian` until the puzzle is solved, then an open `door` with no guardian. Beating the guardian is the YAML command in the terminal, not a combat system. The open north door is cosmetic; sequential unlock still goes through the lobby / overworld. Distinct Kenney sprites per room (`guardian_shell` / `guardian_playbook` / `guardian_pod` / `guardian_servlet` / `guardian_throne`). Author `guardian: { id, title, sprite }` on every room.
+**Choice:** Every challenge room has two interior doors. South is the lobby door, always open (`door` at `(450, 470)`); Esc / click / E on it returns to the overworld. North is the challenge door: `door_locked` plus that room’s YAML `guardian` until the puzzle is solved, then an open `door` with no guardian. Beating the guardian is the YAML command in the terminal, not a combat system. Distinct Kenney sprites per room (`guardian_shell` / `guardian_playbook` / `guardian_pod` / `guardian_servlet` / `guardian_throne`). Author `guardian: { id, title, sprite }` on every room. After a pass, the open north door enters the next YAML room (see 2026-09-22).
 
 **Rejected**
 
 - **Guardian on the south lobby door.** Players must always be able to leave.
 - **A real combat minigame.** YAML regex still wins. The sprite is cosmetic. The hour is escape-room role-play (walk, clues, simulated terminal), not a battle.
-- **North door walking into the next interior.** Room order stays sequential on the overworld.
+
+## North door to the next challenge (2026-09-22)
+
+**Choice:** After `puzzleCompletion[roomId]`, the north `door` is a real exit into the next YAML room (`order + 1`) when that room is already unlocked (`currentRoomId` after the pass, or completed). Click it, or E / Enter while standing on it. Presence still sets `viewedRoomId` and still refuses locked future rooms. The south lobby door still returns to the overworld; overworld gates still work. The throne has no successor — its open north door is a no-op. Scoring still only advances via YAML. The guardian sprite stays cosmetic (not combat).
+
+**Rejected**
+
+- **Forcing a lobby hop after every pass.** The north door is the sequential path; the lobby remains an alternate.
+- **Auto-moving the whole party when anyone solves.** Only the walker who uses the door changes `viewedRoomId`.
+- **Skipping YAML unlock.** The next room must already be `currentRoomId` or completed.
 
 ## No combat (2026-09-22)
 
