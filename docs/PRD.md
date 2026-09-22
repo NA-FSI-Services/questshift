@@ -20,8 +20,8 @@ Seats are Guardian, Automancer, Cluster Ranger, and Artificer. They are avatars 
 ## Journey
 
 1. Facilitator applies one QuestShift stack to one OpenShift project (one Route; many parties).
-2. Party opens the UI Route. Dual panel: Phaser dungeon (Panel A) and CRT-like terminal (Panel B).
-3. Facilitator starts a 60-minute session for campaign `devops-dungeon` (*The Cluster That Forgot Its Name*).
+2. Party opens the UI Route. Pre-run **quest lobby**: pick the shipped campaign, a cosmetic character, and a unique alias. A Kenney CC0 music bed plays after the first gesture (mute control). Dual panel (Phaser dungeon + CRT terminal) appears after Start or Join.
+3. Facilitator starts a 60-minute session for campaign `devops-dungeon` (*The Cluster That Forgot Its Name*) from the lobby (`POST /api/sessions` with the selected `campaignId`).
 4. Game Master narrates the current room as JSON and grants the floor (`turnName`). Only that player types a command, playbook, `oc` line, or Java snippet. After the GM answers, the floor rotates.
 5. `CommandEvaluator` scores the input. Pass grants loot and unlocks the next room. Fail increments hints.
 6. Five rooms in order. Boss requires runes THORN, ASH, OAK, IRON already in inventory.
@@ -56,8 +56,10 @@ If vLLM is unavailable, the engine uses authored YAML narrative and hints so the
 
 ### Dual panel
 
+- Pre-run lobby: quest card(s) from `GET /api/campaigns` (v1: one card), cosmetic character + alias, Start / Join. Hidden once this browser is in a party.
 - Panel A: Phaser 3 16-bit dungeon — five walkable rooms, Kenney seat sprites with unique aliases, occupancy on a room icon when a teammate is inside, authored clues, status gems, Kenney CC0 door/room/chest/quest SFX. Kenney Tiny Dungeon sheet in `questshift-ui/public/assets/`.
 - Panel B: readable IBM Plex Mono terminal — GM log, command box (only `turnName` can type), seat chips, elapsed clock, export control.
+- Kenney CC0 looping music bed (`bgm_lobby` / `bgm_dungeon`) with a mute control. Duck under the quest-complete jingle. No TTS.
 
 ## Success bar
 

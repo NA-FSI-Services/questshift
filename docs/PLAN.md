@@ -47,6 +47,10 @@ Set up OpenShift 4.20+. Log in as cluster-admin (`oc whoami` must succeed) and k
 
 Exit: facilitated 60-minute run on the workshop cluster, export/import survives a pod bounce via PVC `questshift-session-export`.
 
+## Quest lobby (in v1)
+
+A browser that is not yet in a party sees a dedicated lobby (campaign card from `GET /api/campaigns`, cosmetic character + unique alias, Start / Join), then Panel A/B. A Kenney CC0 music bed loops after the first gesture, with mute. Tracker: [questshift#16](https://github.com/NA-FSI-Services/questshift/issues/16). Extra campaigns stay out of v1 — the lobby lists the shipped `devops-dungeon` card only.
+
 ## Party join (in v1)
 
 Many browsers on the same hour, and many hours on the same engine. Shareable `joinCode`; Start always creates another party. Joiners add a unique alias via `POST /api/sessions/{id}/party` (cap 8). Leave and delete are named in [API-CONTRACT.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/API-CONTRACT.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/API-CONTRACT.md`). Shared room board is `session.commandLog`. The Game Master grants `turnName` so only one alias types at a time ([questshift#36](https://github.com/NA-FSI-Services/questshift/issues/36), follow-on to [questshift#32](https://github.com/NA-FSI-Services/questshift/issues/32)). Walkable map + YAML clues: [questshift#10](https://github.com/NA-FSI-Services/questshift/issues/10). Party aliases and room occupancy on Panel A: [questshift#11](https://github.com/NA-FSI-Services/questshift/issues/11) (spec [questshift#12](https://github.com/NA-FSI-Services/questshift/issues/12), UI [questshift#13](https://github.com/NA-FSI-Services/questshift/issues/13), engine [questshift#14](https://github.com/NA-FSI-Services/questshift/issues/14)). Tracker: [questshift#6](https://github.com/NA-FSI-Services/questshift/issues/6).

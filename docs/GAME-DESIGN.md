@@ -13,7 +13,7 @@ Campaign id `devops-dungeon`. Title: **The Cluster That Forgot Its Name**. Premi
 
 | Minute | Beat | Room id | Puzzle | Loot |
 | --- | --- | --- | --- | --- |
-| 0–4 | Opening. GM leans on a cracked Route. Seats chosen (cosmetic). | — | — | — |
+| 0–4 | Quest lobby: pick the shipped campaign, a cosmetic seat, and a unique alias. Kenney music bed. Then GM leans on a cracked Route. | — | — | — |
 | 4–14 | The Broken Shell | `room-01-broken-shell` | `linux` pipeline | `rune-thorn` **THORN** |
 | 14–24 | The Playbook of Binding | `room-02-playbook-of-binding` | `ansible` play | `rune-ash` **ASH** |
 | 24–36 | The Pod That Would Not Wake | `room-03-pod-that-would-not-wake` | `openshift` probe | `rune-oak` **OAK** |
@@ -32,7 +32,7 @@ Win: all five `puzzleCompletion` flags true; throne accepted the annotation; the
 | `ranger` | Cluster Ranger | `#2a6f97` | OpenShift ranger |
 | `artificer` | Artificer | `#7b4ea3` | Java artificer |
 
-Anyone may **solve** any room when they hold the Game Master floor (`turnName`). The engine does not gate puzzles by `seatId`. Typing is sequential: only the holder may `POST /api/sessions/{id}/commands`. WebSocket currently stamps seat `shared` and must not bypass the floor. One engine process hosts many parties; players share a `joinCode` (`thorn-golem`) so a second browser can join without YAML import. Start may create `iron-ward` while `throne-ward` is still in memory. Each player picks a cosmetic seat and a **unique alias** (max 8 people). Same seat may be shared. Suggested aliases, first unused:
+Anyone may **solve** any room when they hold the Game Master floor (`turnName`). The engine does not gate puzzles by `seatId`. Typing is sequential: only the holder may `POST /api/sessions/{id}/commands`. WebSocket currently stamps seat `shared` and must not bypass the floor. One engine process hosts many parties; players share a `joinCode` (`thorn-golem`) so a second browser can join without YAML import. Start may create `iron-ward` while `throne-ward` is still in memory. Each player picks a cosmetic seat and a **unique alias** (max 8 people) **in the quest lobby** before Start or Join. Same seat may be shared. Suggested aliases, first unused:
 
 | Seat | Suggestions (in order) |
 | --- | --- |
@@ -73,7 +73,7 @@ Every challenge room has **two interior doors**:
 
 Do not put the guardian on the lobby door. The sprite is cosmetic; there is no battle, weapon, or HP. The hour is escape-room role-play. Named keys and coordinates: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 
-Overworld spawn is 56px south of the current room node (inside the 64px enter radius), so a four-seat party stacks on the same pixel. E or Enter enters a nearby unlocked room or picks a nearby clue. Esc or the south lobby door returns to the overworld. Keyboard is ignored while the terminal is focused so typing `oc` is not stolen. Panel A plays Kenney CC0 SFX on those map beats (door, threshold step, chest latch, room-complete jingle). Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`). The Game Master stays text; this is not TTS.
+Overworld spawn is 56px south of the current room node (inside the 64px enter radius), so a four-seat party stacks on the same pixel. E or Enter enters a nearby unlocked room or picks a nearby clue. Esc or the south lobby door returns to the overworld. Keyboard is ignored while the terminal is focused so typing `oc` is not stolen. Panel A plays Kenney CC0 SFX on those map beats (door, threshold step, chest latch, room-complete jingle). A Kenney CC0 music bed loops in the quest lobby (`bgm_lobby`) and quieter during the hour (`bgm_dungeon`), with a mute control; duck under the room-complete jingle. Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`). The Game Master stays text; this is not TTS. Do not add WASD footsteps.
 
 ### Where is Linus? (Panel A occupancy)
 

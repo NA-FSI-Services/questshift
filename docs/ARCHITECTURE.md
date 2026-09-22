@@ -65,18 +65,20 @@ UI split:
 
 | Path | Panel |
 | --- | --- |
-| `src/App.tsx` | Dual-panel shell, session start, loot strip |
+| `src/App.tsx` | Quest lobby, dual-panel shell, session start, loot strip |
+| `src/lobby/Lobby.tsx` | Pre-run campaign + character picker |
 | `src/game/DungeonScene.ts` | Panel A Phaser board |
 | `src/terminal/TerminalPanel.tsx` | Panel B IBM Plex Mono terminal |
 | `src/api/client.ts` | REST helpers (`/api/campaigns`, sessions, party join/leave/delete, commands, export) |
 | `public/assets/kenney/tiny-dungeon/` | CC0 sprite sheet |
 | `public/assets/kenney/sfx/` | CC0 door / room / chest / quest clips |
+| `public/assets/kenney/music/` | CC0 looping lobby / dungeon beds |
 
 GitOps split: facilitators run `./install.sh` (Argo CD Application on `k8s/`). Manifests: `k8s/granite-pipeline.yaml` (Tekton ModelCar copy), `k8s/llm-deployment.yaml` (vLLM + L4), `game-backend-deployment.yaml`, `game-ui-deployment.yaml`, `configmap.yaml`, `pvc.yaml`, `openshift-route.yaml`, campaign ConfigMap generator.
 
 ## Game loop
 
-1. `POST /api/sessions` loads `campaign-devops-dungeon.yaml` (or classpath copy) and creates `GameSession` with a unique `joinCode` and the posted party (1–8 members, unique aliases). A second Start creates another hour. A second browser `GET`s `/api/sessions/{joinCode}`, then `POST /api/sessions/{id}/party`. Leave is `DELETE /api/sessions/{id}/party?name=…`; delete is `DELETE /api/sessions/{id}`.
+1. The UI lobby lists `GET /api/campaigns` and posts the chosen `campaignId` on Start. `POST /api/sessions` loads `campaign-devops-dungeon.yaml` (or classpath copy) and creates `GameSession` with a unique `joinCode` and the posted party (1–8 members, unique aliases). A second Start creates another hour. A second browser `GET`s `/api/sessions/{joinCode}`, then `POST /api/sessions/{id}/party`. Leave is `DELETE /api/sessions/{id}/party?name=…`; delete is `DELETE /api/sessions/{id}`.
 2. Engine asks `LLMService` for a Game Master turn. The model **must** return a JSON object:
 
    ```json
@@ -143,10 +145,11 @@ Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshi
 
 Dual panel:
 
-- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), each challenge room as a wooden gate at `mapX` / `mapY` (`lobby_gate` for current, locked, and resolved rooms), walkable seat sprites with unique alias labels, occupancy on a room gate when a teammate is inside, YAML `clue` chests with a private map dialog, two interior doors per room (south lobby `door` always open; north `door_locked` plus YAML `guardian` until that puzzle is solved), status gems, `focus` reticle, Kenney CC0 SFX on door / room / chest / quest. Sprite keys, SFX keys, and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
+- **Quest lobby** — React pre-run screen (not a second Phaser dungeon). Quest cards from `GET /api/campaigns` (v1: `devops-dungeon`), cosmetic character + unique alias, Start / Join. Dual panel stays hidden until this browser is in a party.
+- **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), each challenge room as a wooden gate at `mapX` / `mapY` (`lobby_gate` for current, locked, and resolved rooms), walkable seat sprites with unique alias labels, occupancy on a room gate when a teammate is inside, YAML `clue` chests with a private map dialog, two interior doors per room (south lobby `door` always open; north `door_locked` plus YAML `guardian` until that puzzle is solved), status gems, `focus` reticle, Kenney CC0 SFX on door / room / chest / quest. Sprite keys, SFX keys, music keys, and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 - **Panel B** — CRT-like terminal: Game Master log, command prompt (enabled only for `turnName`), seat chips, elapsed clock. Font is IBM Plex Mono (readable; not a bitmap font).
 
-Voice / TTS is out of scope for v1. Short Kenney CC0 map SFX are in v1.
+Voice / TTS is out of scope for v1. Short Kenney CC0 map SFX and a looping Kenney CC0 music bed are in v1.
 
 Vite (`npm run dev`) proxies `/api` and `/ws` to `localhost:8080`. nginx in cluster does the same against `questshift-engine:8080`. The UI opens `/ws/sessions/{id}` for live presence snapshots; `GET /api/sessions/{id}` once a second remains the fallback.
 

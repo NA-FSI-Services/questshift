@@ -17,7 +17,9 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Join | Human-readable `joinCode` (two dungeon words). Start always creates a new hour. Members via `POST /api/sessions/{id}/party`. Leave `DELETE …/party?name=`. Delete `DELETE /api/sessions/{id}`. |
 | Seats | Cosmetic avatars; any player may solve any puzzle |
 | TTS | Deferred (Game Master stays text; no Web Speech) |
-| Map SFX | Kenney CC0 clips on door / room enter / chest / quest complete; no music bed |
+| Map SFX | Kenney CC0 clips on door / room enter / chest / quest complete |
+| Music bed | Kenney CC0 Music Loops (`bgm_lobby`, quieter `bgm_dungeon`); mute persists for the tab; duck under quest-complete |
+| Pre-run | Dedicated quest lobby (campaign picker + character/alias); dual panel only after Start/Join/restore |
 | Native image | Later; JVM first |
 | Puzzle source of truth | Campaign YAML; LLM narrates only; YAML fallback if vLLM is down |
 | Terminal | Simulated; never execute player `oc` / Ansible / Linux / Java on the cluster |
@@ -91,13 +93,13 @@ v1 still serves **IBM Granite 3.2 8B Instruct** through the existing **vLLM Depl
 
 ## Kenney map SFX, not TTS (2026-09-17)
 
-**Choice:** Panel A plays four short Kenney CC0 clips (RPG Audio + Music Jingles) on door, room enter, chest, and room complete. Game Master narration stays text. No Web Speech, Piper, or spoken GM lines.
+**Choice:** Panel A plays four short Kenney CC0 clips (RPG Audio + Music Jingles) on door, room enter, chest, and room complete. Game Master narration stays text. No Web Speech, Piper, or spoken GM lines. A Kenney CC0 **music bed** was added later (see **Quest lobby and Kenney music bed**). WASD footsteps stay out.
 
 **Rejected**
 
 - **TTS / Web Speech for GM copy.** Still deferred. SFX are map confirmation, not voice.
 - **AI-generated audio or a second audio license.** Same Kenney CC0 exception as the sprite sheet.
-- **Music beds or WASD footsteps.** Too noisy for a facilitated hour.
+- **WASD footsteps.** Too noisy for a facilitated hour.
 
 Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 
@@ -130,7 +132,7 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 
 ## Unique alias + cosmetic character (2026-09-16)
 
-**Choice:** Start requires 1–8 real members (no placeholders). Joiners `POST /api/sessions/{id}/party` with `{ name, seatId }`. Aliases are unique (case-insensitive); seats may repeat; cap **8**; pick once (same alias again is idempotent). Suggested names are per-seat lists in [GAME-DESIGN.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/GAME-DESIGN.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/GAME-DESIGN.md`). Picker lives in the topbar.
+**Choice:** Start requires 1–8 real members (no placeholders). Joiners `POST /api/sessions/{id}/party` with `{ name, seatId }`. Aliases are unique (case-insensitive); seats may repeat; cap **8**; pick once (same alias again is idempotent). Suggested names are per-seat lists in [GAME-DESIGN.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/GAME-DESIGN.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/GAME-DESIGN.md`). Picker lives in the **quest lobby** (see **Quest lobby and Kenney music bed** below). The 2026-09-16 topbar picker is superseded.
 
 **Rejected**
 
@@ -138,7 +140,6 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 - **One player per seat.** Seats stay cosmetic.
 - **Overloading Start with `joinCode` to add a member.**
 - **Changing alias or seat after join.**
-- **A dedicated lobby screen.**
 
 ## Shared command board (2026-09-16)
 
@@ -189,3 +190,15 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 - **Gating by `seatId`.** Seats stay cosmetic.
 - **A second “pass the floor” REST route.** Rotation is automatic after each GM answer.
 - **WebSocket text frames scoring as `shared`.** That path must not bypass the floor.
+
+## Quest lobby and Kenney music bed (2026-09-22)
+
+**Choice:** Thaw the dedicated lobby and a Kenney CC0 music bed for playtesting. Tracker [questshift#16](https://github.com/NA-FSI-Services/questshift/issues/16) (spec [#17](https://github.com/NA-FSI-Services/questshift/issues/17), lobby UI [#18](https://github.com/NA-FSI-Services/questshift/issues/18), character picker [#19](https://github.com/NA-FSI-Services/questshift/issues/19), music [#20](https://github.com/NA-FSI-Services/questshift/issues/20)). Before this browser is in a party, show a React **quest lobby** (not dual-panel play). Cards come from existing `GET /api/campaigns`; v1 still ships **one** card (`devops-dungeon`). Character + unique alias move into that lobby. Start/Join still hit `POST /api/sessions` and `GET` + `POST …/party`. After Start, collapse to **Party {joinCode}**; switch / new party return to the lobby. Named looping beds `bgm_lobby` (`Wacky Waiting.ogg`) and quieter `bgm_dungeon` (`Infinite Descent.ogg`) from Kenney Music Loops 1.1. Unlock on first click/key. Mute persists for the tab. Duck under `sfx_quest_complete`. HTMLAudio plays the bed so Phaser need not be mounted. Extra campaigns, extra Routes, TTS, and seat-gated puzzles stay frozen.
+
+**Rejected**
+
+- **Keeping Start/Join on an empty topbar in front of Panel A/B.** Playtesting needed a pre-run pick.
+- **Authoring a second campaign YAML** so the lobby has two cards.
+- **A second OpenShift Route or session router.**
+- **TTS / mic / WASD footsteps.**
+- **AI audio or a second music license.** Kenney CC0 only.

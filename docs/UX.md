@@ -5,8 +5,18 @@ Dual-panel 16-bit dungeon. Canvas is pixel art; the terminal stays readable.
 ## Layout
 
 ```text
+Pre-run lobby (no party on this tab)
 ┌──────────────────────────────────────────────────────────────────────────┐
-│ QuestShift  The Cluster That Forgot Its Name  [start] [join thorn-golem] │
+│ QuestShift                                                    [mute]     │
+│ Pick a quest                                                             │
+│  [ The Cluster That Forgot Its Name · 60 min · premise ]                 │
+│ Character  [Guardian] [Automancer] [Cluster Ranger] [Artificer]          │
+│ Alias [Ada]  [start 60-minute run]  Join code [thorn-golem] [Join]       │
+└──────────────────────────────────────────────────────────────────────────┘
+
+In-run dual panel
+┌──────────────────────────────────────────────────────────────────────────┐
+│ QuestShift  The Cluster That Forgot Its Name  Party thorn-golem  [mute]  │
 │             [YAML fallback — Game Master unreachable]                    │
 ├────────────────────────────────────────────┬─────────────────────────────┤
 │ Panel A — Phaser canvas                    │ Panel B — terminal          │
@@ -16,12 +26,14 @@ Dual-panel 16-bit dungeon. Canvas is pixel art; the terminal stays readable.
 └────────────────────────────────────────────┴─────────────────────────────┘
 ```
 
-Empty topbar: four **character** buttons, an **alias** field (suggested from the selected seat, skipping names already in a looked-up party), **start 60-minute run**, plus **Join code** / **Join**. Panel A/B stay visible — not a lobby screen. After Start, those party actions collapse into a **Party {joinCode}** dropdown: **Copy code**, **Switch party** (type another code such as `iron-ward`), **new party**, **Abandon party**, and **Delete party** (danger zone: type the join code). Session restore only reapplies an `active` stored party. Character and alias stay yours until you switch or abandon.
+A browser that is not yet in a party sees a **quest lobby** (React, not a second Phaser dungeon). Dual-panel play is hidden until Start, Join, or restore of an `active` stored party. The lobby lists quest cards from `GET /api/campaigns` (title, subtitle, duration, premise). v1 still ships **one** card: `devops-dungeon` / *The Cluster That Forgot Its Name*. Selecting a card sets `campaignId` on `POST /api/sessions` — do not invent a new route. Four **character** buttons (Kenney seat sprites) and an **alias** field (suggested from the selected seat, skipping names already in a looked-up party) live **in the lobby**. **Start 60-minute run** and **Join code** / **Join** stay there. Do not gate Start on filling four unique seats.
+
+Join still looks up `GET /api/sessions/{joinCode}` then `POST /api/sessions/{id}/party`. Joiners use the same lobby; the quest card is the live party’s `campaignId`, not a second Start. After Start or Join, enter Panel A/B. Party actions collapse into a **Party {joinCode}** dropdown: **Copy code**, **Switch party**, **new party**, **Abandon party**, and **Delete party** (danger zone: type the join code). Switch party and new party return this browser to the lobby (leave the current hour first). The in-run chrome does **not** re-open the full seat grid. Session restore only reapplies an `active` stored party (skips the lobby). Character and alias stay yours until you switch or abandon. `import.yaml` stays available from the lobby (no live session) and from Panel B.
 
 - **Panel A:** `src/game/DungeonScene.ts` in `questshift-ui`. Phaser 3 scene `dungeon`. Fill the canvas with `floor` / `wall` tiles, then place each challenge room as a wooden gate (`lobby_gate`) at campaign `mapX` / `mapY`. Do not draw a path snake between rooms. Seat sprites **walk** (WASD / arrows while the canvas is focused). `focus` marks the current scoring room. E / Enter enters a nearby unlocked room or opens a nearby `clue` chest (clicking the room, chest, or south lobby door also works); Esc or the south lobby door leaves the interior. Door, room, chest, and quest SFX use named Kenney CC0 keys (below). Opening a chest shows an emerging IBM Plex Mono dialog on **that** canvas only — teammates do not see the text on Panel B — and the chest stays on the floor so they can still open it. Every challenge room has **two interior doors**: a south `door` always open back to the lobby, and a north challenge door (`door_locked` plus that room’s YAML `guardian` until the puzzle is solved; `door` after). Draw `loot_*` sprites on the canvas as inventory runes appear; keep the HTML inventory line under the board. Every party member (including you) shows a unique **alias** next to their Kenney seat sprite. Same-layer walkers draw at last presence `mapX` / `mapY`; overlapping sprites offset. Overworld occupancy marks who is inside each named room. Movement math lives in `src/map.ts` (Vitest); occupancy / label / offset / private-clue helpers follow the same pattern. Phaser `src/game/**` stays coverage-excluded.
 - **Panel B:** `src/terminal/TerminalPanel.tsx`. Still the command surface. CRT-like background (`#07110c`) and scanline wash in CSS; **typeface is IBM Plex Mono**, not a 8×8 font. Players must read YAML, `oc`, and Java. When a player is inside a room, the log shows that room’s authored `narrative`. Chest fragments stay on the map dialog. The GM log is followed by the **shared room board**: each attempt in the current scoring room shows alias, seat, command, and accepted/failed. Other rooms’ attempts stay on the session but are hidden until the party is scoring that room. Only the alias in `session.turnName` can use the command box; everyone else sees a disabled prompt and a status line **waiting — {turnName} has the floor**. The GM grant line names the holder. The 1s `GET` poll is a fallback; live walks use the existing `/ws/sessions/{id}` `GameSession` snapshot. Both carry `commandLog`, `turnName`, `foundClues`, `partyMembers` positions, and per-member `foundClues`.
 
-On viewports under 960px, stack Panel A above Panel B.
+On viewports under 960px, the lobby still stacks (quest card, then character, then Start/Join). Dual-panel play stacks Panel A above Panel B.
 
 ## Palette and motion
 
@@ -56,6 +68,8 @@ Vendored CC0 1.0 sheet. Do not replace with AI-generated images.
 | NOTICE | `questshift-ui/public/assets/NOTICE` |
 | SFX clips | `questshift-ui/public/assets/kenney/sfx/` |
 | SFX license | `questshift-ui/public/assets/kenney/sfx/LICENSE.txt` |
+| Music beds | `questshift-ui/public/assets/kenney/music/` |
+| Music license | `questshift-ui/public/assets/kenney/music/LICENSE.txt` |
 
 GitHub tree: https://github.com/NA-FSI-Services/questshift-ui/tree/main/public/assets  
 Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-ui/public/assets/`
@@ -140,7 +154,21 @@ Short map cues only. Game Master copy stays text; no TTS, mic, or Web Speech. Ph
 Vendored copies (renamed): `questshift-ui/public/assets/kenney/sfx/{door_open,room_enter,quest_complete,chest_open}.{ogg,wav}`. GitHub tree: https://github.com/NA-FSI-Services/questshift-ui/tree/main/public/assets/kenney/sfx  
 Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-ui/public/assets/kenney/sfx/`
 
-Door and chest cues are **local** (your sprite). Quest complete is **party-wide** (every client hears it when the shared `puzzleCompletion` map gains a room). Session restore primes already-complete rooms so it does not replay five jingles. Do not add music beds, footsteps on WASD, or spoken GM lines.
+Door and chest cues are **local** (your sprite). Quest complete is **party-wide** (every client hears it when the shared `puzzleCompletion` map gains a room). Session restore primes already-complete rooms so it does not replay five jingles. Do not add footsteps on WASD or spoken GM lines.
+
+## Music bed (Kenney CC0)
+
+Looping beds, not map one-shots. Game Master copy stays text; no TTS, mic, or Web Speech. HTMLAudio (not `DungeonScene`) plays the bed so the lobby can hear it before Phaser mounts. Load OGG then WAV so Safari can play the same loop. Audio unlocks on the first lobby or canvas click/key (same autoplay rule as map SFX). Missing files fail open — the lobby and board still work. Named keys below are what `src/sounds.ts` must use.
+
+| Key | When | Pack | Kenney file | What you hear |
+| --- | --- | --- | --- | --- |
+| `bgm_lobby` | Pre-run lobby, after the first gesture, unless muted | [Music Loops](https://kenney.nl/) 1.1 | `Wacky Waiting.ogg` | Looping waiting-room bed, ~12s |
+| `bgm_dungeon` | Dual-panel hour (quieter than lobby) | [Music Loops](https://kenney.nl/) 1.1 | `Infinite Descent.ogg` | Looping dungeon bed, ~12s |
+
+Vendored copies (renamed): `questshift-ui/public/assets/kenney/music/{lobby,dungeon}.{ogg,wav}`. GitHub tree: https://github.com/NA-FSI-Services/questshift-ui/tree/main/public/assets/kenney/music  
+Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-ui/public/assets/kenney/music/`
+
+Mute/unmute on the lobby and on the in-run topbar. Remember the choice for the tab (`sessionStorage` key `questshift-muted`). Default is unmuted; browsers stay silent until the first gesture. Duck (or pause) the bed under party-wide `sfx_quest_complete` so the jingle is audible, then resume. Switch to `bgm_dungeon` when Panel A/B appear; abandon / delete / switch back to the lobby restores `bgm_lobby`. Do not add a second audio license or AI music.
 
 ## Party occupancy on Panel A
 
@@ -172,4 +200,4 @@ When `session.yamlFallback` is true (vLLM down, `%dev`, or HTTP ≥ 300), show *
 - Command field has a visible label (sr-only is acceptable). When this alias does not hold `turnName`, keep the wait line **waiting — {turnName} has the floor** (`role="status"`) so disable is not the only cue.
 - Seat list in HTML under the canvas so color is not the only cue (`<i>` swatch + title). Canvas alias labels are the sprite cue: two players who share a seat still read as different people.
 - Contrast: IBM Plex Mono on `#07110c` meets readable ops output; do not drop font size below 14px in the log.
-- SFX are extra confirmation of gems, interiors, and chest dialogs. The hour is playable muted; browsers stay silent until the canvas is clicked or a walk key is pressed.
+- SFX are extra confirmation of gems, interiors, and chest dialogs. The looping bed is extra atmosphere. The hour is playable muted; browsers stay silent until the lobby or canvas is clicked or a key is pressed. The mute control is a toggle with a visible label (Mute music / Unmute music), not color alone.
