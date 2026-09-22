@@ -45,7 +45,7 @@ Submitted commands for the **current room** appear on a shared board (alias, sea
 
 ## Walkable map
 
-Panel A is a walkable Kenney overworld. Each challenge room is a wooden gate (`lobby_gate_open` for the current room, `lobby_gate` for locked and resolved rooms). A hard-floor snake (`path` / `path_rocks`) connects the five rooms in campaign order; it is paint only. Each player moves their own seat sprite (WASD or arrows while the canvas is focused). `currentRoomId` still gates which puzzle the engine will **score**; walking does not change it. A player may **enter** the current room or any completed room, not a locked future room.
+Panel A is a walkable Kenney overworld. Each challenge room is a wooden gate (`lobby_gate` for the current room, locked rooms, and resolved rooms). Do not paint a hard-floor snake between rooms. Each player moves their own seat sprite (WASD or arrows while the canvas is focused). `currentRoomId` still gates which puzzle the engine will **score**; walking does not change it. A player may **enter** the current room or any completed room, not a locked future room.
 
 Inside a room, YAML `clues` sit on the floor as chests. Opening one shows an emerging dialog **on that player's map only** (IBM Plex Mono). The fragment never lands on Panel B and other browsers do not receive the text. The chest stays on the floor so every player can still open it. Pickup appends the `id` to that member's `foundClues` (session `foundClues` is the union for export) but does not hide the sprite. The Broken Shell chests are a filesystem tree, the log leaf that contains `rune=THORN`, and a grep/awk man page — never the full winning command. Regex / `accepted_examples` remain the scorer.
 

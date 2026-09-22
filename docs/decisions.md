@@ -33,7 +33,7 @@ Recorded from the kickoff workshop. Change these in the GitHub Project, then upd
 | Session restore | Terminal footer file picker (`import.yaml`) posts to existing `POST /api/sessions/import` |
 | Phase 1 proof | QuarkusTest submits all five YAML `accepted_examples` then export/import; no live facilitator pass |
 | Kenney sheet load | Packed `tilemap_packed.png` is 192×176; Phaser `spacing: 0`. Ignore `Tilesheet.txt` 1px gap |
-| Phase 2 board | Full Kenney tilemap: fill Panel A with `floor` / `wall`, wooden gates at `mapX` / `mapY` (`lobby_gate`; current room `lobby_gate_open`; resolved rooms stay closed), a `path` / `path_rocks` snake between rooms, plus gems, seat sprites, and `focus` reticle. Not a polyline of circles. Interior doors use `door` / `door_locked` (tiles 45 / 21). |
+| Phase 2 board | Full Kenney tilemap: fill Panel A with `floor` / `wall`, wooden gates at `mapX` / `mapY` (`lobby_gate` for current, locked, and resolved rooms), plus gems, seat sprites, and `focus` reticle. No `path` / `path_rocks` snake. Not a polyline of circles. Interior doors use `door` / `door_locked` (tiles 45 / 21). |
 | Phase 2 loot | HTML inventory strip stays; also draw `loot_*` sprites on Panel A as runes are collected (e.g. along the bottom of the tilemap) |
 | Phase 2 gem_hint | Show `gem_hint` on the current room after a failed command (`passed=false`) until the next pass or room change. No new engine field — UI keeps last command result. |
 | Phase 2 sprite scale | 3× (48px tiles), `pixelArt: true`, current-room pulse 1.0 → 1.15 |
@@ -167,3 +167,12 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 **Rejected**
 
 - **Battle / weapon pickup / intercept minigame.** Out of product. Escape-room role-play only.
+
+## Lobby gates (2026-09-22)
+
+**Choice:** Every overworld node uses `lobby_gate` (tile 9), including the current scoring room. Drop the `path` / `path_rocks` snake. `focus`, status gems, and the current-room pulse still mark which gate scores. Walking and YAML scoring are unchanged.
+
+**Rejected**
+
+- **`lobby_gate_open` on the active gate.** Same closed door as locked and resolved rooms.
+- **A painted trail between rooms.** The lobby is `floor` / `wall` fill plus gates.
