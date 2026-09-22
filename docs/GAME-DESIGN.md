@@ -54,9 +54,9 @@ Every challenge room has **two interior doors**:
 | Door | Sprite | Where | Rule |
 | --- | --- | --- | --- |
 | Lobby | `door` | South `(450, 470)` | Always open. Esc, click, or E on it returns to the overworld. |
-| Challenge | `door_locked` + YAML `guardian`, then `door` | North `(450, 70)` | Locked with that room's guardian until `puzzleCompletion[roomId]`. Beat the guardian by solving the YAML puzzle in the terminal. After a pass, the guardian vanishes and the north door shows open (cosmetic; the next scoring room is still entered from the lobby). |
+| Challenge | `door_locked` + YAML `guardian`, then `door` | North `(450, 70)` | Locked with that room's **cosmetic** guardian sprite until `puzzleCompletion[roomId]`. Beat it by solving the YAML puzzle in the terminal — not combat. After a pass, the guardian vanishes and the north door shows open (cosmetic; the next scoring room is still entered from the lobby). |
 
-Do not put the guardian on the lobby door. Named keys and coordinates: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
+Do not put the guardian on the lobby door. The sprite is cosmetic; there is no battle, weapon, or HP. The hour is escape-room role-play. Named keys and coordinates: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 
 Overworld spawn is 56px south of the current room node (inside the 64px enter radius), so a four-seat party stacks on the same pixel. E or Enter enters a nearby unlocked room or picks a nearby clue. Esc or the south lobby door returns to the overworld. Keyboard is ignored while the terminal is focused so typing `oc` is not stolen. Panel A plays Kenney CC0 SFX on those map beats (door, threshold step, chest latch, room-complete jingle). Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`). The Game Master stays text; this is not TTS.
 

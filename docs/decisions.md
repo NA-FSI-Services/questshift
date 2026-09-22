@@ -157,5 +157,13 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 **Rejected**
 
 - **Guardian on the south lobby door.** Players must always be able to leave.
-- **A real combat minigame.** YAML regex still wins.
+- **A real combat minigame.** YAML regex still wins. The sprite is cosmetic. The hour is escape-room role-play (walk, clues, simulated terminal), not a battle.
 - **North door walking into the next interior.** Room order stays sequential on the overworld.
+
+## No combat (2026-09-22)
+
+**Choice:** Reaffirm 2026-09-17. Tracker [questshift#27](https://github.com/NA-FSI-Services/questshift/issues/27) and children [#28](https://github.com/NA-FSI-Services/questshift/issues/28)–[#31](https://github.com/NA-FSI-Services/questshift/issues/31) (defend-the-solver, floor weapons, presence combat, Phaser intercept) are **closed not planned**. The north-door `guardian` is a cosmetic Kenney sprite. Beating it is the YAML command. Do not add weapons, HP, knockback, or a second player holding a golem while someone types.
+
+**Rejected**
+
+- **Battle / weapon pickup / intercept minigame.** Out of product. Escape-room role-play only.

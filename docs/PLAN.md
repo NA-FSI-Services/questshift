@@ -53,4 +53,4 @@ Many browsers on the same hour, and many hours on the same engine. Shareable `jo
 
 ## Explicitly not scheduled
 
-TTS, Ollama, native Quarkus, multi-party matchmaking across deployments, real command execution, extra campaigns, a database.
+TTS, Ollama, native Quarkus, multi-party matchmaking across deployments, real command execution, extra campaigns, a database, combat / battle (the north-door guardian is a cosmetic sprite; YAML still wins). [questshift#27](https://github.com/NA-FSI-Services/questshift/issues/27)–[#31](https://github.com/NA-FSI-Services/questshift/issues/31) closed not planned.

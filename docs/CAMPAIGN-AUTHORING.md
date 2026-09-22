@@ -44,7 +44,7 @@ Each `Campaign.Room` (Jackson → `io.questshift.campaign.Campaign.Room`):
 | `title` | yes | Phaser label |
 | `mapX`, `mapY` | yes | Panel A overworld coordinates |
 | `clues` | yes | List of floor chests inside the room. Each needs `id`, `label`, `text`, `x`, `y`. Fragments only — do **not** put a full `accepted_examples` command in `text`. Opening a chest shows a map dialog to **that player only**; it does not dump the text on Panel B. Chests stay on the floor after open. |
-| `guardian` | yes | `{ id, title, sprite }` for the north challenge door. `sprite` must be one of `guardian_shell`, `guardian_playbook`, `guardian_pod`, `guardian_servlet`, `guardian_throne`. Distinct `id` and `sprite` per room. The guardian bars `door_locked` until the puzzle is solved; beating it is the YAML command, not combat. |
+| `guardian` | yes | `{ id, title, sprite }` for the north challenge door. `sprite` must be one of `guardian_shell`, `guardian_playbook`, `guardian_pod`, `guardian_servlet`, `guardian_throne`. Distinct `id` and `sprite` per room. The guardian is a **cosmetic** sprite on `door_locked` until the puzzle is solved; beating it is the YAML command, not combat. Do not author weapons or battle stats. |
 | `miss_beats` | no | Ordered `{ pattern, message }` fails after regex/examples/soft match miss. First matching pattern supplies the GM miss line (YAML wins; no LLM rewrite). Room 1 uses these for a shouted name and a grep without awk. |
 | `puzzle_type` | yes | `linux` \| `ansible` \| `openshift` \| `java` |
 | `estimatedMinutes` | no | Facilitator pacing |
