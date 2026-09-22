@@ -28,7 +28,7 @@ Starts one party. Body optional. Many `active` parties may exist in the same eng
 }
 ```
 
-Missing/blank `campaignId` → `questshift.campaigns.default-id` (`devops-dungeon`). `party` is required and must contain **1–8** members. Each member needs a non-blank `name` (alias, unique in the party, case-insensitive) and a cosmetic `seatId` (`guardian` \| `automancer` \| `ranger` \| `artificer`). Same seat may be chosen more than once. There are **no** placeholder members. Response: `GameSession` after the opening GM turn, including `joinCode`. Invalid party → **400** `invalid_party`.
+Missing/blank `campaignId` → `questshift.campaigns.default-id` (`devops-dungeon`). `party` is required and must contain **1–8** members. Each member needs a non-blank `name` (alias, unique in the party, case-insensitive) and a cosmetic `seatId` (`guardian` \| `automancer` \| `ranger` \| `artificer`). Same seat may be chosen more than once. There are **no** placeholder members. Response: `GameSession` after the opening GM turn, including `joinCode` and `turnName` set to the first Start alias. The opening prose names that holder. Invalid party → **400** `invalid_party`.
 
 ### `GET /api/sessions/{id}`
 
@@ -42,11 +42,11 @@ Adds one player to the live party. `{id}` is the UUID **or** `joinCode`. Body:
 { "name": "Linus", "seatId": "automancer" }
 ```
 
-Response: `GameSession`. Alias uniqueness is case-insensitive. Same seat as another player is allowed. Cap **8**. Posting an alias that is already in the party is **idempotent** (200, original `seatId` kept — no character/alias change after join). Duplicate *new* alias → **409** `alias_taken`. Ninth player → **409** `party_full`. Session not `active` → **409** `party_not_active`. Blank alias or unknown `seatId` → **400** `invalid_party`.
+Response: `GameSession`. Alias uniqueness is case-insensitive. Same seat as another player is allowed. Cap **8**. Posting an alias that is already in the party is **idempotent** (200, original `seatId` kept — no character/alias change after join). Duplicate *new* alias → **409** `alias_taken`. Ninth player → **409** `party_full`. Session not `active` → **409** `party_not_active`. Blank alias or unknown `seatId` → **400** `invalid_party`. A new joiner is appended to `partyMembers` and **waits**; `turnName` does not jump to them.
 
 ### `DELETE /api/sessions/{id}/party?name={alias}`
 
-Removes that alias from the party. `{id}` is the UUID **or** `joinCode`. Unknown alias is **idempotent** (200, party unchanged). Blank `name` → **400** `invalid_party`. The hour stays in memory so others can keep playing; this is abandon, not delete. After a successful leave the engine fans the JSON snapshot on `/ws/sessions/{sessionId}`.
+Removes that alias from the party. `{id}` is the UUID **or** `joinCode`. Unknown alias is **idempotent** (200, party unchanged). Blank `name` → **400** `invalid_party`. The hour stays in memory so others can keep playing; this is abandon, not delete. If the leaver held `turnName`, grant the next remaining member immediately and announce. After a successful leave the engine fans the JSON snapshot on `/ws/sessions/{sessionId}`.
 
 ### `DELETE /api/sessions/{id}`
 
@@ -90,7 +90,7 @@ Response `CommandResult`:
 }
 ```
 
-`session` is the updated `GameSession`. `seatId` and optional `name` (alias) are recorded on the result and appended to `session.commandLog` for the **current room**. They do not gate the puzzle. Blank `name` is filled from the first party member with that `seatId`, else `shared`. Clearing the throne sets `status: complete`, freezes `elapsedSeconds`, and writes `adventureSummary`. Session not `active` → **409** `party_not_active`.
+`session` is the updated `GameSession`. `seatId` and optional `name` (alias) are recorded on the result and appended to `session.commandLog` for the **current room**. Seats do not gate the puzzle. **Turns do:** `name` (case-insensitive) must match `session.turnName`. Blank `name` is filled from the first party member with that `seatId`, else `shared`. A blank or `shared` name never holds the floor. After a scored attempt (pass or fail) the engine answers that speaker, rotates `turnName` to the next `partyMembers` alias (circular; solo keeps it), and the GM prose announces the grant. Clearing the throne sets `status: complete`, freezes `elapsedSeconds`, and writes `adventureSummary`. Session not `active` → **409** `party_not_active`. Alias is not the holder → **409** `not_your_turn` (session unchanged; no `commandLog` row). Presence is never turn-gated.
 
 ### `GET /api/sessions/{id}/export?format=yaml|json`
 
@@ -98,7 +98,7 @@ Default `format=yaml`. Body is serialized `GameSession`. Content-Type `applicati
 
 ### `POST /api/sessions/import?format=yaml|json`
 
-Raw body is YAML or JSON. If `format` is omitted, serializer sniffs `---` / `id:` / `campaignId:` as YAML, else JSON. Restores into the in-memory map (assigns a new `id` if blank; assigns a `joinCode` if blank). An imported `active` snapshot sits beside other live parties. Response: `GameSession`.
+Raw body is YAML or JSON. If `format` is omitted, serializer sniffs `---` / `id:` / `campaignId:` as YAML, else JSON. Restores into the in-memory map (assigns a new `id` if blank; assigns a `joinCode` if blank). Restore `turnName` when that alias is still in `partyMembers`; otherwise grant the first remaining member. An imported `active` snapshot sits beside other live parties. Response: `GameSession`.
 
 There is **no** campaign-reload HTTP route in v1. YAML changes need an engine restart.
 
@@ -109,11 +109,11 @@ There is **no** campaign-reload HTTP route in v1. YAML changes need an engine re
 | Event | Payload |
 | --- | --- |
 | On open | JSON snapshot (`export(..., "json")`) |
-| Client text frame | Treated as a **command string** (not JSON). Engine calls `submit(sessionId, command, "shared")`. Presence is **not** sent as a socket frame. |
-| Server reply after command | JSON snapshot after evaluate, to the sender. Seat on this path is always `"shared"`. Prefer REST commands when you need a real `seatId` and alias. |
+| Client text frame | Treated as a **command string** (not JSON). Engine calls `submit(sessionId, command, "shared")` with blank name. That path cannot match `turnName`, so it is **409** `not_your_turn` (or the socket returns the unchanged snapshot). Presence is **not** sent as a socket frame. |
+| Server reply after command | JSON snapshot after evaluate, to the sender. Seat on this path is always `"shared"`. Prefer REST commands: they carry alias and are the only scoring path that can hold the floor. |
 | After `POST /api/sessions/{id}/presence` | Same JSON `GameSession` snapshot to **every** open `/ws/sessions/{sessionId}` for that party (walk, enter/leave room, clue pickup). `{id}` on the POST may be UUID or `joinCode`; fan-out is keyed by the `GameSession`. |
 
-Live Panel A walks use this fan-out so other browsers do not wait for the 1s poll. The poll remains a valid fallback when no socket is open (UI occupancy can ship against GET before the engine child lands). Socket payloads are the same `GameSession` JSON, including `partyMembers` (`mapX` / `mapY` / `viewedRoomId` / `foundClues`), `commandLog`, and session `foundClues`.
+Live Panel A walks use this fan-out so other browsers do not wait for the 1s poll. The poll remains a valid fallback when no socket is open (UI occupancy can ship against GET before the engine child lands). Socket payloads are the same `GameSession` JSON, including `partyMembers` (`mapX` / `mapY` / `viewedRoomId` / `foundClues`), `commandLog`, `turnName`, and session `foundClues`.
 
 Do not add a presence opcode, a second WebSocket, or an occupancy REST route.
 
@@ -154,7 +154,8 @@ After parse, Java keeps **room YAML** `expectedCommandPattern`. Fallback sets `c
 | `skills` | string list | flavor (`piping`, …) |
 | `puzzleCompletion` | map | room id → boolean |
 | `hintCount` | int | miss counter |
-| `lastNarrative` | string | last GM prose |
+| `lastNarrative` | string | last GM prose (includes the floor grant) |
+| `turnName` | string | Alias who may type a command. Engine-owned. Join order, not `seatId`. Opening grants the first Start alias. |
 | `lastHint` | string | last hint |
 | `lastCanvasEvent` | string | last canvas event |
 | `yamlFallback` | boolean | `true` when the last GM turn used campaign YAML because vLLM was disabled, unreachable, or returned HTTP ≥ 300 |
@@ -186,7 +187,8 @@ puzzleCompletion:
   room-01-broken-shell: true
   room-02-playbook-of-binding: false
 hintCount: 1
-lastNarrative: The golem cracks.
+lastNarrative: The golem cracks. Linus, the floor is yours.
+turnName: Linus
 lastHint: The golem hates cat-only answers.
 lastCanvasEvent: unlock_room_02
 yamlFallback: true
@@ -203,4 +205,4 @@ foundClues:
 
 ## Errors
 
-Unknown session or unknown join code → 404. Duplicate alias on `POST …/party` → 409 `alias_taken`. Party already has 8 members → 409 `party_full`. Missing Start party, blank alias, or unknown `seatId` → 400 `invalid_party`. Presence with unknown alias, locked room, or unknown clue → 400 `invalid_presence`. Presence or a command while the hour is not `active` → 409 `party_not_active`. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.
+Unknown session or unknown join code → 404. Duplicate alias on `POST …/party` → 409 `alias_taken`. Party already has 8 members → 409 `party_full`. Missing Start party, blank alias, or unknown `seatId` → 400 `invalid_party`. Presence with unknown alias, locked room, or unknown clue → 400 `invalid_presence`. Presence or a command while the hour is not `active` → 409 `party_not_active`. Command whose `name` is not `turnName` → 409 `not_your_turn`. Unknown `campaignId` on start → 500 wrapping `IllegalArgumentException("Unknown campaign: …")`. Invalid import body → 500 wrapping `IllegalArgumentException`. Keep these stable; do not add auth in v1.

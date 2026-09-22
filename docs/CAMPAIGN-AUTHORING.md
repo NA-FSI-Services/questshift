@@ -128,7 +128,7 @@ The engine copies that `message` onto `lastNarrative` / `lastHint` and does not 
 
 ## Seats
 
-Do not add `required_seat` or class checks. Blurbs already say anyone may solve any room.
+Do not add `required_seat` or class checks. Blurbs already say anyone may solve any room **when they hold the Game Master floor**. Turn order is `partyMembers` join order (`turnName`), not a YAML `required_seat`. Do not hide the floor grant only in `system_prompt`; the engine owns `turnName` and YAML fallback still announces it.
 
 ## Validate locally
 

@@ -22,7 +22,7 @@ Seats are Guardian, Automancer, Cluster Ranger, and Artificer. They are avatars 
 1. Facilitator applies one QuestShift stack to one OpenShift project (one Route; many parties).
 2. Party opens the UI Route. Dual panel: Phaser dungeon (Panel A) and CRT-like terminal (Panel B).
 3. Facilitator starts a 60-minute session for campaign `devops-dungeon` (*The Cluster That Forgot Its Name*).
-4. Game Master narrates the current room as JSON. Players type a command, playbook, `oc` line, or Java snippet.
+4. Game Master narrates the current room as JSON and grants the floor (`turnName`). Only that player types a command, playbook, `oc` line, or Java snippet. After the GM answers, the floor rotates.
 5. `CommandEvaluator` scores the input. Pass grants loot and unlocks the next room. Fail increments hints.
 6. Five rooms in order. Boss requires runes THORN, ASH, OAK, IRON already in inventory.
 7. Party exports session YAML as proof of the run. Import restores after a bounce.
@@ -34,7 +34,7 @@ If vLLM is unavailable, the engine uses authored YAML narrative and hints so the
 ### Session
 
 - `POST /api/sessions` creates one in-memory `GameSession` for campaign `devops-dungeon` (or the posted `campaignId`) with 1–8 named members and a shareable `joinCode`. Start may run while other parties are `active`.
-- Session tracks party members (unique alias + cosmetic seat), current room, inventory, skills, puzzle flags, elapsed seconds (frozen on complete), last GM text, canvas event, `joinCode`, `commandLog` (shared board for the current room), and `adventureSummary` after the throne.
+- Session tracks party members (unique alias + cosmetic seat), current room, inventory, skills, puzzle flags, elapsed seconds (frozen on complete), last GM text, canvas event, `joinCode`, `turnName` (who may type), `commandLog` (shared board for the current room), and `adventureSummary` after the throne.
 - Many parties per engine process / OpenShift stack. Other browsers look up `GET /api/sessions/{joinCode}` and `POST /api/sessions/{id}/party`. Leave and delete are `DELETE /api/sessions/{id}/party` and `DELETE /api/sessions/{id}`.
 
 ### Game Master JSON
@@ -57,7 +57,7 @@ If vLLM is unavailable, the engine uses authored YAML narrative and hints so the
 ### Dual panel
 
 - Panel A: Phaser 3 16-bit dungeon — five walkable rooms, Kenney seat sprites with unique aliases, occupancy on a room icon when a teammate is inside, authored clues, status gems, Kenney CC0 door/room/chest/quest SFX. Kenney Tiny Dungeon sheet in `questshift-ui/public/assets/`.
-- Panel B: readable IBM Plex Mono terminal — GM log, command box, seat chips, elapsed clock, export control.
+- Panel B: readable IBM Plex Mono terminal — GM log, command box (only `turnName` can type), seat chips, elapsed clock, export control.
 
 ## Success bar
 
