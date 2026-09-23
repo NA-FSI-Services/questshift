@@ -226,12 +226,23 @@ Named keys: [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs
 
 ## Quest lobby and Kenney music bed (2026-09-22)
 
-**Choice:** Thaw the dedicated lobby and a Kenney CC0 music bed for playtesting. Tracker [questshift#16](https://github.com/NA-FSI-Services/questshift/issues/16) (spec [#17](https://github.com/NA-FSI-Services/questshift/issues/17), lobby UI [#18](https://github.com/NA-FSI-Services/questshift/issues/18), character picker [#19](https://github.com/NA-FSI-Services/questshift/issues/19), music [#20](https://github.com/NA-FSI-Services/questshift/issues/20)). Before this browser is in a party, show a React **quest lobby** (not dual-panel play). Cards come from existing `GET /api/campaigns`; v1 still ships **one** card (`devops-dungeon`). Character + unique alias move into that lobby. Start/Join still hit `POST /api/sessions` and `GET` + `POST …/party`. After Start, collapse to **Party {joinCode}**; switch / new party return to the lobby. Named looping beds `bgm_lobby` (`Wacky Waiting.ogg`) and quieter `bgm_dungeon` (`Infinite Descent.ogg`) from Kenney Music Loops 1.1. Unlock on first click/key. Mute persists for the tab. Duck under `sfx_quest_complete`. HTMLAudio plays the bed so Phaser need not be mounted. Extra campaigns, extra Routes, TTS, and seat-gated puzzles stay frozen.
+**Choice:** Thaw the dedicated lobby and a Kenney CC0 music bed for playtesting. Tracker [questshift#16](https://github.com/NA-FSI-Services/questshift/issues/16) (spec [#17](https://github.com/NA-FSI-Services/questshift/issues/17), lobby UI [#18](https://github.com/NA-FSI-Services/questshift/issues/18), character picker [#19](https://github.com/NA-FSI-Services/questshift/issues/19), music [#20](https://github.com/NA-FSI-Services/questshift/issues/20)). Before this browser is in a party, show a React **quest lobby** (not dual-panel play). Cards come from existing `GET /api/campaigns`; v1 shipped **one** card (`devops-dungeon`). Character + unique alias move into that lobby. Start/Join still hit `POST /api/sessions` and `GET` + `POST …/party`. After Start, collapse to **Party {joinCode}**; switch / new party return to the lobby. Named looping beds `bgm_lobby` (`Wacky Waiting.ogg`) and quieter `bgm_dungeon` (`Infinite Descent.ogg`) from Kenney Music Loops 1.1. Unlock on first click/key. Mute persists for the tab. Duck under `sfx_quest_complete`. HTMLAudio plays the bed so Phaser need not be mounted. Extra Routes, TTS, and seat-gated puzzles stay frozen. A second campaign card is post-v1 (see **Second campaign ansible-bastion**).
 
 **Rejected**
 
 - **Keeping Start/Join on an empty topbar in front of Panel A/B.** Playtesting needed a pre-run pick.
-- **Authoring a second campaign YAML** so the lobby has two cards.
+- **Authoring a second campaign YAML in the same lobby thaw.** Deferred to post-v1 ([questshift#40](https://github.com/NA-FSI-Services/questshift/issues/40)).
 - **A second OpenShift Route or session router.**
 - **TTS / mic / WASD footsteps.**
 - **AI audio or a second music license.** Kenney CC0 only.
+
+## Second campaign `ansible-bastion` (2026-09-23)
+
+**Choice:** Post-v1 ships a second 60-minute card, `ansible-bastion` (*The Bastion That Lost Its Runbook*), beside default `devops-dungeon`. Lobby lists both from `GET /api/campaigns`. Five rooms, all `puzzle_type: ansible` (copy/template → package+service → firewall/SG → AWS module → Controller *Aether* boss). Simulated terminal only; YAML regex + `accepted_examples` score; never execute `ansible-playbook` or call AWS/AAP. Reuse Kenney `guardian_*` sprites with new titles. Tracker: [questshift#40](https://github.com/NA-FSI-Services/questshift/issues/40) (spec [#41](https://github.com/NA-FSI-Services/questshift/issues/41)). Authoring: [CAMPAIGN-AUTHORING.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/CAMPAIGN-AUTHORING.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/CAMPAIGN-AUTHORING.md`).
+
+**Rejected**
+
+- **Live AWS API or Automation Controller from engine or browser.** Still simulated text.
+- **Hiding wins only in `system_prompt`.** Regex + examples remain the scorer.
+- **Combat / new Routes / TTS.** Unchanged freezes.
+- **An open-ended campaign library.** Exactly two shipped cards for now; default stays `devops-dungeon`.

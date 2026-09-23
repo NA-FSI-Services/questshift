@@ -1,19 +1,19 @@
-# QuestShift game design (v1)
+# QuestShift game design
 
-One campaign, one hour, five rooms. Source of truth for puzzles is campaign YAML, not this prose.
+Two shipped campaigns, each one hour and five rooms. Default card remains `devops-dungeon`. Source of truth for puzzles is campaign YAML, not this prose.
 
-Campaign file:
+| Id | Title | YAML |
+| --- | --- | --- |
+| `devops-dungeon` | The Cluster That Forgot Its Name | https://github.com/NA-FSI-Services/questshift-campaigns/blob/main/campaigns/campaign-devops-dungeon.yaml — local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-campaigns/campaigns/campaign-devops-dungeon.yaml` |
+| `ansible-bastion` | The Bastion That Lost Its Runbook | https://github.com/NA-FSI-Services/questshift-campaigns/blob/main/campaigns/campaign-ansible-bastion.yaml — local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-campaigns/campaigns/campaign-ansible-bastion.yaml` |
 
-- GitHub: https://github.com/NA-FSI-Services/questshift-campaigns/blob/main/campaigns/campaign-devops-dungeon.yaml
-- Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-campaigns/campaigns/campaign-devops-dungeon.yaml`
-
-## Arc (60 minutes)
+## Arc (60 minutes) — `devops-dungeon`
 
 Campaign id `devops-dungeon`. Title: **The Cluster That Forgot Its Name**. Premise: the workshop cluster woke unnamed — labels gone, pods looping, playbooks bound to the wrong hosts, a Java resource silent. Restore the name `thorn-ash-oak-iron` or the hour is lost.
 
 | Minute | Beat | Room id | Puzzle | Loot |
 | --- | --- | --- | --- | --- |
-| 0–4 | Quest lobby: pick the shipped campaign, a cosmetic seat, and a unique alias. Kenney music bed. Then GM leans on a cracked Route. | — | — | — |
+| 0–4 | Quest lobby: pick a shipped campaign, a cosmetic seat, and a unique alias. Kenney music bed. Then GM leans on a cracked Route. | — | — | — |
 | 4–14 | The Broken Shell | `room-01-broken-shell` | `linux` pipeline | `rune-thorn` **THORN** |
 | 14–24 | The Playbook of Binding | `room-02-playbook-of-binding` | `ansible` play | `rune-ash` **ASH** |
 | 24–36 | The Pod That Would Not Wake | `room-03-pod-that-would-not-wake` | `openshift` probe | `rune-oak` **OAK** |
@@ -22,6 +22,22 @@ Campaign id `devops-dungeon`. Title: **The Cluster That Forgot Its Name**. Premi
 | 54–60 | Debrief + export YAML | — | — | — |
 
 Win: all five `puzzleCompletion` flags true; throne accepted the annotation; the clock **stops**; Panel B shows an adventure recap (most questions, most commands, first accepted command per room); party exports session YAML. Fail: hour ends with the boss unsolved (`expired`, clock capped). Export still works so the next party can resume.
+
+## Arc (60 minutes) — `ansible-bastion`
+
+Campaign id `ansible-bastion`. Title: **The Bastion That Lost Its Runbook**. Premise: after a drift storm, Automation Controller *Aether* woke with an empty inventory. Bastion files never arrived. Common services sleep on the wrong unit. Security groups whisper the wrong CIDRs. AWS tags fell off the cloudforge. The party restores the runbook — **simulated Ansible only** (YAML regex scores; never execute `ansible-playbook` against a real controller or AWS).
+
+| Minute | Beat | Room id | Puzzle | Loot (draft) |
+| --- | --- | --- | --- | --- |
+| 0–4 | Quest lobby: pick `ansible-bastion`, seat, alias. GM names Controller *Aether*. | — | — | — |
+| 4–14 | The Courier's Vault | `room-01-couriers-vault` | `ansible` copy/template | `rune-quill` **QUILL** |
+| 14–24 | The Chapel of Common Services | `room-02-chapel-of-services` | `ansible` package+service | `rune-lamp` **LAMP** |
+| 24–36 | The Gate of Whispered Cidrs | `room-03-gate-of-cidrs` | `ansible` firewall/SG | `rune-gate` **GATE** |
+| 36–46 | The Drifted Cloudforge | `room-04-drifted-cloudforge` | `ansible` AWS module | `rune-sigil` **SIGIL** |
+| 46–54 | The Controller's Throne | `room-05-controllers-throne` | `ansible` boss play | restores *Aether* |
+| 54–60 | Debrief + export YAML | — | — | — |
+
+Guardians reuse existing Kenney `guardian_*` sprites with new titles (no combat). Room authoring contract: [CAMPAIGN-AUTHORING.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/CAMPAIGN-AUTHORING.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/CAMPAIGN-AUTHORING.md`).
 
 ## Cosmetic seats
 

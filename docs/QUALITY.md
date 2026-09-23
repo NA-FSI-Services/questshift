@@ -47,7 +47,7 @@ Python repos: `python3 -m pip install -r requirements-dev.txt` then `./verify.sh
 
 The campaign checker (`tools/campaign.py`) enforces the v1 authoring contract from [CAMPAIGN-AUTHORING.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/CAMPAIGN-AUTHORING.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/CAMPAIGN-AUTHORING.md`):
 
-- Exactly one YAML, `kind: Campaign`, id `devops-dungeon`, `durationMinutes: 60`, five rooms ordered 1–5.
+- Exactly **two** YAMLs under `campaigns/`, ids `devops-dungeon` and `ansible-bastion`, each `kind: Campaign`, `durationMinutes: 60`, five rooms ordered 1–5.
 - Required room fields (`expected_command_pattern`, `accepted_examples`, `hint`, fallback `narrative`, …).
 - Regexes compile; seats stay cosmetic (no `required_seat`).
 - Rejects secret-looking text (`hf_…`, private keys, `AKIA…`).

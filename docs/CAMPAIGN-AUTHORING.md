@@ -1,13 +1,15 @@
-# Campaign authoring (v1)
+# Campaign authoring
 
 Campaign YAML is the puzzle source of truth. Granite narrates; it does not invent win conditions. Do **not** hide the solving command only in `game_master.system_prompt` or room `narrative`.
 
-Canonical adventure:
+Shipped adventures (two cards; default remains `devops-dungeon`):
 
-- GitHub: https://github.com/NA-FSI-Services/questshift-campaigns/blob/main/campaigns/campaign-devops-dungeon.yaml
-- Local: `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-campaigns/campaigns/campaign-devops-dungeon.yaml`
+| Id | Title | GitHub | Local |
+| --- | --- | --- | --- |
+| `devops-dungeon` | The Cluster That Forgot Its Name | https://github.com/NA-FSI-Services/questshift-campaigns/blob/main/campaigns/campaign-devops-dungeon.yaml | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-campaigns/campaigns/campaign-devops-dungeon.yaml` |
+| `ansible-bastion` | The Bastion That Lost Its Runbook | https://github.com/NA-FSI-Services/questshift-campaigns/blob/main/campaigns/campaign-ansible-bastion.yaml | `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift-campaigns/campaigns/campaign-ansible-bastion.yaml` |
 
-Engine also ships a classpath copy at `questshift-engine/src/main/resources/campaigns/campaign-devops-dungeon.yaml`. GitOps embeds the same file via ConfigMap generator `k8s/campaigns/`. Change all three together, or local/cluster will drift.
+Engine ships classpath copies under `questshift-engine/src/main/resources/campaigns/`. GitOps embeds the same files via ConfigMap generator `k8s/campaigns/`. Change all three together, or local/cluster will drift.
 
 ## File shape
 
@@ -15,7 +17,7 @@ Engine also ships a classpath copy at `questshift-engine/src/main/resources/camp
 apiVersion: questshift.io/v1
 kind: Campaign
 metadata:
-  id: devops-dungeon          # CampaignLibrary key
+  id: devops-dungeon          # CampaignLibrary key (or ansible-bastion)
   title: The Cluster That Forgot Its Name
   durationMinutes: 60
   recommendedPartySize: 4
@@ -32,7 +34,7 @@ game_master:
   output_schema: ...
 ```
 
-Keep the whole file on a 60-minute arc (~10 min framing, ~8–12 min per room, ~5 min boss + debrief). v1 ships this one campaign only.
+Keep the whole file on a 60-minute arc (~10 min framing, ~8–12 min per room, ~5 min boss + debrief). Post-v1 ships **two** campaigns; do not add a third without a new decision.
 
 ## Room contract
 
@@ -79,7 +81,21 @@ v1 *The Cluster That Forgot Its Name* guardians:
 | The Cursed Servlet | `servlet-slime` | `guardian_servlet` |
 | The Operator's Throne | `nameless-wraith` | `guardian_throne` |
 
-Do not hide the win only in the guardian's flavor text. Regex + `accepted_examples` still score.
+`ansible-bastion` reuses the same five Kenney `guardian_*` sprite keys with new titles (no new art). Do not hide the win only in the guardian's flavor text. Regex + `accepted_examples` still score.
+
+## Ansible room contract (`ansible-bastion`)
+
+Every room in *The Bastion That Lost Its Runbook* uses `puzzle_type: ansible`. Scoring stays **simulated**: the party types playbook YAML into Panel B; the engine never runs `ansible-playbook`, never calls AWS, and never talks to Automation Controller. Put wins in `expected_command_pattern` + `accepted_examples`; put cursed forms in `forbidden_patterns`.
+
+| Order | Room (draft id) | Teaching beat | Scorer notes |
+| --- | --- | --- | --- |
+| 1 | The Courier's Vault (`room-01-couriers-vault`) | Copy / template files | `hosts` + named task + `ansible.builtin.copy` or `template` (or short `copy`/`template`) writing a known `dest` (e.g. `/etc/questshift/bastion.conf`). Forbid nameless tasks and wrong `dest`. |
+| 2 | The Chapel of Common Services (`room-02-chapel-of-services`) | Packages + services | `package` / `yum` / `dnf` **and** `service` with `state` / `enabled` for a common daemon (e.g. `nginx` or `chronyd`). Forbid start-only without a package task. |
+| 3 | The Gate of Whispered Cidrs (`room-03-gate-of-cidrs`) | Network resources | `ansible.posix.firewalld` **or** `amazon.aws.ec2_security_group` allowing a documented port/CIDR. Forbid open `0.0.0.0/0` on SSH when teaching least privilege. |
+| 4 | The Drifted Cloudforge (`room-04-drifted-cloudforge`) | AWS components | `amazon.aws` module(s) (e.g. S3 bucket + tag, or EC2 instance tag). **Text only** — no live AWS. |
+| 5 | The Controller's Throne (`room-05-controllers-throne`) | Boss playbook | Short multi-task play (optional `block` / `handlers`) that restores Controller name *Aether*; `requires_loot` prior runes (QUILL → LAMP → GATE → SIGIL). |
+
+Loot rune ids land in the YAML. Accept FQCN and short module names in the regex when facilitators reasonably type either. Never put AWS keys, AAP tokens, or kubeconfigs in clue text or `accepted_examples`.
 
 ## Clues (layer-scoped map dialogs)
 
@@ -143,4 +159,4 @@ Do not add `required_seat` or class checks. Blurbs already say anyone may solve 
 
 ## Validate locally
 
-From `questshift-campaigns`: `python3 -m pip install -r requirements-dev.txt && ./verify.sh`. That yamllints the adventure, runs ruff, and checks the contract above (`tools/campaign.py`: one campaign, five rooms, cosmetic seats, compiling regexes, `story.clues`, per-room `guardian` and `clues`, unique clue ids, no secret-looking text). Pre-commit: `./.githooks/install`. Full quality map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).
+From `questshift-campaigns`: `python3 -m pip install -r requirements-dev.txt && ./verify.sh`. That yamllints the adventures, runs ruff, and checks the contract above (`tools/campaign.py`: two campaigns `devops-dungeon` + `ansible-bastion`, five rooms each, cosmetic seats, compiling regexes, `story.clues`, per-room `guardian` and `clues`, unique clue ids, no secret-looking text). Pre-commit: `./.githooks/install`. Full quality map: [QUALITY.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/QUALITY.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/QUALITY.md`).

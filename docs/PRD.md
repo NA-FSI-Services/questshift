@@ -20,8 +20,8 @@ Seats are Guardian, Automancer, Cluster Ranger, and Artificer. They are avatars 
 ## Journey
 
 1. Facilitator applies one QuestShift stack to one OpenShift project (one Route; many parties).
-2. Party opens the UI Route. Pre-run **quest lobby**: pick the shipped campaign, a cosmetic character, and a unique alias. A Kenney CC0 music bed plays after the first gesture (mute control). Dual panel (Phaser dungeon + CRT terminal) appears after Start or Join.
-3. Facilitator starts a 60-minute session for campaign `devops-dungeon` (*The Cluster That Forgot Its Name*) from the lobby (`POST /api/sessions` with the selected `campaignId`).
+2. Party opens the UI Route. Pre-run **quest lobby**: pick a shipped campaign card, a cosmetic character, and a unique alias. A Kenney CC0 music bed plays after the first gesture (mute control). Dual panel (Phaser dungeon + CRT terminal) appears after Start or Join.
+3. Facilitator starts a 60-minute session from the lobby (`POST /api/sessions` with the selected `campaignId`). Default card is `devops-dungeon` (*The Cluster That Forgot Its Name*). Post-v1 also ships `ansible-bastion` (*The Bastion That Lost Its Runbook*).
 4. Game Master narrates the current room as JSON and grants the floor (`turnName`). Only that player types a command, playbook, `oc` line, or Java snippet. After the GM answers, the floor rotates.
 5. `CommandEvaluator` scores the input. Pass grants loot and unlocks the next room. Fail increments hints.
 6. Five rooms in order. Boss requires runes THORN, ASH, OAK, IRON already in inventory.
@@ -56,14 +56,14 @@ If vLLM is unavailable, the engine uses authored YAML narrative and hints so the
 
 ### Dual panel
 
-- Pre-run lobby: quest card(s) from `GET /api/campaigns` (v1: one card), cosmetic character + alias, Start / Join. Hidden once this browser is in a party.
+- Pre-run lobby: quest cards from `GET /api/campaigns` (default `devops-dungeon`; post-v1 also `ansible-bastion`), cosmetic character + alias, Start / Join. Hidden once this browser is in a party.
 - Panel A: Phaser 3 16-bit dungeon — five walkable rooms, Kenney seat sprites with unique aliases, occupancy on a room icon when a teammate is inside, authored clues, status gems, Kenney CC0 door/room/chest/quest SFX. Kenney Tiny Dungeon sheet in `questshift-ui/public/assets/`.
 - Panel B: readable IBM Plex Mono terminal — GM log, command box (only `turnName` can type), seat chips, elapsed clock, export control.
 - Kenney CC0 looping music bed (`bgm_lobby` / `bgm_dungeon`) with a mute control. Duck under the quest-complete jingle. No TTS.
 
 ## Success bar
 
-A facilitated party can clear all five rooms of *The Cluster That Forgot Its Name* in **60 minutes**, including when vLLM is down and the engine falls back to campaign YAML.
+A facilitated party can clear all five rooms of *The Cluster That Forgot Its Name* in **60 minutes**, including when vLLM is down and the engine falls back to campaign YAML. Post-v1: the same bar for *The Bastion That Lost Its Runbook* (`ansible-bastion`) with Ansible-only rooms and no live AWS/AAP calls.
 
 ## Non-goals (v1)
 
@@ -72,6 +72,7 @@ A facilitated party can clear all five rooms of *The Cluster That Forgot Its Nam
 - Multi-party / multi-tenant matchmaking
 - Real execution of `oc`, Ansible, Linux, or Java against the workshop cluster
 - Native Quarkus image
-- Extra campaigns beyond `devops-dungeon`
+- An open-ended campaign library (post-v1 adds exactly one second card: `ansible-bastion`)
+- Live AWS API or Automation Controller calls from engine or browser
 - A database; v1 is in-memory plus export/import files
 - Hiding win conditions only in LLM prompts

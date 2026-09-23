@@ -49,7 +49,11 @@ Exit: facilitated 60-minute run on the workshop cluster, export/import survives 
 
 ## Quest lobby (in v1)
 
-A browser that is not yet in a party sees a dedicated lobby (campaign card from `GET /api/campaigns`, cosmetic character + unique alias, Start / Join), then Panel A/B. A Kenney CC0 music bed loops after the first gesture, with mute. Tracker: [questshift#16](https://github.com/NA-FSI-Services/questshift/issues/16). Extra campaigns stay out of v1 — the lobby lists the shipped `devops-dungeon` card only.
+A browser that is not yet in a party sees a dedicated lobby (campaign card from `GET /api/campaigns`, cosmetic character + unique alias, Start / Join), then Panel A/B. A Kenney CC0 music bed loops after the first gesture, with mute. Tracker: [questshift#16](https://github.com/NA-FSI-Services/questshift/issues/16). v1 shipped one card (`devops-dungeon`). Post-v1 thaws a second card — see below.
+
+## Post-v1 — second campaign `ansible-bastion`
+
+Tracker: [questshift#40](https://github.com/NA-FSI-Services/questshift/issues/40) (spec [#41](https://github.com/NA-FSI-Services/questshift/issues/41)). The lobby lists **two** cards from `GET /api/campaigns`: default `devops-dungeon` (*The Cluster That Forgot Its Name*) and `ansible-bastion` (*The Bastion That Lost Its Runbook*). Five Ansible-only rooms; simulated terminal still; YAML regex wins; never execute `ansible-playbook` or call AWS/AAP. Same OpenShift Route; seats stay cosmetic; no TTS; no combat. Authoring and room contract: [CAMPAIGN-AUTHORING.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/CAMPAIGN-AUTHORING.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/CAMPAIGN-AUTHORING.md`).
 
 ## Party join (in v1)
 
@@ -57,4 +61,4 @@ Many browsers on the same hour, and many hours on the same engine. Shareable `jo
 
 ## Explicitly not scheduled
 
-TTS, Ollama, native Quarkus, multi-party matchmaking across deployments, real command execution, extra campaigns, a database, combat / battle (the north-door guardian is a cosmetic sprite; YAML still wins). [questshift#27](https://github.com/NA-FSI-Services/questshift/issues/27)–[#31](https://github.com/NA-FSI-Services/questshift/issues/31) closed not planned.
+TTS, Ollama, native Quarkus, multi-party matchmaking across deployments, real command execution, a database, combat / battle (the north-door guardian is a cosmetic sprite; YAML still wins), live AWS/AAP from the engine or browser. A second campaign (`ansible-bastion`) is post-v1 (above), not an open-ended campaign library. [questshift#27](https://github.com/NA-FSI-Services/questshift/issues/27)–[#31](https://github.com/NA-FSI-Services/questshift/issues/31) closed not planned.
