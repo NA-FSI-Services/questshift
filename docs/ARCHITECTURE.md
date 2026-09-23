@@ -140,13 +140,13 @@ Pass → room complete, loot ids added, skills granted, Phaser node unlocks via 
 
 Storage in v1 is in-memory plus export/import files. GitOps mounts PVC `questshift-session-export` at `/work/exports` as the restart story until a real database is justified. Import via `POST /api/sessions/import` rehydrates the map.
 
-`CampaignLibrary` loads `*.yaml` from `questshift.campaigns.dir` once; if empty, classpath `campaigns/campaign-devops-dungeon.yaml`. YAML edits require an engine restart in v1 (no reload endpoint).
+`CampaignLibrary` loads `*.yaml` from `questshift.campaigns.dir` once; if empty, classpath `campaigns/campaign-devops-dungeon.yaml` and `campaigns/campaign-ansible-bastion.yaml`. Default id stays `devops-dungeon`. YAML edits require an engine restart in v1 (no reload endpoint).
 
 ## UI
 
 Dual panel:
 
-- **Quest lobby** — React pre-run screen (not a second Phaser dungeon). Quest cards from `GET /api/campaigns` (v1: `devops-dungeon`), cosmetic character + unique alias, Start / Join. Dual panel stays hidden until this browser is in a party.
+- **Quest lobby** — React pre-run screen (not a second Phaser dungeon). Quest cards from `GET /api/campaigns` (default `devops-dungeon`; post-v1 also `ansible-bastion`), cosmetic character + unique alias, Start / Join. Dual panel stays hidden until this browser is in a party.
 - **Panel A** — Phaser 2D board: Kenney Tiny Dungeon CC0 **tilemap** (`floor` / `wall` fill), each challenge room as a wooden gate at `mapX` / `mapY` (`lobby_gate` for current, locked, and resolved rooms), walkable seat sprites with unique alias labels, occupancy on a room gate when a teammate is inside, YAML `clue` chests with a private map dialog (lobby `story.clues` on the overworld; that room’s `clues` inside), two interior doors per room (south lobby `door` always open; north `door_locked` plus YAML `guardian` until that puzzle is solved, then an open `door` into the next YAML room), status gems, `focus` reticle, Kenney CC0 SFX on door / room / chest / quest. Sprite keys, SFX keys, music keys, and occupancy rules in [UX.md](https://github.com/NA-FSI-Services/questshift/blob/main/docs/UX.md) (local `/Users/dtorresf/Documents/GitHub/na-fsi-services/questshift/questshift/docs/UX.md`).
 - **Panel B** — CRT-like terminal: Game Master log (`GM>` for a scene beat, `GM> {alias}` for an attempt reply), command prompt (enabled only for `turnName`), seat chips, elapsed clock. Font is IBM Plex Mono (readable; not a bitmap font). History comes from `gmLog` and `commandLog.narrative`, not a browser-only buffer.
 
